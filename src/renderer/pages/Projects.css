@@ -1,0 +1,48 @@
+/* プロジェクトページ全体のスタイル */
+.Projects {
+  padding: 20px;
+}
+
+/* プロジェクトページのヘッダー部分のスタイル */
+.ProjectsHeader {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+
+/* 新規作成ボタンを右寄せに */
+.ProjectsHeader button {
+  margin-left: auto;
+}
+
+/* プロジェクト一覧部分のスタイル */
+.ProjectsList {
+  margin-top: 20px;
+}
+
+/* プロジェクト一覧のヘッダー部分のスタイル */
+.ProjectsListHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px;
+  background: #555;
+  border-radius: 5px;
+}
+
+/* プロジェクト一覧のリスト部分のスタイル */
+.ProjectsList ul {
+  list-style: none;
+  padding: 0;
+}
+
+/* プロジェクト一覧の各項目のスタイル */
+.ProjectsList ul li {
+  display: flex;
+  justify-content: space-between;
+  margin: 10px 0;
+  padding: 10px;
+  background: #444;
+  border-radius: 5px;
+}
