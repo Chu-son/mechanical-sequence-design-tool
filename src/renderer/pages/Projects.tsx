@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react';
 import { ProjectsDB } from '../database';
+import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 
 export default function Projects() {
   const [projects, setProjects] = useState<{ id: number; name: string; updatedAt: string }[]>([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -13,24 +15,21 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
-  const addProject = async () => {
-    const newProjectName = prompt('新しいプロジェクト名を入力してください:');
-    if (newProjectName) {
-      const newProject = {
-        id: Date.now(),
-        name: newProjectName,
-        updatedAt: new Date().toLocaleString(),
-      };
-      await ProjectsDB.create(newProject);
-      setProjects([...projects, newProject]);
-    }
+  const addProject = async (name: string) => {
+    const newProject = {
+      id: Date.now(),
+      name,
+      updatedAt: new Date().toLocaleString(),
+    };
+    await ProjectsDB.create(newProject);
+    setProjects([...projects, newProject]);
   };
 
   return (
     <div className="Projects">
       <div className="ProjectsHeader">
         <h1>プロジェクト一覧</h1>
-        <button onClick={addProject}>新規作成</button>
+        <button onClick={() => setIsModalOpen(true)}>新規作成</button>
       </div>
       <div className="ProjectsList">
         <div className="ProjectsListHeader">
@@ -46,6 +45,11 @@ export default function Projects() {
           ))}
         </ul>
       </div>
+      <NewProjectModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSave={addProject}
+      />
     </div>
   );
 }
