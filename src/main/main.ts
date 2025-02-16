@@ -14,6 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import './database';
 
 class AppUpdater {
   constructor() {
@@ -76,7 +77,7 @@ const createWindow = async () => {
     icon: getAssetPath('icon.png'),
     webPreferences: {
       preload: app.isPackaged
-        ? path.join(__dirname, 'preload.js')
+        ? path.join(__dirname, 'preload.ts')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
     },
   });

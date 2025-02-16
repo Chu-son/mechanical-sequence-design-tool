@@ -1,14 +1,28 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { ProjectsDB } from '../database';
 import './Projects.css';
 
 export default function Projects() {
-  const [projects, setProjects] = useState<{ name: string; updatedAt: string }[]>([]);
+  const [projects, setProjects] = useState<{ id: number; name: string; updatedAt: string }[]>([]);
 
-  const addProject = () => {
-    const newProject = prompt('新しいプロジェクト名を入力してください:');
-    if (newProject) {
-      const updatedAt = new Date().toLocaleString();
-      setProjects([...projects, { name: newProject, updatedAt }]);
+  useEffect(() => {
+    const fetchProjects = async () => {
+      const data = await ProjectsDB.getAll();
+      setProjects(data);
+    };
+    fetchProjects();
+  }, []);
+
+  const addProject = async () => {
+    const newProjectName = prompt('新しいプロジェクト名を入力してください:');
+    if (newProjectName) {
+      const newProject = {
+        id: Date.now(),
+        name: newProjectName,
+        updatedAt: new Date().toLocaleString(),
+      };
+      await ProjectsDB.create(newProject);
+      setProjects([...projects, newProject]);
     }
   };
 
@@ -24,8 +38,8 @@ export default function Projects() {
           <span>更新日時</span>
         </div>
         <ul>
-          {projects.map((project, index) => (
-            <li key={index}>
+          {projects.map((project) => (
+            <li key={project.id}>
               <span>{project.name}</span>
               <span>{project.updatedAt}</span>
             </li>
