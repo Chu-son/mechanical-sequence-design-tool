@@ -39,12 +39,12 @@ export default function Projects() {
         </div>
         <ul>
           {projects.map((project) => (
-            <Link to={`/projects/${project.id}`} key={project.id}>
-              <li>
+            <li key={project.id}>
+              <Link to={`/projects/${project.id}`}>
                 <span>{project.name}</span>
                 <span>{project.updatedAt}</span>
-              </li>
-            </Link>
+              </Link>
+            </li>
           ))}
         </ul>
       </div>
