@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { ProjectsDB } from '../database';
+import { Link } from 'react-router-dom';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 
@@ -38,10 +39,12 @@ export default function Projects() {
         </div>
         <ul>
           {projects.map((project) => (
-            <li key={project.id}>
-              <span>{project.name}</span>
-              <span>{project.updatedAt}</span>
-            </li>
+            <Link to={`/projects/${project.id}`} key={project.id}>
+              <li>
+                <span>{project.name}</span>
+                <span>{project.updatedAt}</span>
+              </li>
+            </Link>
           ))}
         </ul>
       </div>

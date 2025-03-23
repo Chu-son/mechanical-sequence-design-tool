@@ -7,7 +7,11 @@ interface NewProjectModalProps {
   onSave: (name: string) => void;
 }
 
-export default function NewProjectModal({ isOpen, onClose, onSave }: NewProjectModalProps) {
+export default function NewProjectModal({
+  isOpen,
+  onClose,
+  onSave,
+}: NewProjectModalProps) {
   const [projectName, setProjectName] = useState('');
 
   const handleSave = () => {
@@ -21,7 +25,9 @@ export default function NewProjectModal({ isOpen, onClose, onSave }: NewProjectM
   return (
     <div className="modal-overlay">
       <div className="modal-content">
-        <button className="close-button" onClick={onClose}>×</button>
+        <button className="close-button" onClick={onClose}>
+          ×
+        </button>
         <h2>新規プロジェクト</h2>
         <label htmlFor="projectName">プロジェクト名</label>
         <input
