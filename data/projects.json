@@ -6,11 +6,22 @@
     "units": [
       {
         "id": 1,
-        "name": "ユニット1"
+        "name": "ユニット1",
+        "driveConfig": "駆動構成1",
+        "operationConfig": "動作構成1",
+        "subUnits": [
+          { "id": 1, "name": "サブユニット1-1" },
+          { "id": 2, "name": "サブユニット1-2" }
+        ]
       },
       {
         "id": 2,
-        "name": "ユニット2"
+        "name": "ユニット2",
+        "driveConfig": "駆動構成2",
+        "operationConfig": "動作構成2",
+        "subUnits": [
+          { "id": 3, "name": "サブユニット2-1" }
+        ]
       }
     ]
   },
@@ -21,7 +32,12 @@
     "units": [
       {
         "id": 3,
-        "name": "ユニット3"
+        "name": "ユニット3",
+        "driveConfig": "駆動構成3",
+        "operationConfig": "動作構成3",
+        "subUnits": [
+          { "id": 4, "name": "サブユニット3-1" }
+        ]
       }
     ]
   }

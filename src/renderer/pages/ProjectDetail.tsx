@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { ProjectsDB } from '../database';
 import './ProjectDetail.css';
 import NewUnitModal from '../components/NewUnitModal';
@@ -48,7 +48,9 @@ export default function ProjectDetail() {
         <ul>
           {project.units.map((unit) => (
             <li key={unit.id}>
-              <span>{unit.name}</span>
+              <span>
+                <Link to={`/unit/${unit.id}`}>{unit.name}</Link>
+              </span>
               <span>{new Date().toLocaleString()}</span>
             </li>
           ))}

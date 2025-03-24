@@ -51,10 +51,3 @@ class Database {
 }
 
 export const ProjectsDB = new Database('projects.json');
-export const UnitsDB = new Database('units.json');
-export const DriveConfigurationsDB = new Database('drive_configurations.json');
-export const OperationsDB = new Database('operations.json');
-export const DevicesDB = new Database('devices.json');
-export const MotorsDB = new Database('motors.json');
-export const LinearUnitsDB = new Database('linear_units.json');
-export const SensorsDB = new Database('sensors.json');

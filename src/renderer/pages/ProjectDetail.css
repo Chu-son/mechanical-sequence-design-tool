@@ -3,7 +3,7 @@
 }
 
 .ProjectDetail h1 {
-  /* font-size: 24px; */
+  font-size: 24px;
   margin-bottom: 20px;
 }
 
@@ -22,7 +22,13 @@
 }
 
 .UnitsList li {
-  padding: 5px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 10px 0;
+  padding: 10px;
+  background: #444;
+  border-radius: 5px;
 }
 
 .UnitsList input {
@@ -30,5 +36,17 @@
 }
 
 .UnitsList button {
-  padding: 5px 10px;
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.3rem;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.UnitsList button:hover {
+  transform: scale(1.05);
+  opacity: 1;
 }
