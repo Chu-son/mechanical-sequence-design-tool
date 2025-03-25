@@ -1,26 +1,26 @@
-/* プロジェクトページ全体のスタイル */
+/* 共通の詳細ページスタイル */
 .DetailPage {
   padding: 20px;
 }
 
-/* プロジェクトページのヘッダー部分のスタイル */
+/* 共通のヘッダースタイル */
 .Header {
   display: flex;
   justify-content: flex-start;
   align-items: center;
 }
 
-/* 新規作成ボタンを右寄せに */
+/* ヘッダー内のボタンを右寄せに */
 .Header button {
   margin-left: auto;
 }
 
-/* プロジェクト一覧部分のスタイル */
+/* 共通のリストスタイル */
 .List {
   margin-top: 20px;
 }
 
-/* プロジェクト一覧のヘッダー部分のスタイル */
+/* リストヘッダーのスタイル */
 .ListHeader {
   display: flex;
   justify-content: space-between;
@@ -30,13 +30,13 @@
   border-radius: 5px;
 }
 
-/* プロジェクト一覧のリスト部分のスタイル */
+/* リスト内の項目スタイル */
 .List ul {
   list-style: none;
   padding: 0;
 }
 
-/* プロジェクト一覧の各項目のスタイル */
+/* リスト内の各項目のスタイル */
 .List ul li {
   display: flex;
   justify-content: space-between;
@@ -47,7 +47,7 @@
   border-radius: 5px;
 }
 
-/* プロジェクト一覧のリンクスタイル */
+/* リスト内のリンクスタイル */
 .List ul li a {
   color: inherit;
   text-decoration: none;
@@ -57,7 +57,25 @@
   margin: 0;
 }
 
-/* プロジェクト一覧のリンクホバースタイル */
+/* リスト内のリンクホバースタイル */
 .List ul li a:hover {
   background-color: inherit;
+}
+
+/* 共通のボタンスタイル */
+button {
+  background-color: white;
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: none;
+  appearance: none;
+  font-size: 1.0rem;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+/* ボタンのホバースタイル */
+button:hover {
+  transform: scale(1.05);
+  opacity: 1;
 }

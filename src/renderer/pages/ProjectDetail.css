@@ -1,27 +1,37 @@
-.ProjectDetail {
+/* 詳細ページ全体のスタイル */
+.DetailPage {
   padding: 20px;
 }
 
-.ProjectDetail h1 {
+/* 詳細ページのタイトルスタイル */
+.DetailPage h1 {
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-.UnitsList {
+/* リスト全体のスタイル */
+.List {
   margin-top: 20px;
 }
 
-.UnitsList h2 {
-  font-size: 20px;
-  margin-bottom: 10px;
+/* リストヘッダーのスタイル */
+.ListHeader {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  padding: 10px;
+  background: #555;
+  border-radius: 5px;
 }
 
-.UnitsList ul {
+/* リストのスタイル */
+.List ul {
   list-style-type: none;
   padding: 0;
 }
 
-.UnitsList li {
+/* リスト項目のスタイル */
+.List li {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -31,11 +41,13 @@
   border-radius: 5px;
 }
 
-.UnitsList input {
+/* リスト項目の入力スタイル */
+.List input {
   margin-right: 10px;
 }
 
-.UnitsList button {
+/* ボタンのスタイル */
+button {
   background-color: white;
   padding: 10px 20px;
   border-radius: 10px;
@@ -46,7 +58,8 @@
   opacity: 0.9;
 }
 
-.UnitsList button:hover {
+/* ボタンのホバースタイル */
+button:hover {
   transform: scale(1.05);
   opacity: 1;
 }

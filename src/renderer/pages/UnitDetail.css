@@ -1,57 +1,67 @@
-.UnitDetail {
+/* 詳細ページ全体のスタイル */
+.DetailPage {
   padding: 20px;
 }
 
-.UnitDetail h1 {
+/* 詳細ページのタイトルスタイル */
+.DetailPage h1 {
   font-size: 24px;
   margin-bottom: 20px;
 }
 
-.UnitDetail .DriveConfig,
-.UnitDetail .OperationConfig,
-.UnitDetail .SubUnits {
+/* 各設定セクションのスタイル */
+.ConfigSection {
   margin-bottom: 20px;
 }
 
-.UnitDetail h2 {
+/* 設定セクションのタイトルスタイル */
+.ConfigSection h2 {
   font-size: 20px;
   margin-bottom: 10px;
 }
 
-.UnitDetail p {
+/* 設定セクションのテキストスタイル */
+.ConfigSection p {
   font-size: 16px;
 }
 
-.UnitDetail ul {
+/* 設定セクションのリストスタイル */
+.ConfigSection ul {
   list-style-type: none;
   padding: 0;
 }
 
-.UnitDetail li {
+/* 設定セクションのリスト項目スタイル */
+.ConfigSection li {
   font-size: 16px;
   margin-bottom: 5px;
 }
 
-.UnitDetail table {
+/* 設定セクションのテーブルスタイル */
+.ConfigSection table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 20px;
 }
 
-.UnitDetail table, .UnitDetail th, .UnitDetail td {
+/* テーブルの境界線スタイル */
+.ConfigSection table, .ConfigSection th, .ConfigSection td {
   border: 1px solid #ddd;
 }
 
-.UnitDetail th, .UnitDetail td {
+/* テーブルのセルスタイル */
+.ConfigSection th, .ConfigSection td {
   padding: 8px;
   text-align: left;
 }
 
-.UnitDetail th {
+/* テーブルのヘッダースタイル */
+.ConfigSection th {
   background-color: #f2f2f2;
 }
 
-.UnitDetail .modal {
+/* モーダルのスタイル */
+.modal {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -65,7 +75,8 @@
   background-color: rgba(0, 0, 0, 0.4);
 }
 
-.UnitDetail .modal-content {
+/* モーダルコンテンツのスタイル */
+.modal-content {
   background-color: #fff;
   padding: 20px;
   border: 1px solid #888;
@@ -73,69 +84,24 @@
   max-width: 500px;
 }
 
-.UnitDetail .close {
+/* モーダルの閉じるボタンスタイル */
+.close {
   color: #aaa;
   float: right;
   font-size: 28px;
   font-weight: bold;
 }
 
-.UnitDetail .close:hover,
-.UnitDetail .close:focus {
+/* 閉じるボタンのホバースタイル */
+.close:hover,
+.close:focus {
   color: black;
   text-decoration: none;
   cursor: pointer;
 }
 
-.UnitDetail .ProjectsHeader {
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  margin-bottom: 20px;
-}
-
-.UnitDetail .ProjectsList {
-  margin-top: 20px;
-}
-
-.UnitDetail .ProjectsListHeader {
-  display: flex;
-  justify-content: space-between;
-  font-weight: bold;
-  padding: 10px;
-  background: #555;
-  border-radius: 5px;
-}
-
-.UnitDetail .ProjectsList ul {
-  list-style: none;
-  padding: 0;
-}
-
-.UnitDetail .ProjectsList li {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin: 10px 0;
-  padding: 10px;
-  background: #444;
-  border-radius: 5px;
-}
-
-.UnitDetail .ProjectsList li a {
-  color: inherit;
-  text-decoration: none;
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  margin: 0;
-}
-
-.UnitDetail .ProjectsList li a:hover {
-  background-color: inherit;
-}
-
-.UnitDetail button {
+/* ボタンのスタイル */
+button {
   background-color: white;
   padding: 10px 20px;
   border-radius: 10px;
@@ -146,7 +112,8 @@
   opacity: 0.9;
 }
 
-.UnitDetail button:hover {
+/* ボタンのホバースタイル */
+button:hover {
   transform: scale(1.05);
   opacity: 1;
 }

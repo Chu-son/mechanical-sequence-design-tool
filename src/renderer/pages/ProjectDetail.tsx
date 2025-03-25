@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { ProjectsDB } from '../database';
 import './ProjectDetail.css';
+import '../styles/Common.css'; // 共通スタイルをインポート
 import NewUnitModal from '../components/NewUnitModal';
 
 export default function ProjectDetail() {
@@ -33,15 +34,15 @@ export default function ProjectDetail() {
   if (!project) return <div>Loading...</div>;
 
   return (
-    <div className="ProjectDetail">
-      <div className="ProjectsHeader">
+    <div className="DetailPage">
+      <div className="Header">
         <h1>{project.name}</h1>
         <button type="button" onClick={() => setIsUnitModalOpen(true)}>
           新規作成
         </button>
       </div>
-      <div className="ProjectsList">
-        <div className="ProjectsListHeader">
+      <div className="List">
+        <div className="ListHeader">
           <span>名前</span>
           <span>更新日時</span>
         </div>

@@ -3,6 +3,7 @@ import { ProjectsDB } from '../database';
 import { Link } from 'react-router-dom';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
+import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function Projects() {
   const [projects, setProjects] = useState<{ id: number; name: string; updatedAt: string }[]>([]);
@@ -27,13 +28,13 @@ export default function Projects() {
   };
 
   return (
-    <div className="Projects">
-      <div className="ProjectsHeader">
+    <div className="DetailPage">
+      <div className="Header">
         <h1>プロジェクト一覧</h1>
         <button onClick={() => setIsModalOpen(true)}>新規作成</button>
       </div>
-      <div className="ProjectsList">
-        <div className="ProjectsListHeader">
+      <div className="List">
+        <div className="ListHeader">
           <span>名前</span>
           <span>更新日時</span>
         </div>
