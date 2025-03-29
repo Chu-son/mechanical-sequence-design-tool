@@ -4,7 +4,7 @@ import Projects from './pages/Projects';
 import Devices from './pages/Devices';
 import ProjectDetail from './pages/ProjectDetail';
 import UnitDetail from './pages/UnitDetail';
-import './App.css';
+import './styles/App.css';
 
 export default function App() {
   return (

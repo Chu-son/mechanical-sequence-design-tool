@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { ProjectsDB } from '../database'; // ProjectsDBをインポート
+import { ProjectsDB } from '../utils/database'; // ProjectsDBをインポート
 import './UnitDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 

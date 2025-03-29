@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ProjectsDB } from '../database';
+import { ProjectsDB } from '../utils/database';
 import { Link } from 'react-router-dom';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
