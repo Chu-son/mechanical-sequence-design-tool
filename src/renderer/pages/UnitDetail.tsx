@@ -68,7 +68,12 @@ export default function UnitDetail() {
           </div>
           <ul>
             {unit.driveConfigs.map((driveConfig, index) => (
-              <li key={index}>{driveConfig}</li>
+              <li
+                key={index}
+                onClick={() => navigate(`/flowchart?config=${driveConfig}`)}
+              >
+                {driveConfig}
+              </li>
             ))}
           </ul>
         </div>
@@ -88,7 +93,12 @@ export default function UnitDetail() {
           </div>
           <ul>
             {unit.operationConfigs.map((operationConfig, index) => (
-              <li key={index}>{operationConfig}</li>
+              <li
+                key={index}
+                onClick={() => navigate(`/flowchart?config=${operationConfig}`)}
+              >
+                {operationConfig}
+              </li>
             ))}
           </ul>
         </div>
