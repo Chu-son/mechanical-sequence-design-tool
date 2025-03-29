@@ -5,6 +5,7 @@ import Devices from './pages/Devices';
 import ProjectDetail from './pages/ProjectDetail';
 import UnitDetail from './pages/UnitDetail';
 import './styles/App.css';
+import Flowchart from './pages/Flowchart';
 
 export default function App() {
   return (
@@ -17,6 +18,7 @@ export default function App() {
             <Route path="/" element={<Projects />} />
             <Route path="/devices" element={<Devices />} />
             <Route path="/unit/:unitId" element={<UnitDetail />} />
+            <Route path="/flowchart" element={<Flowchart />} />
           </Routes>
         </div>
       </div>

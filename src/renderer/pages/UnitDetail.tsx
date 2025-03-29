@@ -2,10 +2,12 @@ import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { ProjectsDB } from '../utils/database'; // ProjectsDBをインポート
 import './UnitDetail.css';
+import { useNavigate } from 'react-router-dom';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function UnitDetail() {
   const { unitId } = useParams<{ unitId: string }>();
+  const navigate = useNavigate();
   const [unit, setUnit] = useState<{
     id: number;
     name: string;
@@ -44,6 +46,7 @@ export default function UnitDetail() {
         <div className="Header">
           <h1>{unit.name}</h1>
         </div>
+        <button onClick={() => navigate('/flowchart')}>フローチャートを表示</button>
       </div>
 
       <div className="DetailPage">

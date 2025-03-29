@@ -54,3 +54,5 @@ a:hover {
 .Sidebar.closed + .Content {
   margin-left: 50px; /* サイドバーが閉じた際の幅に合わせて調整 */
 }
+
+@import url('./flow-theme.css');
