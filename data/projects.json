@@ -7,21 +7,45 @@
       {
         "id": 1,
         "name": "ユニット1",
-        "driveConfig": "駆動構成1",
-        "operationConfig": "動作構成1",
-        "subUnits": [
-          { "id": 1, "name": "サブユニット1-1" },
-          { "id": 2, "name": "サブユニット1-2" }
+        "parentId": null,
+        "driveConfigs": [
+          "駆動構成1"
+        ],
+        "operationConfigs": [
+          "動作構成1"
         ]
       },
       {
         "id": 2,
         "name": "ユニット2",
-        "driveConfig": "駆動構成2",
-        "operationConfig": "動作構成2",
-        "subUnits": [
-          { "id": 3, "name": "サブユニット2-1" }
+        "parentId": null,
+        "driveConfigs": [
+          "駆動構成2"
+        ],
+        "operationConfigs": [
+          "動作構成2"
         ]
+      },
+      {
+        "id": 3,
+        "name": "サブユニット1-1",
+        "parentId": 1,
+        "driveConfigs": [],
+        "operationConfigs": []
+      },
+      {
+        "id": 4,
+        "name": "サブユニット1-2",
+        "parentId": 1,
+        "driveConfigs": [],
+        "operationConfigs": []
+      },
+      {
+        "id": 5,
+        "name": "サブユニット2-1",
+        "parentId": 2,
+        "driveConfigs": [],
+        "operationConfigs": []
       }
     ]
   },
@@ -31,13 +55,22 @@
     "updatedAt": "2025-03-23 12:00:00",
     "units": [
       {
-        "id": 3,
+        "id": 6,
         "name": "ユニット3",
-        "driveConfig": "駆動構成3",
-        "operationConfig": "動作構成3",
-        "subUnits": [
-          { "id": 4, "name": "サブユニット3-1" }
+        "parentId": null,
+        "driveConfigs": [
+          "駆動構成3"
+        ],
+        "operationConfigs": [
+          "動作構成3"
         ]
+      },
+      {
+        "id": 7,
+        "name": "サブユニット3-1",
+        "parentId": 6,
+        "driveConfigs": [],
+        "operationConfigs": []
       }
     ]
   }

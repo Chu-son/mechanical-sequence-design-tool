@@ -10,7 +10,7 @@ export default function ProjectDetail() {
   const [project, setProject] = useState<{
     id: number;
     name: string;
-    units: { id: number; name: string }[];
+    units: { id: number; name: string; parentId: number | null }[];
   } | null>(null);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
@@ -24,14 +24,22 @@ export default function ProjectDetail() {
 
   const addUnit = async (name: string) => {
     if (project) {
-      const newUnit = { id: Date.now(), name };
+      const newUnit = { id: Date.now(), name, parentId: null };
       const updatedProject = { ...project, units: [...project.units, newUnit] };
       await ProjectsDB.update(project.id, updatedProject);
       setProject(updatedProject);
     }
   };
 
+  const getTopLevelUnits = (
+    units: { id: number; name: string; parentId: number | null }[],
+  ) => {
+    return units.filter((unit) => unit.parentId === null);
+  };
+
   if (!project) return <div>Loading...</div>;
+
+  const topLevelUnits = getTopLevelUnits(project.units);
 
   return (
     <div className="DetailPage">
@@ -47,7 +55,7 @@ export default function ProjectDetail() {
           <span>更新日時</span>
         </div>
         <ul>
-          {project.units.map((unit) => (
+          {topLevelUnits.map((unit) => (
             <li key={unit.id}>
               <span>
                 <Link to={`/unit/${unit.id}`}>{unit.name}</Link>

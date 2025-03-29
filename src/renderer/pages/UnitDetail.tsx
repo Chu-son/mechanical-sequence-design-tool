@@ -11,10 +11,10 @@ export default function UnitDetail() {
   const [unit, setUnit] = useState<{
     id: number;
     name: string;
-    driveConfig: string;
-    operationConfig: string;
-    subUnits: { id: number; name: string }[];
+    driveConfigs: string[];
+    operationConfigs: string[];
   } | null>(null);
+  const [subUnits, setSubUnits] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true); // ローディング状態を追加
   const [showDriveConfigModal, setShowDriveConfigModal] = useState(false);
   const [showOperationConfigModal, setShowOperationConfigModal] =
@@ -28,6 +28,10 @@ export default function UnitDetail() {
         const foundUnit = project.units.find((u) => u.id === Number(unitId));
         if (foundUnit) {
           setUnit(foundUnit);
+          const childUnits = project.units.filter(
+            (u) => u.parentId === foundUnit.id,
+          );
+          setSubUnits(childUnits);
           break;
         }
       }
@@ -46,7 +50,9 @@ export default function UnitDetail() {
         <div className="Header">
           <h1>{unit.name}</h1>
         </div>
-        <button onClick={() => navigate('/flowchart')}>フローチャートを表示</button>
+        <button onClick={() => navigate('/flowchart')}>
+          フローチャートを表示
+        </button>
       </div>
 
       <div className="DetailPage">
@@ -61,7 +67,9 @@ export default function UnitDetail() {
             <span>駆動名</span>
           </div>
           <ul>
-            <li>{unit.driveConfig}</li>
+            {unit.driveConfigs.map((driveConfig, index) => (
+              <li key={index}>{driveConfig}</li>
+            ))}
           </ul>
         </div>
       </div>
@@ -79,7 +87,9 @@ export default function UnitDetail() {
             <span>動作名</span>
           </div>
           <ul>
-            <li>{unit.operationConfig}</li>
+            {unit.operationConfigs.map((operationConfig, index) => (
+              <li key={index}>{operationConfig}</li>
+            ))}
           </ul>
         </div>
       </div>
@@ -94,7 +104,7 @@ export default function UnitDetail() {
             <span>名前</span>
           </div>
           <ul>
-            {unit.subUnits.map((subUnit) => (
+            {subUnits.map((subUnit) => (
               <li key={subUnit.id}>{subUnit.name}</li>
             ))}
           </ul>
