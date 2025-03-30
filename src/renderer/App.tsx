@@ -1,5 +1,6 @@
 import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import Sidebar from './components/Sidebar';
+import TitleBar from './components/TitleBar';
 import Projects from './pages/Projects';
 import Devices from './pages/Devices';
 import ProjectDetail from './pages/ProjectDetail';
@@ -14,6 +15,9 @@ export default function App({
 }) {
   return (
     <Router>
+      <header>
+        <TitleBar />
+      </header>
       <div className="App">
         <Sidebar />
         <div className="Content">
