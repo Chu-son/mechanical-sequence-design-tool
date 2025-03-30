@@ -7,7 +7,11 @@ import UnitDetail from './pages/UnitDetail';
 import './styles/App.css';
 import Flowchart from './pages/Flowchart';
 
-export default function App() {
+export default function App({
+  flowchartProps,
+}: {
+  flowchartProps?: { projectId: number; configType: string; configId: number };
+}) {
   return (
     <Router>
       <div className="App">
@@ -18,7 +22,10 @@ export default function App() {
             <Route path="/" element={<Projects />} />
             <Route path="/devices" element={<Devices />} />
             <Route path="/unit/:unitId" element={<UnitDetail />} />
-            <Route path="/flowchart" element={<Flowchart />} />
+            <Route
+              path="/flowchart"
+              element={<Flowchart {...flowchartProps} />}
+            />
           </Routes>
         </div>
       </div>

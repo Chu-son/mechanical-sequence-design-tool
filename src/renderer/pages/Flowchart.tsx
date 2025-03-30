@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -9,17 +9,15 @@ import {
   useReactFlow,
   Background,
 } from '@xyflow/react';
-
-import '@xyflow/react/dist/style.css';
-
-import Sidebar from '../components/Sidebar';
+import { useLocation } from 'react-router-dom';
+import { ProjectsDB } from '../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
-
 import TaskNode, {
   MemoizedTaskStartNode,
   MemoizedTaskEndNode,
 } from '../components/TaskNode';
 import FlowchartSidebar from '../components/FlowchartSidebar';
+import '@xyflow/react/dist/style.css';
 
 const nodeTypes = {
   taskStart: MemoizedTaskStartNode,
@@ -28,36 +26,59 @@ const nodeTypes = {
 };
 
 let id = 0;
-const getId = () => `${id++}`;
+const getId = (): string => {
+  id += 1;
+  return `${id}`;
+};
 
-const initialNodes = [
-  {
-    id: getId(),
-    type: 'taskStart',
-    data: { label: 'Task Start Node' },
-    position: { x: 250, y: 5 },
-  },
-];
+const initialNodes: any[] = [];
 
 function DnDFlow() {
-  const reactFlowWrapper = useRef(null);
+  const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
+
+  const location = useLocation();
+  const { projectId, unitId, configType, configId } = location.state || {};
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
+  useEffect(() => {
+    if (!projectId || !configType || !configId) {
+      console.error('Missing parameters: projectId, configType, or configId');
+      return;
+    }
+
+    const loadFlowData = async () => {
+      const flowData = await ProjectsDB.getFlowData(
+        projectId,
+        configType,
+        configId,
+      );
+      if (flowData) {
+        setNodes(flowData.nodes || []);
+        setEdges(flowData.edges || []);
+      } else {
+        setNodes(initialNodes);
+      }
+    };
+
+    loadFlowData();
+  }, [projectId, configType, configId, setNodes, setEdges]);
+
   const onConnect = useCallback(
-    (params) => setEdges((eds) => addEdge(params, eds)),
-    [],
+    (params: any) => setEdges((eds) => addEdge(params, eds as any[])),
+    [setEdges],
   );
 
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
   const onDrop = useCallback(
-    (event) => {
+    (event: React.DragEvent) => {
       event.preventDefault();
 
       if (!type) {
@@ -77,7 +98,7 @@ function DnDFlow() {
 
       setNodes((nds) => nds.concat(newNode));
     },
-    [screenToFlowPosition, type],
+    [screenToFlowPosition, type, setNodes],
   );
 
   return (
@@ -107,12 +128,25 @@ function DnDFlow() {
           <Background />
         </ReactFlow>
       </div>
-      <FlowchartSidebar />
+      <FlowchartSidebar
+        projectId={projectId}
+        unitId={unitId}
+        configType={configType}
+        configId={configId}
+      />
     </div>
   );
 }
 
-export default function Flowchart() {
+export default function Flowchart({
+  projectId = 1,
+  configType = 'driveConfigs',
+  configId = 1,
+}: {
+  projectId?: number;
+  configType?: 'driveConfigs' | 'operationConfigs';
+  configId?: number;
+}) {
   return (
     <ReactFlowProvider>
       <DnDProvider>

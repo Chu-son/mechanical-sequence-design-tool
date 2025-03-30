@@ -6,7 +6,9 @@ import './Projects.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function Projects() {
-  const [projects, setProjects] = useState<{ id: number; name: string; updatedAt: string }[]>([]);
+  const [projects, setProjects] = useState<
+    { id: number; name: string; updatedAt: string }[]
+  >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
@@ -41,7 +43,10 @@ export default function Projects() {
         <ul>
           {projects.map((project) => (
             <li key={project.id}>
-              <Link to={`/projects/${project.id}`}>
+              <Link
+                to={`/projects/${project.id}`}
+                state={{ projectId: project.id }}
+              >
                 <span>{project.name}</span>
                 <span>{project.updatedAt}</span>
               </Link>

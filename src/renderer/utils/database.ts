@@ -7,6 +7,25 @@ class Database {
     this.fileName = fileName;
   }
 
+  public async getFlowData(projectId: number, configType: 'driveConfigs' | 'operationConfigs', configId: number): Promise<any | null> {
+    try {
+      const projects = await this.getAll();
+      const project = projects.find((p: any) => p.id === projectId);
+      if (!project) return null;
+
+      for (const unit of project.units) {
+        const configs = unit[configType];
+        const config = configs.find((c: any) => c.id === configId);
+        if (config && config.flow_data) {
+          return config.flow_data;
+        }
+      }
+      return null;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   public async getAll(): Promise<any[]> {
     try {
       const result = await ipcRenderer.invoke('getAll', this.fileName);

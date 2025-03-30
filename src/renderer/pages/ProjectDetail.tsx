@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { ProjectsDB } from '../utils/database';
 import './ProjectDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
@@ -7,6 +7,8 @@ import NewUnitModal from '../components/NewUnitModal';
 
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
+  const location = useLocation();
+  const { projectId: stateProjectId } = location.state || {};
   const [project, setProject] = useState<{
     id: number;
     name: string;
@@ -58,7 +60,12 @@ export default function ProjectDetail() {
           {topLevelUnits.map((unit) => (
             <li key={unit.id}>
               <span>
-                <Link to={`/unit/${unit.id}`}>{unit.name}</Link>
+                <Link
+                  to={`/unit/${unit.id}`}
+                  state={{ projectId: stateProjectId, unitId: unit.id }}
+                >
+                  {unit.name}
+                </Link>
               </span>
               <span>{new Date().toLocaleString()}</span>
             </li>

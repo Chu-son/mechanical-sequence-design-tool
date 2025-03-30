@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { ProjectsDB } from '../utils/database'; // ProjectsDBをインポート
 import './UnitDetail.css';
-import { useNavigate } from 'react-router-dom';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function UnitDetail() {
   const { unitId } = useParams<{ unitId: string }>();
+  const location = useLocation();
+  const { projectId } = location.state || {};
   const navigate = useNavigate();
   const [unit, setUnit] = useState<{
     id: number;
@@ -50,9 +51,6 @@ export default function UnitDetail() {
         <div className="Header">
           <h1>{unit.name}</h1>
         </div>
-        <button onClick={() => navigate('/flowchart')}>
-          フローチャートを表示
-        </button>
       </div>
 
       <div className="DetailPage">
@@ -70,7 +68,16 @@ export default function UnitDetail() {
             {unit.driveConfigs.map((driveConfig) => (
               <li
                 key={driveConfig.id}
-                onClick={() => navigate(`/flowchart?config=${driveConfig.id}`)}
+                onClick={() =>
+                  navigate('/flowchart', {
+                    state: {
+                      projectId: projectId,
+                      unitId: unit.id,
+                      configType: 'driveConfigs',
+                      configId: driveConfig.id,
+                    },
+                  })
+                }
               >
                 {driveConfig.label}
               </li>
@@ -96,7 +103,14 @@ export default function UnitDetail() {
               <li
                 key={operationConfig.id}
                 onClick={() =>
-                  navigate(`/flowchart?config=${operationConfig.id}`)
+                  navigate('/flowchart', {
+                    state: {
+                      projectId: projectId,
+                      unitId: unit.id,
+                      configType: 'operationConfigs',
+                      configId: operationConfig.id,
+                    },
+                  })
                 }
               >
                 {operationConfig.label}
