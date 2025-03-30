@@ -26,15 +26,23 @@
   justify-content: center;
 }
 
-button {
-  background: none;
-  border: none;
-  /* color: white; */
-  font-size: 14px;
+.title-bar button {
+  all: unset; /* 他のスタイルをリセット */
   cursor: pointer;
+  font-size: 14px;
   margin: 0 5px;
+
+  -webkit-app-region: no-drag;
 }
 
-button:hover {
+.title-bar button:hover {
   color: #1e90ff;
+}
+
+.title-bar span {
+  border: 1px solid white;
+  border-radius: 5px;
+  padding: 0px 80px;
+  margin: 0 5px;
+  background-color: #444;
 }
