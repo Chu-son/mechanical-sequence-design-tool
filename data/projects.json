@@ -9,10 +9,18 @@
         "name": "ユニット1",
         "parentId": null,
         "driveConfigs": [
-          "駆動構成1"
+          {
+            "id": 1,
+            "label": "駆動構成1",
+            "flow_data": {}
+          }
         ],
         "operationConfigs": [
-          "動作構成1"
+          {
+            "id": 1,
+            "label": "動作構成1",
+            "flow_data": {}
+          }
         ]
       },
       {
@@ -20,10 +28,18 @@
         "name": "ユニット2",
         "parentId": null,
         "driveConfigs": [
-          "駆動構成2"
+          {
+            "id": 2,
+            "label": "駆動構成2",
+            "flow_data": {}
+          }
         ],
         "operationConfigs": [
-          "動作構成2"
+          {
+            "id": 2,
+            "label": "動作構成2",
+            "flow_data": {}
+          }
         ]
       },
       {
@@ -59,10 +75,18 @@
         "name": "ユニット3",
         "parentId": null,
         "driveConfigs": [
-          "駆動構成3"
+          {
+            "id": 3,
+            "label": "駆動構成3",
+            "flow_data": {}
+          }
         ],
         "operationConfigs": [
-          "動作構成3"
+          {
+            "id": 3,
+            "label": "動作構成3",
+            "flow_data": {}
+          }
         ]
       },
       {

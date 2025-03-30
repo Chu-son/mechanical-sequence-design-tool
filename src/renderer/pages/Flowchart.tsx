@@ -15,7 +15,10 @@ import '@xyflow/react/dist/style.css';
 import Sidebar from '../components/Sidebar';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 
-import TaskNode, { MemoizedTaskStartNode, MemoizedTaskEndNode } from '../components/TaskNode';
+import TaskNode, {
+  MemoizedTaskStartNode,
+  MemoizedTaskEndNode,
+} from '../components/TaskNode';
 import FlowchartSidebar from '../components/FlowchartSidebar';
 
 const nodeTypes = {
@@ -80,7 +83,7 @@ function DnDFlow() {
   return (
     <div
       className="dndflow"
-      style={{ height: '100vh', width: '100vw', display: 'flex' }}
+      style={{ height: '90vh', width: '80vw', display: 'flex' }}
     >
       <div
         className="reactflow-wrapper"

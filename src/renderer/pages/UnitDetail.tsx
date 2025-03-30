@@ -11,8 +11,8 @@ export default function UnitDetail() {
   const [unit, setUnit] = useState<{
     id: number;
     name: string;
-    driveConfigs: string[];
-    operationConfigs: string[];
+    driveConfigs: { id: number; label: string }[];
+    operationConfigs: { id: number; label: string }[];
   } | null>(null);
   const [subUnits, setSubUnits] = useState<{ id: number; name: string }[]>([]);
   const [loading, setLoading] = useState(true); // ローディング状態を追加
@@ -67,12 +67,12 @@ export default function UnitDetail() {
             <span>駆動名</span>
           </div>
           <ul>
-            {unit.driveConfigs.map((driveConfig, index) => (
+            {unit.driveConfigs.map((driveConfig) => (
               <li
-                key={index}
-                onClick={() => navigate(`/flowchart?config=${driveConfig}`)}
+                key={driveConfig.id}
+                onClick={() => navigate(`/flowchart?config=${driveConfig.id}`)}
               >
-                {driveConfig}
+                {driveConfig.label}
               </li>
             ))}
           </ul>
@@ -92,12 +92,14 @@ export default function UnitDetail() {
             <span>動作名</span>
           </div>
           <ul>
-            {unit.operationConfigs.map((operationConfig, index) => (
+            {unit.operationConfigs.map((operationConfig) => (
               <li
-                key={index}
-                onClick={() => navigate(`/flowchart?config=${operationConfig}`)}
+                key={operationConfig.id}
+                onClick={() =>
+                  navigate(`/flowchart?config=${operationConfig.id}`)
+                }
               >
-                {operationConfig}
+                {operationConfig.label}
               </li>
             ))}
           </ul>
