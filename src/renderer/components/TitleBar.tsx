@@ -1,19 +1,36 @@
-import React from 'react';
+import React, { JSX } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './TitleBar.css';
 
-const TitleBar = () => {
+function TitleBar(): JSX.Element {
+  const navigate = useNavigate();
+
+  const navigateBack = () => {
+    navigate(-1);
+  };
+
+  const navigateForward = () => {
+    navigate(1);
+  };
+
   return (
     <div className="title-bar">
       <div className="title-bar-left">
-        <button onClick={() => window.electronAPI.showMenu()}>Menu</button>
+        <button type="button" onClick={() => window.electronAPI.showMenu()}>
+          Menu
+        </button>
       </div>
       <div className="title-bar-center">
-        <button>←</button>
-        <button>→</button>
+        <button type="button" onClick={navigateBack}>
+          ←
+        </button>
+        <button type="button" onClick={navigateForward}>
+          →
+        </button>
         <span>src/index.js</span>
       </div>
     </div>
   );
-};
+}
 
 export default TitleBar;
