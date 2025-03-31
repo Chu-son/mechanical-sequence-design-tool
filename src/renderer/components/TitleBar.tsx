@@ -27,7 +27,7 @@ function TitleBar(): JSX.Element {
         <button type="button" onClick={navigateForward}>
           →
         </button>
-        <span>src/index.js</span>
+        <span>home</span>
       </div>
     </div>
   );
