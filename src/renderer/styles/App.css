@@ -48,11 +48,15 @@ a:hover {
 .Content {
   flex-grow: 1; /* コンテンツが残りの幅を占めるように */
   padding: 20px;
-  margin-left: 250px; /* サイドバーの幅に合わせて調整 */
+  margin-left: 0; /* サイドバーが非表示の場合の調整 */
+}
+
+.Sidebar + .Content {
+  margin-left: 250px; /* サイドバーが表示されている場合の幅 */
 }
 
 .Sidebar.closed + .Content {
-  margin-left: 50px; /* サイドバーが閉じた際の幅に合わせて調整 */
+  margin-left: 50px; /* サイドバーが閉じた際の幅 */
 }
 
 @import url('./flow-theme.css');
