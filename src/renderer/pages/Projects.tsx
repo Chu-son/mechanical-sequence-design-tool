@@ -3,6 +3,7 @@ import { ProjectsDB } from '../utils/database';
 import { Link } from 'react-router-dom';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
+import { useGlobalFlag } from '../context/GlobalFlagContext';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function Projects() {
@@ -11,13 +12,19 @@ export default function Projects() {
   >([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const { setSidebarVisibility } = useGlobalFlag();
+
   useEffect(() => {
+    setSidebarVisibility(false); // Sidebar を非表示に設定
     const fetchProjects = async () => {
       const data = await ProjectsDB.getAll();
       setProjects(data);
     };
     fetchProjects();
-  }, []);
+    return () => {
+      setSidebarVisibility(true); // クリーンアップ時に Sidebar を再表示
+    };
+  }, [setSidebarVisibility]);
 
   const addProject = async (name: string) => {
     const newProject = {
