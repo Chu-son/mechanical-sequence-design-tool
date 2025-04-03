@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import './Sidebar.css';
 import { ProjectsDB } from '../utils/database';
@@ -52,14 +52,28 @@ export default function Sidebar() {
           .filter((unit) => unit.parentId === parentId)
           .map((unit) => (
             <li key={unit.id}>
-              <span>{unit.name}</span>
+              <Link to={`/projects/${projects[0].id}/unit/${unit.id}`}>
+                {unit.name}
+              </Link>
               {renderTree(units, unit.id)}
               <ul>
                 {unit.driveConfigs.map((config: Config) => (
-                  <li key={`drive-${config.id}`}>{config.label}</li>
+                  <li key={`drive-${config.id}`}>
+                    <Link
+                      to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/driveConfigs/${config.id}`}
+                    >
+                      {config.label}
+                    </Link>
+                  </li>
                 ))}
                 {unit.operationConfigs.map((config: Config) => (
-                  <li key={`operation-${config.id}`}>{config.label}</li>
+                  <li key={`operation-${config.id}`}>
+                    <Link
+                      to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/operationConfigs/${config.id}`}
+                    >
+                      {config.label}
+                    </Link>
+                  </li>
                 ))}
               </ul>
             </li>
