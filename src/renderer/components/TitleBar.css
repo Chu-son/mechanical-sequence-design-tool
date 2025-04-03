@@ -39,7 +39,7 @@
   color: #1e90ff;
 }
 
-.title-bar span {
+.title-bar .location-path {
   border: 1px solid white;
   border-radius: 5px;
   padding: 0px 80px;
