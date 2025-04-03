@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { ProjectsDB } from '../utils/database';
 import { Link } from 'react-router-dom';
+import { ProjectsDB } from '../utils/database';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
@@ -40,7 +40,9 @@ export default function Projects() {
     <div className="DetailPage">
       <div className="Header">
         <h1>プロジェクト一覧</h1>
-        <button onClick={() => setIsModalOpen(true)}>新規作成</button>
+        <button type="button" onClick={() => setIsModalOpen(true)}>
+          新規作成
+        </button>
       </div>
       <div className="List">
         <div className="ListHeader">
@@ -50,10 +52,7 @@ export default function Projects() {
         <ul>
           {projects.map((project) => (
             <li key={project.id}>
-              <Link
-                to={`/projects/${project.id}`}
-                state={{ projectId: project.id }}
-              >
+              <Link to={`/projects/${project.id}`}>
                 <span>{project.name}</span>
                 <span>{project.updatedAt}</span>
               </Link>

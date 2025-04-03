@@ -9,7 +9,7 @@ import {
   useReactFlow,
   Background,
 } from '@xyflow/react';
-import { useLocation } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { ProjectsDB } from '../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 import TaskNode, {
@@ -36,8 +36,12 @@ const initialNodes: any[] = [];
 function DnDFlow() {
   const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
 
-  const location = useLocation();
-  const { projectId, unitId, configType, configId } = location.state || {};
+  const { projectId, unitId, configType, configId } = useParams<{
+    projectId: string;
+    unitId: string;
+    configType: string;
+    configId: string;
+  }>();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
@@ -49,12 +53,15 @@ function DnDFlow() {
       console.error('Missing parameters: projectId, configType, or configId');
       return;
     }
+    console.log(
+      `Loading flow data for projectId: ${projectId}, configType: ${configType}, configId: ${configId}`,
+    );
 
     const loadFlowData = async () => {
       const flowData = await ProjectsDB.getFlowData(
-        projectId,
-        configType,
-        configId,
+        Number(projectId),
+        configType as 'driveConfigs' | 'operationConfigs',
+        Number(configId),
       );
       if (flowData) {
         setNodes(flowData.nodes || []);
@@ -129,10 +136,10 @@ function DnDFlow() {
         </ReactFlow>
       </div>
       <FlowchartSidebar
-        projectId={projectId}
-        unitId={unitId}
-        configType={configType}
-        configId={configId}
+        projectId={Number(projectId)}
+        unitId={Number(unitId)}
+        configType={configType as 'driveConfigs' | 'operationConfigs'}
+        configId={Number(configId)}
       />
     </div>
   );

@@ -5,9 +5,10 @@ import './UnitDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function UnitDetail() {
-  const { unitId } = useParams<{ unitId: string }>();
-  const location = useLocation();
-  const { projectId } = location.state || {};
+  const { projectId, unitId } = useParams<{
+    projectId: string;
+    unitId: string;
+  }>();
   const navigate = useNavigate();
   const [unit, setUnit] = useState<{
     id: number;
@@ -69,14 +70,9 @@ export default function UnitDetail() {
               <li
                 key={driveConfig.id}
                 onClick={() =>
-                  navigate('/flowchart', {
-                    state: {
-                      projectId: projectId,
-                      unitId: unit.id,
-                      configType: 'driveConfigs',
-                      configId: driveConfig.id,
-                    },
-                  })
+                  navigate(
+                    `/projects/${projectId}/unit/${unit.id}/flowchart/driveConfigs/${driveConfig.id}`,
+                  )
                 }
               >
                 {driveConfig.label}
@@ -103,14 +99,9 @@ export default function UnitDetail() {
               <li
                 key={operationConfig.id}
                 onClick={() =>
-                  navigate('/flowchart', {
-                    state: {
-                      projectId: projectId,
-                      unitId: unit.id,
-                      configType: 'operationConfigs',
-                      configId: operationConfig.id,
-                    },
-                  })
+                  navigate(
+                    `/projects/${projectId}/unit/${unit.id}/flowchart/operationConfigs/${operationConfig.id}`,
+                  )
                 }
               >
                 {operationConfig.label}

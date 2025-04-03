@@ -1,10 +1,72 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import './Sidebar.css';
+import { ProjectsDB } from '../utils/database';
+
+interface Config {
+  id: number;
+  label: string;
+}
+
+interface Unit {
+  id: number;
+  name: string;
+  parentId: number | null;
+  driveConfigs: Config[];
+  operationConfigs: Config[];
+}
+
+interface Project {
+  id: number;
+  name: string;
+  units: Unit[];
+}
 
 export default function Sidebar() {
-  const [isOpen, setIsOpen] = useState(false); // デフォルトで閉じた状態に設定
+  const [isOpen, setIsOpen] = useState(false);
+  const [projects, setProjects] = useState<Project[]>([]);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    const fetchCurrentProject = async () => {
+      try {
+        const data = await ProjectsDB.getAll();
+        const currentPath = location.pathname;
+        const projectId = parseInt(currentPath.split('/')[2], 10); // Assuming URL structure includes project ID
+        const currentProject = data.find((project) => project.id === projectId);
+        setProjects(currentProject ? [currentProject] : []);
+      } catch (error) {
+        console.error('Failed to fetch current project:', error);
+      }
+    };
+
+    fetchCurrentProject();
+  }, [location]);
+
+  const renderTree = (units: Unit[], parentId: number | null = null) => {
+    return (
+      <ul>
+        {units
+          .filter((unit) => unit.parentId === parentId)
+          .map((unit) => (
+            <li key={unit.id}>
+              <span>{unit.name}</span>
+              {renderTree(units, unit.id)}
+              <ul>
+                {unit.driveConfigs.map((config: Config) => (
+                  <li key={`drive-${config.id}`}>{config.label}</li>
+                ))}
+                {unit.operationConfigs.map((config: Config) => (
+                  <li key={`operation-${config.id}`}>{config.label}</li>
+                ))}
+              </ul>
+            </li>
+          ))}
+      </ul>
+    );
+  };
 
   const { isSidebarVisible } = useGlobalFlag();
 
@@ -22,14 +84,12 @@ export default function Sidebar() {
         ☰
       </button>
       <nav>
-        <ul>
-          <li>
-            <Link to="/">プロジェクト</Link>
-          </li>
-          <li>
-            <Link to="/devices">デバイスリスト</Link>
-          </li>
-        </ul>
+        {projects.length > 0 && (
+          <div>
+            <h3>{projects[0].name}</h3>
+            {renderTree(projects[0].units)}
+          </div>
+        )}
       </nav>
     </div>
   );

@@ -8,7 +8,7 @@ import NewUnitModal from '../components/NewUnitModal';
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
   const location = useLocation();
-  const { projectId: stateProjectId } = location.state || {};
+  const stateProjectId = location.state?.projectId || projectId;
   const [project, setProject] = useState<{
     id: number;
     name: string;
@@ -60,10 +60,7 @@ export default function ProjectDetail() {
           {topLevelUnits.map((unit) => (
             <li key={unit.id}>
               <span>
-                <Link
-                  to={`/unit/${unit.id}`}
-                  state={{ projectId: stateProjectId, unitId: unit.id }}
-                >
+                <Link to={`/projects/${stateProjectId}/unit/${unit.id}`}>
                   {unit.name}
                 </Link>
               </span>

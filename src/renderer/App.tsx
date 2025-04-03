@@ -9,11 +9,7 @@ import UnitDetail from './pages/UnitDetail';
 import './styles/App.css';
 import Flowchart from './pages/Flowchart';
 
-export default function App({
-  flowchartProps,
-}: {
-  flowchartProps?: { projectId: number; configType: string; configId: number };
-}) {
+export default function App() {
   return (
     <GlobalFlagProvider>
       <Router>
@@ -24,14 +20,17 @@ export default function App({
           <Sidebar />
           <div className="Content">
             <Routes>
-              <Route path="/projects/:projectId" element={<ProjectDetail />} />
               <Route path="/" element={<Projects />} />
-              <Route path="/devices" element={<Devices />} />
-              <Route path="/unit/:unitId" element={<UnitDetail />} />
+              <Route path="/projects/:projectId" element={<ProjectDetail />} />
               <Route
-                path="/flowchart"
-                element={<Flowchart {...flowchartProps} />}
+                path="/projects/:projectId/unit/:unitId"
+                element={<UnitDetail />}
               />
+              <Route
+                path="/projects/:projectId/unit/:unitId/flowchart/:configType/:configId"
+                element={<Flowchart />}
+              />
+              <Route path="/devices" element={<Devices />} />
             </Routes>
           </div>
         </div>
