@@ -10,7 +10,9 @@ import {
   Background,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
-import { ProjectsDB } from '../../utils/database';
+import Database from '../../utils/database';
+
+const ProjectsDB = Database;
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 import TaskNode, {
   MemoizedTaskStartNode,
@@ -44,7 +46,7 @@ function DnDFlow() {
   }>();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any[]>([]);
   const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
@@ -75,7 +77,7 @@ function DnDFlow() {
   }, [projectId, configType, configId, setNodes, setEdges]);
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds as any[])),
+    (params: any) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
 

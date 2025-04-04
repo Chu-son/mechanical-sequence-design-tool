@@ -2,26 +2,9 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import './Sidebar.css';
-import { ProjectsDB } from '../utils/database';
+import Database, { Project, Unit } from '../utils/database';
 
-interface Config {
-  id: number;
-  label: string;
-}
-
-interface Unit {
-  id: number;
-  name: string;
-  parentId: number | null;
-  driveConfigs: Config[];
-  operationConfigs: Config[];
-}
-
-interface Project {
-  id: number;
-  name: string;
-  units: Unit[];
-}
+const ProjectsDB = Database;
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -57,7 +40,7 @@ export default function Sidebar() {
               </Link>
               {renderTree(units, unit.id)}
               <ul>
-                {unit.driveConfigs.map((config: Config) => (
+                {unit.driveConfigs.map((config) => (
                   <li key={`drive-${config.id}`}>
                     <Link
                       to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/driveConfigs/${config.id}`}
@@ -66,7 +49,7 @@ export default function Sidebar() {
                     </Link>
                   </li>
                 ))}
-                {unit.operationConfigs.map((config: Config) => (
+                {unit.operationConfigs.map((config) => (
                   <li key={`operation-${config.id}`}>
                     <Link
                       to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/operationConfigs/${config.id}`}

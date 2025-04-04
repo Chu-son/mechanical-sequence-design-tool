@@ -1,7 +1,9 @@
 import React from 'react';
-import { useDnD } from '../utils/DnDContext';
 import { useReactFlow } from '@xyflow/react';
-import { ProjectsDB } from '../../utils/database';
+import { useDnD } from '../utils/DnDContext';
+import Database, { ConfigType, Config } from '../../utils/database';
+
+const ProjectsDB = Database;
 export default ({
   projectId,
   unitId,
@@ -13,9 +15,9 @@ export default ({
   configType: string;
   configId: number;
 }) => {
-  const [_, setType] = useDnD();
+  const [, setType] = useDnD();
 
-  const onDragStart = (event, nodeType) => {
+  const onDragStart = (event: React.DragEvent, nodeType: string) => {
     setType(nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };
@@ -45,14 +47,20 @@ export default ({
       const unit = project.units.find((u) => u.id === unitId);
       if (!unit) throw new Error('Unit not found');
 
-      console.log('Debug: unit[configType]:', unit[configType]);
+      console.log('Debug: unit[configType]:', unit[configType as ConfigType]);
       if (!unit[configType] || unit[configType].length === 0) {
         throw new Error(`No configurations found for type: ${configType}`);
       }
-      const config = unit[configType].find((c) => c.id === configId);
+      const config = unit[configType as ConfigType].find(
+        (c: Config) => c.id === configId,
+      );
       if (!config) throw new Error('Configuration not found');
 
-      config.flow_data = flow;
+      config.flow_data = {
+        nodes: flow.nodes,
+        edges: flow.edges,
+        viewport: flow.viewport,
+      };
       await ProjectsDB.update(projectId, project);
       console.log('Flow data saved successfully');
     } catch (error) {
@@ -87,7 +95,11 @@ export default ({
       >
         Task End Node
       </div>
-      <button onClick={saveFlowData} style={{ marginBottom: '10px' }}>
+      <button
+        type="button"
+        onClick={saveFlowData}
+        style={{ marginBottom: '10px' }}
+      >
         Save
       </button>
     </aside>

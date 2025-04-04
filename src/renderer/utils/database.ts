@@ -1,5 +1,34 @@
 const { ipcRenderer } = window.electron;
 
+export interface FlowData {
+  nodes: Node[];
+  edges: { source: string; target: string }[];
+  viewport: { x: number; y: number; zoom: number };
+}
+
+export interface Config {
+  id: number;
+  label: string;
+  flow_data: FlowData;
+}
+
+export interface Unit {
+  id: number;
+  name: string;
+  parentId: number | null;
+  driveConfigs: Config[];
+  operationConfigs: Config[];
+}
+
+export interface Project {
+  id: number;
+  name: string;
+  updatedAt: string;
+  units: Unit[];
+}
+
+export type ConfigType = 'driveConfigs' | 'operationConfigs';
+
 class Database {
   private fileName: string;
 
@@ -7,66 +36,59 @@ class Database {
     this.fileName = fileName;
   }
 
-  public async getFlowData(projectId: number, configType: 'driveConfigs' | 'operationConfigs', configId: number): Promise<any | null> {
-    try {
-      const projects = await this.getAll();
-      const project = projects.find((p: any) => p.id === projectId);
-      if (!project) return null;
+  public async getFlowData(
+    projectId: number,
+    configType: ConfigType,
+    configId: number,
+  ): Promise<any | null> {
+    const projects = await this.getAll();
+    const project = projects.find((p: any) => p.id === projectId);
+    if (!project) return null;
 
-      for (const unit of project.units) {
-        const configs = unit[configType];
-        const config = configs.find((c: any) => c.id === configId);
-        if (config && config.flow_data) {
-          return config.flow_data;
-        }
-      }
-      return null;
-    } catch (error) {
-      throw error;
-    }
+    const unit = project.units.find((unit) =>
+      unit[configType].some((config: any) => config.id === configId),
+    );
+    if (!unit) return null;
+
+    const config = unit[configType].find((c: any) => c.id === configId);
+    return config?.flow_data || null;
   }
 
-  public async getAll(): Promise<any[]> {
-    try {
-      const result = await ipcRenderer.invoke('getAll', this.fileName);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+  public async getAll(): Promise<Project[]> {
+    const result = await ipcRenderer.invoke('getAll', this.fileName);
+    return result;
+  }
+
+  public async getProjectById(projectId: number): Promise<Project | null> {
+    const projects = await this.getAll();
+    return projects.find((project) => project.id === projectId) || null;
+  }
+
+  public async getUnitById(
+    projectId: number,
+    unitId: number,
+  ): Promise<Unit | null> {
+    const project = await this.getProjectById(projectId);
+    if (!project) return null;
+    return project.units.find((unit) => unit.id === unitId) || null;
   }
 
   public async getById(id: number): Promise<any | null> {
-    try {
-      const result = await ipcRenderer.invoke('getById', this.fileName, id);
-      return result;
-    } catch (error) {
-      throw error;
-    }
+    const result = await ipcRenderer.invoke('getById', this.fileName, id);
+    return result;
   }
 
   public async create(item: any): Promise<void> {
-    try {
-      await ipcRenderer.invoke('create', this.fileName, item);
-    } catch (error) {
-      throw error;
-    }
+    await ipcRenderer.invoke('create', this.fileName, item);
   }
 
   public async update(id: number, updatedItem: any): Promise<void> {
-    try {
-      await ipcRenderer.invoke('update', this.fileName, id, updatedItem);
-    } catch (error) {
-      throw error;
-    }
+    await ipcRenderer.invoke('update', this.fileName, id, updatedItem);
   }
 
   public async delete(id: number): Promise<void> {
-    try {
-      await ipcRenderer.invoke('delete', this.fileName, id);
-    } catch (error) {
-      throw error;
-    }
+    await ipcRenderer.invoke('delete', this.fileName, id);
   }
 }
 
-export const ProjectsDB = new Database('projects.json');
+export default new Database('projects.json');

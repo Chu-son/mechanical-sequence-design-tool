@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ProjectsDB } from '../utils/database';
+import Database from '../utils/database';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import '../styles/Common.css'; // 共通スタイルをインポート
+
+const ProjectsDB = Database;
 
 export default function Projects() {
   const [projects, setProjects] = useState<
