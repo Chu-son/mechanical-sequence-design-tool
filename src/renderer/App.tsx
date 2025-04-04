@@ -7,7 +7,7 @@ import Devices from './pages/Devices';
 import ProjectDetail from './pages/ProjectDetail';
 import UnitDetail from './pages/UnitDetail';
 import './styles/App.css';
-import Flowchart from './pages/Flowchart';
+import Flowchart from './flowchart/pages/Flowchart';
 
 export default function App() {
   return (

@@ -59,4 +59,4 @@ a:hover {
   margin-left: 50px; /* サイドバーが閉じた際の幅 */
 }
 
-@import url('./flow-theme.css');
+@import url('../flowchart/styles/flow-theme.css');

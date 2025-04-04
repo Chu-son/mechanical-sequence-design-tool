@@ -10,7 +10,7 @@ import {
   Background,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
-import { ProjectsDB } from '../utils/database';
+import { ProjectsDB } from '../../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 import TaskNode, {
   MemoizedTaskStartNode,

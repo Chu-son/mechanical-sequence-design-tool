@@ -1,7 +1,7 @@
 import React from 'react';
 import { useDnD } from '../utils/DnDContext';
 import { useReactFlow } from '@xyflow/react';
-import { ProjectsDB } from '../utils/database';
+import { ProjectsDB } from '../../utils/database';
 export default ({
   projectId,
   unitId,
