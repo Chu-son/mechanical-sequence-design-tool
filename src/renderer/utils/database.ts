@@ -29,6 +29,13 @@ export interface Project {
 
 export type ConfigType = 'driveConfigs' | 'operationConfigs';
 
+export interface ConfigIdentifier {
+  projectId: number;
+  unitId: number;
+  configType: ConfigType;
+  configId: number;
+}
+
 class Database {
   private fileName: string;
 

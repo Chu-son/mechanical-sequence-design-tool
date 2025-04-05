@@ -111,10 +111,7 @@ function DnDFlow() {
   );
 
   return (
-    <div
-      className="dndflow"
-      style={{ height: '90vh', width: '80vw', display: 'flex' }}
-    >
+    <div className="dndflow">
       <div
         className="reactflow-wrapper"
         ref={reactFlowWrapper}

@@ -70,3 +70,15 @@ body {
   }
 }
 
+.sidebar .description {
+  font-size: 20px;
+}
+
+.save-button.align-right {
+  float: right;
+  border: 1px solid #1a192b;
+  border-radius: 5px;
+  padding: 5px 10px;
+  cursor: pointer;
+  font-size: 10px;
+}

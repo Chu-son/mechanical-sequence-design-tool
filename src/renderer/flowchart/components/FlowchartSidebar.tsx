@@ -4,18 +4,21 @@ import { useDnD } from '../utils/DnDContext';
 import Database, { ConfigType, Config } from '../../utils/database';
 
 const ProjectsDB = Database;
-export default ({
-  projectId,
-  unitId,
-  configType,
-  configId,
-}: {
+
+interface FlowchartSidebarProps {
   projectId: number;
   unitId: number;
   configType: string;
   configId: number;
+}
+
+const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
+  projectId,
+  unitId,
+  configType,
+  configId,
 }) => {
-  const [, setType] = useDnD();
+  const [, setType] = useDnD() || [];
 
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     setType(nodeType);
@@ -70,14 +73,22 @@ export default ({
 
   return (
     <aside className="sidebar">
-      <div className="description">Node</div>
+      <button
+        type="button"
+        onClick={saveFlowData}
+        className="save-button align-right"
+      >
+        Save
+      </button>
+
+      <h1 className="description">Node</h1>
 
       <div
         className="dndnode"
         onDragStart={(event) => onDragStart(event, 'taskStart')}
         draggable
       >
-        Task Start Node
+        Start Node
       </div>
 
       <div
@@ -93,15 +104,10 @@ export default ({
         onDragStart={(event) => onDragStart(event, 'taskEnd')}
         draggable
       >
-        Task End Node
+        End Node
       </div>
-      <button
-        type="button"
-        onClick={saveFlowData}
-        style={{ marginBottom: '10px' }}
-      >
-        Save
-      </button>
     </aside>
   );
 };
+
+export default FlowchartSidebar;
