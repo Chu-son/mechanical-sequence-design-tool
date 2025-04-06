@@ -5,6 +5,8 @@ import {
   useReactFlow,
   type NodeProps,
   type Node,
+  useNodeConnections,
+  useNodesData,
 } from '@xyflow/react';
 import '../styles/common.css'; // flowchart共通スタイルを適用
 
@@ -21,6 +23,9 @@ type TaskNodeData = {
 
 function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   const { updateNodeData, getNode, getEdges } = useReactFlow();
+  const connections = useNodeConnections({ handleType: 'target' });
+  const nodesData = useNodesData(connections?.[0].source);
+
   const [totalDuration, setTotalDuration] = useState(data.totalDuration || 0);
   const [taskNode, setTaskNode] = useState(data);
   const [inputValue, setInputValue] = useState(String(data.duration || 0));
@@ -44,7 +49,7 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
     const roundedTotalDuration = calculateTotalDuration();
     setTotalDuration(roundedTotalDuration);
     updateNodeData(id, { ...taskNode, totalDuration: roundedTotalDuration });
-  }, [calculateTotalDuration, id, taskNode, updateNodeData]);
+  }, [calculateTotalDuration, id, taskNode, updateNodeData, nodesData]);
 
   const handleBlur = (event) => {
     let value = event.target.value;
@@ -117,6 +122,8 @@ const TaskStartNode = ({ id }) => (
 
 const TaskEndNode = ({ id, data }) => {
   const { getNode, getEdges } = useReactFlow();
+  const connections = useNodeConnections({ handleType: 'target' });
+  const nodesData = useNodesData(connections?.[0].source);
 
   const calculateTotalDuration = () => {
     const edges = getEdges();
@@ -133,6 +140,11 @@ const TaskEndNode = ({ id, data }) => {
   };
 
   const totalDuration = calculateTotalDuration();
+
+  useEffect(() => {
+    const roundedTotalDuration = calculateTotalDuration();
+    data.totalDuration = roundedTotalDuration;
+  }, [data, nodesData]);
 
   return (
     <div className="node">
