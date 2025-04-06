@@ -1,4 +1,4 @@
-import { memo, useEffect, useState } from 'react';
+import { memo, useEffect, useState, useCallback } from 'react';
 import {
   Position,
   Handle,
@@ -6,6 +6,13 @@ import {
   type NodeProps,
   type Node,
 } from '@xyflow/react';
+import '../styles/common.css'; // flowchart共通スタイルを適用
+
+const ROUND_DIGITS = 2;
+
+function roundToDigits(value, digits) {
+  return parseFloat(value.toFixed(digits));
+}
 
 type TaskNodeData = {
   duration: number;
@@ -16,16 +23,13 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   const { updateNodeData, getNode, getEdges } = useReactFlow();
   const [totalDuration, setTotalDuration] = useState(data.totalDuration || 0);
   const [taskNode, setTaskNode] = useState(data);
+  const [inputValue, setInputValue] = useState(String(data.duration || 0));
 
-  useEffect(() => {
-    console.log(`TaskNode ${id} created`);
-  }, [id]);
-
-  useEffect(() => {
+  const calculateTotalDuration = useCallback(() => {
     const edges = getEdges();
-    const incomingEdges = edges.filter(edge => edge.target === id);
     let previousTotalDuration = 0;
 
+    const incomingEdges = edges.filter((edge) => edge.target === id);
     if (incomingEdges.length > 0) {
       const previousNodeId = incomingEdges[0].source;
       const previousNode = getNode(previousNodeId);
@@ -33,48 +37,89 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
     }
 
     const newTotalDuration = previousTotalDuration + taskNode.duration;
-    setTotalDuration(newTotalDuration);
-    updateNodeData(id, { ...taskNode, totalDuration: newTotalDuration });
-  }, [taskNode.duration, id, getNode, getEdges, updateNodeData]);
+    return roundToDigits(newTotalDuration, ROUND_DIGITS);
+  }, [getEdges, getNode, id, taskNode.duration]);
+
+  useEffect(() => {
+    const roundedTotalDuration = calculateTotalDuration();
+    setTotalDuration(roundedTotalDuration);
+    updateNodeData(id, { ...taskNode, totalDuration: roundedTotalDuration });
+  }, [calculateTotalDuration, id, taskNode, updateNodeData]);
 
   const handleBlur = (event) => {
     let value = event.target.value;
+    console.info('Input value:', value);
     if (value === '') {
       value = 0;
     } else {
       value = parseFloat(value);
+      value = roundToDigits(value, ROUND_DIGITS);
     }
     if (!isNaN(value)) {
       setTaskNode({ ...taskNode, duration: value });
       updateNodeData(id, { ...taskNode, duration: value });
+      setInputValue(value.toFixed(ROUND_DIGITS));
     }
   };
 
+  const handleChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
   return (
-    <div>
+    <div className="node">
       <Handle type="target" position={Position.Top} />
-      <div>node {id}</div>
-      <label>
-        Duration:
-        <input type="text" value={taskNode.duration} onBlur={handleBlur} />
-      </label>
-      <div>Total Duration: {totalDuration}</div>
-      <Handle type="source" position={Position.Bottom} />
+      <div className="node-title">Task node</div>
+      <div className="node-content">
+        <div className="node-setting-field">
+          <label>
+            Description
+            <br />
+            <input
+              type="text"
+              value={taskNode.label || ''} // 初期値を空文字列に設定
+              onChange={(event) => {
+                const newLabel = event.target.value;
+                setTaskNode({ ...taskNode, label: newLabel });
+                updateNodeData(id, { ...taskNode, label: newLabel });
+              }}
+            />
+          </label>
+          <label>
+            Duration [sec] {ROUND_DIGITS}digits
+            <br />
+            <input
+              type="text"
+              value={inputValue}
+              onChange={handleChange}
+              onBlur={handleBlur}
+            />
+          </label>
+        </div>
+        <hr style={{ margin: '10px 0' }} />{' '}
+        <div className="node-readonly-field">
+          <div>Node ID: {id}</div>
+          <div>Total Duration [sec]: {totalDuration}</div>
+        </div>
+        <Handle type="source" position={Position.Bottom} />
+      </div>
     </div>
   );
 }
 
 const TaskStartNode = ({ id }) => (
-  <div>
-    <div>Task Start Node {id}</div>
+  <div className="node">
+    <div className="node-title">Task Start</div>
+
     <Handle type="source" position={Position.Bottom} />
   </div>
 );
 
 const TaskEndNode = ({ id }) => (
-  <div>
+  <div className="node">
     <Handle type="target" position={Position.Top} />
-    <div>Task End Node {id}</div>
+
+    <div className="node-title">Task End</div>
   </div>
 );
 

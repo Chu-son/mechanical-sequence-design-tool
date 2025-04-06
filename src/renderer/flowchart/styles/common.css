@@ -1,0 +1,22 @@
+/* flowchart共通スタイル */
+
+.node {
+  line-height: 2; /* 行間を広くする */
+  text-align: left; /* テキストを左寄せにする */
+  padding: 10px; /* ノード内の余白を指定 */
+}
+
+.node .node-title {
+  font-size: 20px; /* タイトルのフォントサイズを指定 */
+  font-weight: bold; /* タイトルを太字にする */
+  margin-bottom: 5px; /* タイトルとコンテンツの間に余白を指定 */
+}
+
+.node .node-content input {
+  width: 100%; /* 入力フィールドの幅を100%にする */
+  padding: 2px; /* 入力フィールド内の余白を指定 */
+  border: 1px solid #ccc; /* 入力フィールドの枠線を指定 */
+  border-radius: 20px; /* 入力フィールドの角を丸くする */
+
+  background-color: #f9f9f9; /* 入力フィールドの背景色を指定 */
+}
