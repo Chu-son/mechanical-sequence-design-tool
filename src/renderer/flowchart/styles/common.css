@@ -20,3 +20,7 @@
 
   background-color: #f9f9f9; /* 入力フィールドの背景色を指定 */
 }
+
+.node-divider {
+  margin: 10px 0; /* ノードの上下に余白を指定 */
+}

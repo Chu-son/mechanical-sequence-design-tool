@@ -96,7 +96,7 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
             />
           </label>
         </div>
-        <hr style={{ margin: '10px 0' }} />{' '}
+        <hr className="node-divider" />
         <div className="node-readonly-field">
           <div>Node ID: {id}</div>
           <div>Total Duration [sec]: {totalDuration}</div>
@@ -115,13 +115,37 @@ const TaskStartNode = ({ id }) => (
   </div>
 );
 
-const TaskEndNode = ({ id }) => (
-  <div className="node">
-    <Handle type="target" position={Position.Top} />
+const TaskEndNode = ({ id, data }) => {
+  const { getNode, getEdges } = useReactFlow();
 
-    <div className="node-title">Task End</div>
-  </div>
-);
+  const calculateTotalDuration = () => {
+    const edges = getEdges();
+    let previousTotalDuration = 0;
+
+    const incomingEdges = edges.filter((edge) => edge.target === id);
+    if (incomingEdges.length > 0) {
+      const previousNodeId = incomingEdges[0].source;
+      const previousNode = getNode(previousNodeId);
+      previousTotalDuration = previousNode?.data?.totalDuration || 0;
+    }
+
+    return previousTotalDuration;
+  };
+
+  const totalDuration = calculateTotalDuration();
+
+  return (
+    <div className="node">
+      <Handle type="target" position={Position.Top} />
+
+      <div className="node-title">Task End</div>
+      <hr className="node-divider" />
+      <div className="node-readonly-field">
+        <div>Total Duration [sec]: {totalDuration}</div>
+      </div>
+    </div>
+  );
+};
 
 export const MemoizedTaskStartNode = memo(TaskStartNode);
 export const MemoizedTaskEndNode = memo(TaskEndNode);
