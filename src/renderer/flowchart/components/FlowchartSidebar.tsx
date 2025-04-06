@@ -1,70 +1,68 @@
 import React from 'react';
 import { useReactFlow } from '@xyflow/react';
 import { useDnD } from '../utils/DnDContext';
-import Database, { ConfigType, Config } from '../../utils/database';
+import Database from '../../utils/database';
+import {
+  ConfigType,
+  Config,
+  FlowData,
+  ConfigIdentifier,
+} from '../../types/databaseTypes';
 
 const ProjectsDB = Database;
 
 interface FlowchartSidebarProps {
-  projectId: number;
-  unitId: number;
-  configType: string;
-  configId: number;
+  configIdentifier: ConfigIdentifier;
 }
 
 const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
-  projectId,
-  unitId,
-  configType,
-  configId,
+  configIdentifier,
 }) => {
-  const [, setType] = useDnD() || [];
+  const dndContext = useDnD();
+  const [, setType] = dndContext ? dndContext : [null, () => {}];
 
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
-    setType(nodeType);
+    if (setType) {
+      setType(nodeType);
+    }
     event.dataTransfer.effectAllowed = 'move';
   };
 
   const { toObject } = useReactFlow();
 
-  const saveFlowData = async () => {
+  const saveFlowData = async (configIdentifier: ConfigIdentifier) => {
     const flow = toObject();
 
     try {
       const projects = await ProjectsDB.getAll();
-      console.log(
-        'Debug: projectId:',
-        projectId,
-        'unitId:',
-        unitId,
-        'configType:',
-        configType,
-        'configId:',
-        configId,
-      );
+
+      console.log('Debug: configIdentifier:', configIdentifier);
       console.log('Debug: projects:', projects);
 
-      const project = projects.find((p) => p.id === projectId);
+      const project = projects.find((p) => p.id === configIdentifier.projectId);
       if (!project) throw new Error('Project not found');
 
-      const unit = project.units.find((u) => u.id === unitId);
+      const unit = project.units.find((u) => u.id === configIdentifier.unitId);
       if (!unit) throw new Error('Unit not found');
 
-      console.log('Debug: unit[configType]:', unit[configType as ConfigType]);
-      if (!unit[configType] || unit[configType].length === 0) {
-        throw new Error(`No configurations found for type: ${configType}`);
+      const configList = unit[configIdentifier.configType];
+      console.log('Debug: unit[configType]:', configList);
+      if (!configList || configList.length === 0) {
+        throw new Error(
+          `No configurations found for type: ${configIdentifier.configType}`,
+        );
       }
-      const config = unit[configType as ConfigType].find(
-        (c: Config) => c.id === configId,
+      const config = configList.find(
+        (c: Config) => c.id === configIdentifier.configId,
       );
       if (!config) throw new Error('Configuration not found');
 
       config.flow_data = {
-        nodes: flow.nodes,
+        nodes: flow.nodes as unknown as FlowData['nodes'],
         edges: flow.edges,
         viewport: flow.viewport,
       };
-      await ProjectsDB.update(projectId, project);
+      await ProjectsDB.update(configIdentifier.projectId, project);
       console.log('Flow data saved successfully');
     } catch (error) {
       console.error('Error saving flow data:', error);
@@ -75,7 +73,11 @@ const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
     <aside className="sidebar">
       <button
         type="button"
-        onClick={saveFlowData}
+        onClick={() =>
+          saveFlowData({
+            ...configIdentifier,
+          })
+        }
         className="save-button align-right"
       >
         Save

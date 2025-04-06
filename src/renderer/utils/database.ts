@@ -1,40 +1,13 @@
+import {
+  FlowData,
+  Config,
+  Unit,
+  Project,
+  ConfigType,
+  ConfigIdentifier,
+} from '../types/databaseTypes';
+
 const { ipcRenderer } = window.electron;
-
-export interface FlowData {
-  nodes: Node[];
-  edges: { source: string; target: string }[];
-  viewport: { x: number; y: number; zoom: number };
-}
-
-export interface Config {
-  id: number;
-  label: string;
-  flow_data: FlowData;
-}
-
-export interface Unit {
-  id: number;
-  name: string;
-  parentId: number | null;
-  driveConfigs: Config[];
-  operationConfigs: Config[];
-}
-
-export interface Project {
-  id: number;
-  name: string;
-  updatedAt: string;
-  units: Unit[];
-}
-
-export type ConfigType = 'driveConfigs' | 'operationConfigs';
-
-export interface ConfigIdentifier {
-  projectId: number;
-  unitId: number;
-  configType: ConfigType;
-  configId: number;
-}
 
 class Database {
   private fileName: string;
@@ -44,20 +17,34 @@ class Database {
   }
 
   public async getFlowData(
-    projectId: number,
-    configType: ConfigType,
-    configId: number,
+    configIdentifier: ConfigIdentifier,
   ): Promise<any | null> {
+    console.log(
+      `Loading flow data for projectId: ${configIdentifier.projectId}, unitId: ${configIdentifier.unitId},
+       configType: ${configIdentifier.configType}, configId: ${configIdentifier.configId}`,
+    );
     const projects = await this.getAll();
-    const project = projects.find((p: any) => p.id === projectId);
-    if (!project) return null;
+    const project = projects.find(
+      (p: any) => p.id === configIdentifier.projectId,
+    );
+    if (!project) {
+      console.error('Project not found');
+      return null;
+    }
 
     const unit = project.units.find((unit) =>
-      unit[configType].some((config: any) => config.id === configId),
+      unit[configIdentifier.configType].some(
+        (config: any) => config.id === configIdentifier.configId,
+      ),
     );
-    if (!unit) return null;
+    if (!unit) {
+      console.error('Unit not found');
+      return null;
+    }
 
-    const config = unit[configType].find((c: any) => c.id === configId);
+    const config = unit[configIdentifier.configType].find(
+      (c: any) => c.id === configIdentifier.configId,
+    );
     return config?.flow_data || null;
   }
 

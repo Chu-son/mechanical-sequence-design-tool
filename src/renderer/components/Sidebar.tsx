@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import './Sidebar.css';
-import Database, { Project, Unit } from '../utils/database';
+import Database from '../utils/database';
+import { Project, Unit, Config } from '../types/databaseTypes';
 
 const ProjectsDB = Database;
 
@@ -40,7 +41,7 @@ export default function Sidebar() {
               </Link>
               {renderTree(units, unit.id)}
               <ul>
-                {unit.driveConfigs.map((config) => (
+                {unit.driveConfigs.map((config: Config) => (
                   <li key={`drive-${config.id}`}>
                     <Link
                       to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/driveConfigs/${config.id}`}
@@ -49,7 +50,7 @@ export default function Sidebar() {
                     </Link>
                   </li>
                 ))}
-                {unit.operationConfigs.map((config) => (
+                {unit.operationConfigs.map((config: Config) => (
                   <li key={`operation-${config.id}`}>
                     <Link
                       to={`/projects/${projects[0].id}/unit/${unit.id}/flowchart/operationConfigs/${config.id}`}

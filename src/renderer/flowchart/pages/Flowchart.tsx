@@ -11,8 +11,6 @@ import {
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
-
-const ProjectsDB = Database;
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 import TaskNode, {
   MemoizedTaskStartNode,
@@ -21,16 +19,30 @@ import TaskNode, {
 import FlowchartSidebar from '../components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
+const ProjectsDB = Database;
+
 const nodeTypes = {
   taskStart: MemoizedTaskStartNode,
   task: TaskNode,
   taskEnd: MemoizedTaskEndNode,
 };
 
-let id = 0;
+let idCounter = 0;
 const getId = (): string => {
-  id += 1;
-  return `${id}`;
+  idCounter += 1;
+  return `${idCounter}`;
+};
+
+const initializeId = (nodes: any[], edges: any[]) => {
+  const nodeIds = nodes
+    .map((node) => parseInt(node.id, 10))
+    .filter((nodeId) => !Number.isNaN(nodeId));
+  const edgeIds = edges
+    .map((edge) => parseInt(edge.id, 10))
+    .filter((edgeId) => !Number.isNaN(edgeId));
+  const maxNodeId = Math.max(0, ...nodeIds);
+  const maxEdgeId = Math.max(0, ...edgeIds);
+  idCounter = Math.max(maxNodeId, maxEdgeId);
 };
 
 const initialNodes: any[] = [];
@@ -52,29 +64,27 @@ function DnDFlow() {
 
   useEffect(() => {
     if (!projectId || !configType || !configId) {
-      console.error('Missing parameters: projectId, configType, or configId');
       return;
     }
-    console.log(
-      `Loading flow data for projectId: ${projectId}, configType: ${configType}, configId: ${configId}`,
-    );
 
     const loadFlowData = async () => {
-      const flowData = await ProjectsDB.getFlowData(
-        Number(projectId),
-        configType as 'driveConfigs' | 'operationConfigs',
-        Number(configId),
-      );
+      const flowData = await ProjectsDB.getFlowData({
+        projectId: Number(projectId),
+        unitId: Number(unitId),
+        configType: configType as 'driveConfigs' | 'operationConfigs',
+        configId: Number(configId),
+      });
       if (flowData) {
         setNodes(flowData.nodes || []);
         setEdges(flowData.edges || []);
+        initializeId(flowData.nodes || [], flowData.edges || []);
       } else {
         setNodes(initialNodes);
       }
     };
 
     loadFlowData();
-  }, [projectId, configType, configId, setNodes, setEdges]);
+  }, [projectId, unitId, configType, configId, setNodes, setEdges]);
 
   const onConnect = useCallback(
     (params: any) => setEdges((eds) => addEdge(params, eds)),
@@ -135,10 +145,12 @@ function DnDFlow() {
         </ReactFlow>
       </div>
       <FlowchartSidebar
-        projectId={Number(projectId)}
-        unitId={Number(unitId)}
-        configType={configType as 'driveConfigs' | 'operationConfigs'}
-        configId={Number(configId)}
+        configIdentifier={{
+          projectId: Number(projectId),
+          unitId: Number(unitId),
+          configType: configType as 'driveConfigs' | 'operationConfigs',
+          configId: Number(configId),
+        }}
       />
     </div>
   );
