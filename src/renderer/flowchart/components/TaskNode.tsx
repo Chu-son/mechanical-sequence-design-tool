@@ -12,7 +12,7 @@ import '../styles/common.css'; // flowchart共通スタイルを適用
 
 const ROUND_DIGITS = 2;
 
-function roundToDigits(value, digits) {
+function roundToDigits(value: number, digits: number): number {
   return parseFloat(value.toFixed(digits));
 }
 
@@ -25,38 +25,46 @@ type TaskNodeData = {
 function SimpleTaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   const { updateNodeData, getNode, getEdges } = useReactFlow();
   const connections = useNodeConnections({ handleType: 'target' });
-  const nodesData = useNodesData(connections?.[0].source);
+  const nodesData = useNodesData(connections?.[0]?.source) as
+    | { data?: { totalDuration?: number } }
+    | undefined;
 
   const [totalDuration, setTotalDuration] = useState(data.totalDuration || 0);
   const [taskNode, setTaskNode] = useState(data);
   const [inputValue, setInputValue] = useState(String(data.duration || 0));
 
   useEffect(() => {
-    const previousTotalDuration = nodesData?.data?.totalDuration || 0;
+    if (nodesData !== undefined) {
+      const previousTotalDuration = nodesData?.data?.totalDuration ?? 0;
 
-    const newTotalDuration = previousTotalDuration + taskNode.duration;
-    const roundedTotalDuration = roundToDigits(newTotalDuration, ROUND_DIGITS);
+      const newTotalDuration = previousTotalDuration + (taskNode.duration || 0);
+      const roundedTotalDuration = roundToDigits(
+        newTotalDuration,
+        ROUND_DIGITS,
+      );
 
-    setTotalDuration(roundedTotalDuration);
-    updateNodeData(id, { ...taskNode, totalDuration: roundedTotalDuration });
+      setTotalDuration(roundedTotalDuration);
+      updateNodeData(id, { ...taskNode, totalDuration: roundedTotalDuration });
+    } else {
+      setTotalDuration(0);
+      updateNodeData(id, { ...taskNode, totalDuration: 0 });
+    }
   }, [id, taskNode, updateNodeData, nodesData]);
 
-  const handleBlur = (event) => {
-    let value = event.target.value;
-    if (value === '') {
+  const handleBlur = (event: React.FocusEvent<HTMLInputElement>): void => {
+    let value = parseFloat(event.target.value || '0');
+    if (Number.isNaN(value)) {
       value = 0;
-    } else {
-      value = parseFloat(value);
       value = roundToDigits(value, ROUND_DIGITS);
     }
-    if (!isNaN(value)) {
+    if (!Number.isNaN(value)) {
       setTaskNode({ ...taskNode, duration: value });
       updateNodeData(id, { ...taskNode, duration: value });
       setInputValue(value.toFixed(ROUND_DIGITS));
     }
   };
 
-  const handleChange = (event) => {
+  const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
     setInputValue(event.target.value);
   };
 
@@ -104,7 +112,7 @@ function SimpleTaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   );
 }
 
-const TaskStartNode = ({ id }) => (
+const TaskStartNode = ({ id }: { id: string }): JSX.Element => (
   <div className="node">
     <div className="node-title">Task Start</div>
 
@@ -112,10 +120,18 @@ const TaskStartNode = ({ id }) => (
   </div>
 );
 
-const TaskEndNode = ({ id, data }) => {
+const TaskEndNode = ({
+  id,
+  data,
+}: {
+  id: string;
+  data: { totalDuration: number };
+}): JSX.Element => {
   const { getNode, getEdges } = useReactFlow();
   const connections = useNodeConnections({ handleType: 'target' });
-  const nodesData = useNodesData(connections?.[0].source);
+  const nodesData = useNodesData(connections?.[0]?.source) as
+    | { data?: { totalDuration?: number } }
+    | undefined;
 
   const calculateTotalDuration = () => {
     const edges = getEdges();
@@ -131,10 +147,10 @@ const TaskEndNode = ({ id, data }) => {
     return previousTotalDuration;
   };
 
-  const totalDuration = calculateTotalDuration();
+  const totalDuration = calculateTotalDuration() ?? 0;
 
   useEffect(() => {
-    const roundedTotalDuration = calculateTotalDuration();
+    const roundedTotalDuration = calculateTotalDuration() ?? 0;
     data.totalDuration = roundedTotalDuration;
   }, [data, nodesData]);
 

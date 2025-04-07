@@ -9,6 +9,7 @@ import {
   Controls,
   useReactFlow,
   Background,
+  reconnectEdge,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
@@ -59,7 +60,7 @@ function DnDFlow() {
   }>();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>();
   const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
@@ -91,6 +92,28 @@ function DnDFlow() {
     (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
+
+  const edgeReconnectSuccessful = useRef<boolean>(true);
+
+  const onReconnectStart = useCallback((): void => {
+    edgeReconnectSuccessful.current = false;
+  }, []);
+
+  const onReconnect = useCallback(
+    (oldEdge: Edge, newConnection: Connection): void => {
+      edgeReconnectSuccessful.current = true;
+      setEdges((els) => reconnectEdge(oldEdge, newConnection, els as Edge[]));
+    },
+    [],
+  );
+
+  const onReconnectEnd = useCallback((_: unknown, edge: Edge): void => {
+    console.log('onReconnectEnd', edge);
+    if (!edgeReconnectSuccessful.current) {
+      setEdges((eds) => eds.filter((e) => (e as Edge).id !== edge.id));
+    }
+    edgeReconnectSuccessful.current = true;
+  }, []);
 
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
@@ -136,6 +159,9 @@ function DnDFlow() {
           onConnect={onConnect}
           onDrop={onDrop}
           onDragOver={onDragOver}
+          onReconnect={onReconnect}
+          onReconnectStart={onReconnectStart}
+          onReconnectEnd={onReconnectEnd}
           fitView
           nodeTypes={nodeTypes}
           style={{ backgroundColor: '#F7F9FB' }}
