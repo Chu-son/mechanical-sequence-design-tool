@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useEffect } from 'react';
+import type { Edge, Connection } from '@xyflow/react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -12,7 +13,7 @@ import {
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
-import TaskNode, {
+import SimpleTaskNode, {
   MemoizedTaskStartNode,
   MemoizedTaskEndNode,
 } from '../components/TaskNode';
@@ -23,7 +24,7 @@ const ProjectsDB = Database;
 
 const nodeTypes = {
   taskStart: MemoizedTaskStartNode,
-  task: TaskNode,
+  task: SimpleTaskNode,
   taskEnd: MemoizedTaskEndNode,
 };
 
@@ -58,7 +59,7 @@ function DnDFlow() {
   }>();
 
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState<any[]>([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<Edge[]>([]);
   const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
@@ -87,7 +88,7 @@ function DnDFlow() {
   }, [projectId, unitId, configType, configId, setNodes, setEdges]);
 
   const onConnect = useCallback(
-    (params: any) => setEdges((eds) => addEdge(params, eds)),
+    (params: Edge | Connection) => setEdges((eds) => addEdge(params, eds)),
     [setEdges],
   );
 

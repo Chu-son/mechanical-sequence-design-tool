@@ -17,11 +17,12 @@ function roundToDigits(value, digits) {
 }
 
 type TaskNodeData = {
+  description: string;
   duration: number;
   totalDuration: number;
 };
 
-function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
+function SimpleTaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   const { updateNodeData, getNode, getEdges } = useReactFlow();
   const connections = useNodeConnections({ handleType: 'target' });
   const nodesData = useNodesData(connections?.[0].source);
@@ -30,30 +31,18 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   const [taskNode, setTaskNode] = useState(data);
   const [inputValue, setInputValue] = useState(String(data.duration || 0));
 
-  const calculateTotalDuration = useCallback(() => {
-    const edges = getEdges();
-    let previousTotalDuration = 0;
-
-    const incomingEdges = edges.filter((edge) => edge.target === id);
-    if (incomingEdges.length > 0) {
-      const previousNodeId = incomingEdges[0].source;
-      const previousNode = getNode(previousNodeId);
-      previousTotalDuration = previousNode?.data?.totalDuration || 0;
-    }
+  useEffect(() => {
+    const previousTotalDuration = nodesData?.data?.totalDuration || 0;
 
     const newTotalDuration = previousTotalDuration + taskNode.duration;
-    return roundToDigits(newTotalDuration, ROUND_DIGITS);
-  }, [getEdges, getNode, id, taskNode.duration]);
+    const roundedTotalDuration = roundToDigits(newTotalDuration, ROUND_DIGITS);
 
-  useEffect(() => {
-    const roundedTotalDuration = calculateTotalDuration();
     setTotalDuration(roundedTotalDuration);
     updateNodeData(id, { ...taskNode, totalDuration: roundedTotalDuration });
-  }, [calculateTotalDuration, id, taskNode, updateNodeData, nodesData]);
+  }, [id, taskNode, updateNodeData, nodesData]);
 
   const handleBlur = (event) => {
     let value = event.target.value;
-    console.info('Input value:', value);
     if (value === '') {
       value = 0;
     } else {
@@ -74,7 +63,7 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
   return (
     <div className="node">
       <Handle type="target" position={Position.Top} />
-      <div className="node-title">Task node</div>
+      <div className="node-title">Simple Task</div>
       <div className="node-content">
         <div className="node-setting-field">
           <label>
@@ -82,16 +71,19 @@ function TaskNode({ id, data }: NodeProps<Node<TaskNodeData, 'task'>>) {
             <br />
             <input
               type="text"
-              value={taskNode.label || ''} // 初期値を空文字列に設定
+              value={taskNode.description || ''} // 初期値を空文字列に設定
               onChange={(event) => {
-                const newLabel = event.target.value;
-                setTaskNode({ ...taskNode, label: newLabel });
-                updateNodeData(id, { ...taskNode, label: newLabel });
+                const newDescription = event.target.value;
+                setTaskNode({ ...taskNode, description: newDescription });
+                updateNodeData(id, {
+                  ...taskNode,
+                  description: newDescription,
+                });
               }}
             />
           </label>
           <label>
-            Duration [sec] {ROUND_DIGITS}digits
+            Duration [sec] ({ROUND_DIGITS}digits)
             <br />
             <input
               type="text"
@@ -161,4 +153,4 @@ const TaskEndNode = ({ id, data }) => {
 
 export const MemoizedTaskStartNode = memo(TaskStartNode);
 export const MemoizedTaskEndNode = memo(TaskEndNode);
-export default memo(TaskNode);
+export default memo(SimpleTaskNode);

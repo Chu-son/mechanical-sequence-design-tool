@@ -90,15 +90,7 @@ const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
         onDragStart={(event) => onDragStart(event, 'taskStart')}
         draggable
       >
-        Start Node
-      </div>
-
-      <div
-        className="dndnode task"
-        onDragStart={(event) => onDragStart(event, 'task')}
-        draggable
-      >
-        Task Node
+        Start
       </div>
 
       <div
@@ -106,7 +98,15 @@ const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
         onDragStart={(event) => onDragStart(event, 'taskEnd')}
         draggable
       >
-        End Node
+        End
+      </div>
+
+      <div
+        className="dndnode task"
+        onDragStart={(event) => onDragStart(event, 'task')}
+        draggable
+      >
+        Simple Task
       </div>
     </aside>
   );
