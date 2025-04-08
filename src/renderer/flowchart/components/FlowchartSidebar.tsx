@@ -108,6 +108,14 @@ const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
       >
         Simple Task
       </div>
+
+      <div
+        className="dndnode actuator-task"
+        onDragStart={(event) => onDragStart(event, 'actuatorTask')}
+        draggable
+      >
+        Simple Actuator Task
+      </div>
     </aside>
   );
 };
