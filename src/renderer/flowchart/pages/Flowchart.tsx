@@ -1,4 +1,5 @@
 import React, { useRef, useCallback, useEffect } from 'react';
+import Dagre from '@dagrejs/dagre';
 import type { Edge, Connection } from '@xyflow/react';
 import {
   ReactFlow,
@@ -10,6 +11,7 @@ import {
   useReactFlow,
   Background,
   reconnectEdge,
+  Panel,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
@@ -61,6 +63,7 @@ function DnDFlow() {
     configId: string;
   }>();
 
+  const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>();
   const { screenToFlowPosition } = useReactFlow();
@@ -117,6 +120,41 @@ function DnDFlow() {
     edgeReconnectSuccessful.current = true;
   }, []);
 
+  const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+    const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
+    g.setGraph({ rankdir: direction });
+
+    edges.forEach((edge) => g.setEdge(edge.source, edge.target));
+    nodes.forEach((node) =>
+      g.setNode(node.id, {
+        ...node,
+        width: node.measured?.width ?? 0,
+        height: node.measured?.height ?? 0,
+      }),
+    );
+
+    Dagre.layout(g);
+
+    return {
+      nodes: nodes.map((node) => {
+        const position = g.node(node.id);
+        const x = position.x - (node.measured?.width ?? 0) / 2;
+        const y = position.y - (node.measured?.height ?? 0) / 2;
+
+        return { ...node, position: { x, y } };
+      }),
+      edges,
+    };
+  };
+
+  const onAlignNodes = useCallback(() => {
+    const layouted = getLayoutedElements(nodes, edges, 'TB');
+    setNodes([...layouted.nodes]);
+    setEdges([...layouted.edges]);
+
+    fitView({ padding: 0.2 });
+  }, [nodes, edges, setNodes, setEdges]);
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -170,6 +208,17 @@ function DnDFlow() {
           colorMode="system"
         >
           <Controls />
+          <Panel position="top-left">
+            <button
+              onClick={onAlignNodes}
+              style={{
+                padding: '5px 10px',
+                fontSize: '12px',
+              }}
+            >
+              Align Vertically
+            </button>
+          </Panel>
           <Background />
         </ReactFlow>
       </div>
