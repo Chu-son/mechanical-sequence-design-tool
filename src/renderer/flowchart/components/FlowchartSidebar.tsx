@@ -1,13 +1,10 @@
 import React from 'react';
 import { useReactFlow } from '@xyflow/react';
-import { useDnD } from '../utils/DnDContext';
 import Database from '../../utils/database';
-import {
-  ConfigType,
-  Config,
-  FlowData,
-  ConfigIdentifier,
-} from '../../types/databaseTypes';
+import { Config, FlowData, ConfigIdentifier } from '../../types/databaseTypes';
+
+import DriveConfigSidebar from './DriveConfigSidebar';
+import OperationConfigSidebar from './OperationConfigSidebar';
 
 const ProjectsDB = Database;
 
@@ -15,31 +12,19 @@ interface FlowchartSidebarProps {
   configIdentifier: ConfigIdentifier;
 }
 
-const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
-  configIdentifier,
-}) => {
-  const dndContext = useDnD();
-  const [, setType] = dndContext ? dndContext : [null, () => {}];
-
-  const onDragStart = (event: React.DragEvent, nodeType: string) => {
-    if (setType) {
-      setType(nodeType);
-    }
-    event.dataTransfer.effectAllowed = 'move';
-  };
-
+function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
   const { toObject } = useReactFlow();
 
-  const saveFlowData = async (configIdentifier: ConfigIdentifier) => {
+  const saveFlowData = async (identifier: ConfigIdentifier) => {
     const flow = toObject();
 
     try {
       const projects = await ProjectsDB.getAll();
 
-      console.log('Debug: configIdentifier:', configIdentifier);
+      console.log('Debug: identifier:', identifier);
       console.log('Debug: projects:', projects);
 
-      const project = projects.find((p) => p.id === configIdentifier.projectId);
+      const project = projects.find((p) => p.id === identifier.projectId);
       if (!project) throw new Error('Project not found');
 
       const unit = project.units.find((u) => u.id === configIdentifier.unitId);
@@ -82,42 +67,12 @@ const FlowchartSidebar: React.FC<FlowchartSidebarProps> = ({
       >
         Save
       </button>
-
-      <h1 className="description">Node</h1>
-
-      <div
-        className="dndnode"
-        onDragStart={(event) => onDragStart(event, 'taskStart')}
-        draggable
-      >
-        Start
-      </div>
-
-      <div
-        className="dndnode"
-        onDragStart={(event) => onDragStart(event, 'taskEnd')}
-        draggable
-      >
-        End
-      </div>
-
-      <div
-        className="dndnode task"
-        onDragStart={(event) => onDragStart(event, 'task')}
-        draggable
-      >
-        Simple Task
-      </div>
-
-      <div
-        className="dndnode actuator-task"
-        onDragStart={(event) => onDragStart(event, 'actuatorTask')}
-        draggable
-      >
-        Simple Actuator Task
-      </div>
+      {configIdentifier.configType === 'driveConfigs' && <DriveConfigSidebar />}
+      {configIdentifier.configType === 'operationConfigs' && (
+        <OperationConfigSidebar />
+      )}
     </aside>
   );
-};
+}
 
 export default FlowchartSidebar;
