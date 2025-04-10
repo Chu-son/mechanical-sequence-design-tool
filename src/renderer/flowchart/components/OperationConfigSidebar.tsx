@@ -1,29 +1,33 @@
 import React from 'react';
+import { useDnD } from '../utils/DnDContext';
 
 const OperationConfigSidebar: React.FC = () => {
+  const dndContext = useDnD();
+  if (!dndContext) {
+    console.error('DnDContext is not initialized');
+    return null;
+  }
+  const [, setType] = dndContext || [null, () => {}];
+
   return (
     <div>
       <h1 className="description">Node</h1>
 
       <div
         className="dndnode"
-        onDragStart={(event) => console.log('Drag Start: taskStart')}
+        onDragStart={() => setType('taskStart')}
         draggable
       >
         Start
       </div>
 
-      <div
-        className="dndnode"
-        onDragStart={(event) => console.log('Drag Start: taskEnd')}
-        draggable
-      >
+      <div className="dndnode" onDragStart={() => setType('taskEnd')} draggable>
         End
       </div>
 
       <div
         className="dndnode task"
-        onDragStart={(event) => console.log('Drag Start: task')}
+        onDragStart={() => setType('task')}
         draggable
       >
         Simple Task
@@ -31,7 +35,7 @@ const OperationConfigSidebar: React.FC = () => {
 
       <div
         className="dndnode actuator-task"
-        onDragStart={(event) => console.log('Drag Start: actuatorTask')}
+        onDragStart={() => setType('actuatorTask')}
         draggable
       >
         Simple Actuator Task

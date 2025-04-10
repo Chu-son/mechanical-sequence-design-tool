@@ -16,22 +16,11 @@ import {
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
-import SimpleTaskNode, {
-  MemoizedTaskStartNode,
-  MemoizedTaskEndNode,
-  SimpleActuatorTaskNode,
-} from '../components/TaskNode';
+import { nodeTypes } from '../components/operation-config-nodes';
 import FlowchartSidebar from '../components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
 const ProjectsDB = Database;
-
-const nodeTypes = {
-  taskStart: MemoizedTaskStartNode,
-  task: SimpleTaskNode,
-  taskEnd: MemoizedTaskEndNode,
-  actuatorTask: SimpleActuatorTaskNode,
-};
 
 let idCounter = 0;
 const getId = (): string => {
