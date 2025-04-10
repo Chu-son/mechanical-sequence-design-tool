@@ -16,7 +16,10 @@ import {
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
-import { nodeTypes } from '../components/operation-config-nodes';
+import { nodeTypes as operationNodeTypes } from '../components/operation-config-nodes';
+import { nodeTypes as driveNodeTypes } from '../components/drive-config-nodes';
+
+const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
 import FlowchartSidebar from '../components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
@@ -192,7 +195,7 @@ function DnDFlow() {
           onReconnectStart={onReconnectStart}
           onReconnectEnd={onReconnectEnd}
           fitView
-          nodeTypes={nodeTypes}
+          nodeTypes={combinedNodeTypes}
           style={{ backgroundColor: '#F7F9FB' }}
           colorMode="system"
         >
