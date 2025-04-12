@@ -1,6 +1,6 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import Dagre from '@dagrejs/dagre';
-import type { Edge, Connection } from '@xyflow/react';
+import type { Edge, Connection, Node } from '@xyflow/react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -22,6 +22,10 @@ import { DnDProvider, useDnD } from '../utils/DnDContext';
 import { nodeTypes as operationNodeTypes } from '../components/operation-config-nodes';
 import { nodeTypes as driveNodeTypes } from '../components/drive-config-nodes';
 
+const defaultEdgeOptions: DefaultEdgeOptions = {
+  interactionWidth: 75,
+};
+
 const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
 import FlowchartSidebar from '../components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
@@ -34,7 +38,7 @@ const getId = (): string => {
   return `${idCounter}`;
 };
 
-const initializeId = (nodes: any[], edges: any[]) => {
+const initializeId = (nodes: Node[], edges: Edge[]) => {
   const nodeIds = nodes
     .map((node) => parseInt(node.id, 10))
     .filter((nodeId) => !Number.isNaN(nodeId));
@@ -46,7 +50,7 @@ const initializeId = (nodes: any[], edges: any[]) => {
   idCounter = Math.max(maxNodeId, maxEdgeId);
 };
 
-const initialNodes: any[] = [];
+const initialNodes: Node[] = [];
 
 function DnDFlow() {
   const reactFlowWrapper = useRef<HTMLDivElement | null>(null);
@@ -58,10 +62,10 @@ function DnDFlow() {
     configId: string;
   }>();
 
-  const { fitView } = useReactFlow();
+  const { fitView, getEdge, updateEdge, addEdges, screenToFlowPosition } =
+    useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>();
-  const { screenToFlowPosition } = useReactFlow();
   const [type] = useDnD();
 
   useEffect(() => {
@@ -115,7 +119,11 @@ function DnDFlow() {
     edgeReconnectSuccessful.current = true;
   }, []);
 
-  const getLayoutedElements = (nodes, edges, direction = 'TB') => {
+  const getLayoutedElements = (
+    nodes: Node[],
+    edges: Edge[],
+    direction = 'TB',
+  ) => {
     const g = new Dagre.graphlib.Graph().setDefaultEdgeLabel(() => ({}));
     g.setGraph({ rankdir: direction });
 
@@ -143,7 +151,7 @@ function DnDFlow() {
   };
 
   const onNodesDelete = useCallback(
-    (deleted) => {
+    (deleted: Node[]) => {
       setEdges(
         deleted.reduce((acc, node) => {
           const incomers = getIncomers(node, nodes, edges);
@@ -182,6 +190,57 @@ function DnDFlow() {
     event.dataTransfer.dropEffect = 'move';
   }, []);
 
+  const overlappedEdgeRef = useRef<string | null>(null);
+
+  const onNodeDrag = useCallback(
+    (e: React.DragEvent, node: Node) => {
+      const nodeDiv = document.querySelector(
+        `.react-flow__node[data-id="${node.id}"]`,
+      );
+
+      if (!nodeDiv) return;
+
+      const rect = nodeDiv.getBoundingClientRect();
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+
+      const edgeFound = document
+        .elementsFromPoint(centerX, centerY)
+        .find((el) =>
+          el.classList.contains('react-flow__edge-interaction'),
+        )?.parentElement;
+
+      const edgeId = edgeFound?.dataset.id;
+
+      if (edgeId) updateEdge(edgeId, { style: { stroke: 'black' } });
+      else if (overlappedEdgeRef.current)
+        updateEdge(overlappedEdgeRef.current, { style: {} });
+
+      overlappedEdgeRef.current = edgeId || null;
+    },
+    [updateEdge],
+  );
+
+  const onNodeDragStop = useCallback(
+    (event: React.DragEvent, node: Node) => {
+      const edgeId = overlappedEdgeRef.current;
+      if (!edgeId) return;
+      const edge = getEdge(edgeId);
+      if (!edge) return;
+
+      updateEdge(edgeId, { source: edge.source, target: node.id, style: {} });
+
+      addEdges({
+        id: `${node.id}->${edge.target}`,
+        source: node.id,
+        target: edge.target,
+      });
+
+      overlappedEdgeRef.current = null;
+    },
+    [getEdge, addEdges, updateEdge],
+  );
+
   const onDrop = useCallback(
     (event: React.DragEvent) => {
       event.preventDefault();
@@ -218,6 +277,8 @@ function DnDFlow() {
           edges={edges}
           onNodesChange={onNodesChange}
           onNodesDelete={onNodesDelete}
+          onNodeDrag={onNodeDrag}
+          onNodeDragStop={onNodeDragStop}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onDrop={onDrop}
@@ -229,6 +290,7 @@ function DnDFlow() {
           nodeTypes={combinedNodeTypes}
           style={{ backgroundColor: '#F7F9FB' }}
           colorMode="system"
+          defaultEdgeOptions={defaultEdgeOptions}
         >
           <Controls />
           <Panel position="top-left">
