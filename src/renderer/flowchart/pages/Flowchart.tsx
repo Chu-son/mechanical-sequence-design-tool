@@ -12,6 +12,9 @@ import {
   Background,
   reconnectEdge,
   Panel,
+  getIncomers,
+  getOutgoers,
+  getConnectedEdges,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import Database from '../../utils/database';
@@ -139,6 +142,33 @@ function DnDFlow() {
     };
   };
 
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      setEdges(
+        deleted.reduce((acc, node) => {
+          const incomers = getIncomers(node, nodes, edges);
+          const outgoers = getOutgoers(node, nodes, edges);
+          const connectedEdges = getConnectedEdges([node], edges);
+
+          const remainingEdges = acc.filter(
+            (edge) => !connectedEdges.includes(edge),
+          );
+
+          const createdEdges = incomers.flatMap(({ id: source }) =>
+            outgoers.map(({ id: target }) => ({
+              id: `${source}->${target}`,
+              source,
+              target,
+            })),
+          );
+
+          return [...remainingEdges, ...createdEdges];
+        }, edges),
+      );
+    },
+    [nodes, edges],
+  );
+
   const onAlignNodes = useCallback(() => {
     const layouted = getLayoutedElements(nodes, edges, 'TB');
     setNodes([...layouted.nodes]);
@@ -187,6 +217,7 @@ function DnDFlow() {
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
+          onNodesDelete={onNodesDelete}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onDrop={onDrop}
