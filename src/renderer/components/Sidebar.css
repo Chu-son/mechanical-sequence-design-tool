@@ -2,13 +2,17 @@
   position: fixed;
   left: 0;
   top: 30px;
-  height: 100%;
+  height: calc(100vh - 30px);
   width: 250px;
   background: #333;
   color: white;
-  transition: width 0.3s;
-  overflow: hidden;
+  transition:
+    width 0.3s,
+    transform 0.3s;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding-top: 50px; /* ハンバーガーメニューのアイコン位置を確保 */
+  z-index: 100;
 }
 
 .Sidebar.closed {
@@ -19,6 +23,7 @@
   display: none;
 }
 
+/* ハンバーガーメニューのスタイル - サイドバーが閉じているときは中央に配置 */
 .Hamburger {
   background: none;
   border: none;
@@ -27,18 +32,258 @@
   cursor: pointer;
   position: absolute;
   top: 10px;
+  transition: left 0.3s;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  left: 10px;
 }
 
-nav ul {
+.Sidebar.closed .Hamburger {
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* ピン留めボタンのスタイル */
+.pin-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: white;
+  font-size: 1.2rem;
+  cursor: pointer;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.pin-button:hover {
+  transform: scale(1.1);
+}
+
+.pin-button.pinned {
+  color: #ffcc00;
+}
+
+/* ピン留めされている場合の表示 */
+.Sidebar.pinned {
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.sidebar-nav {
+  padding: 0 10px;
+}
+
+.project-title {
+  margin-bottom: 20px;
+  font-size: 1.2rem;
+  border-bottom: 1px solid #555;
+  padding-bottom: 10px;
+}
+
+/* ツリー構造のスタイル */
+.sidebar-nav ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
-nav ul li {
-  margin: 20px 0;
+.tree-item {
+  margin: 8px 0;
+  position: relative;
 }
 
-nav ul li a {
+/* インデントラインのスタイル */
+.indent-line {
+  position: absolute;
+  left: -10px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #555;
+}
+
+.tree-item-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  color: white;
+  padding: 0;
+  margin-right: 5px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+}
+
+.expand-icon {
+  font-size: 0.7rem;
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  text-align: center;
+  line-height: 14px;
+}
+
+/* 親ユニットリンクのスタイル */
+.unit-link {
   color: white;
   text-decoration: none;
+  flex-grow: 1;
+  padding: 2px 0;
+}
+
+.unit-link:hover {
+  text-decoration: underline;
+}
+
+/* サブユニットのリンクスタイル */
+.tree-item .unit-link {
+  color: #ddd;
+  text-decoration: none;
+  display: block;
+  padding: 2px 4px;
+  border-radius: 3px;
+  font-size: 0.9rem;
+}
+
+.tree-item .unit-link:hover {
+  background-color: #444;
+}
+
+/* サブユニットのマーカー（オレンジ色の丸） */
+.tree-item .unit-link::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+  background-color: var(--subunit-color);
+  vertical-align: middle;
+}
+
+/* カテゴリのスタイル */
+.unit-contents {
+  margin-left: 12px;
+  margin-top: 4px;
+}
+
+.category-item {
+  margin: 6px 0;
+  padding-left: 8px;
+  border-left: 2px solid transparent;
+}
+
+/* 各カテゴリの色はタイプ属性で定義 */
+.category-item[data-type='drive'] {
+  border-left-color: var(--drive-color);
+}
+
+.category-item[data-type='operation'] {
+  border-left-color: var(--operation-color);
+}
+
+.category-item[data-type='subunit'] {
+  border-left-color: var(--subunit-color);
+}
+
+.category-header {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  padding: 2px 0;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* カテゴリのテキスト色もデータ属性から取得 */
+.category-item[data-type='drive'] .category-header span {
+  color: var(--drive-color);
+}
+
+.category-item[data-type='operation'] .category-header span {
+  color: var(--operation-color);
+}
+
+.category-item[data-type='subunit'] .category-header span {
+  color: var(--subunit-color);
+}
+
+.category-contents {
+  margin-left: 14px;
+  margin-top: 4px;
+}
+
+.config-item {
+  margin: 4px 0;
+  font-size: 0.9rem;
+}
+
+.config-item a {
+  color: #ddd;
+  text-decoration: none;
+  display: block;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+.config-item a:hover {
+  background-color: #444;
+}
+
+/* 設定項目のマーカー共通スタイル */
+.config-item a::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+
+/* マーカーの色もデータ属性から取得 */
+.config-item[data-type='drive'] a::before {
+  background-color: var(--drive-color);
+}
+
+.config-item[data-type='operation'] a::before {
+  background-color: var(--operation-color);
+}
+
+/* サブユニットの表示スタイル */
+.subunits-category .category-contents {
+  margin-left: 14px;
+  margin-top: 4px;
+}
+
+/* 空のカテゴリのメッセージ */
+.empty-category-message {
+  margin: 6px 0 6px 20px;
+  padding: 4px;
+  font-size: 0.85rem;
+  color: #888;
+  font-style: italic;
+}
+
+/* カテゴリタイプごとの色定義 */
+:root {
+  --drive-color: #4caf50; /* 緑色 - 駆動構成 */
+  --operation-color: #2196f3; /* 青色 - 動作構成 */
+  --subunit-color: #ff9800; /* オレンジ色 - サブユニット */
 }
