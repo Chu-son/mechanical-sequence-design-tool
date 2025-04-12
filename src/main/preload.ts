@@ -8,7 +8,8 @@ export type Channels =
   | 'getById'
   | 'create'
   | 'update'
-  | 'delete';
+  | 'delete'
+  | 'save';
 
 const electronAPI = {
   showMenu: () => ipcRenderer.send('showMenu'),

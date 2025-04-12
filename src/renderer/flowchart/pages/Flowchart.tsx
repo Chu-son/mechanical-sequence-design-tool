@@ -17,7 +17,7 @@ import {
   getConnectedEdges,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
-import Database from '../../utils/database';
+import DatabaseFactory from '../../utils/DatabaseFactory';
 import { DnDProvider, useDnD } from '../utils/DnDContext';
 import { nodeTypes as operationNodeTypes } from '../components/operation-config-nodes';
 import { nodeTypes as driveNodeTypes } from '../components/drive-config-nodes';
@@ -30,7 +30,7 @@ const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
 import FlowchartSidebar from '../components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
-const ProjectsDB = Database;
+const ProjectsDB = DatabaseFactory.createDatabase();
 
 let idCounter = 0;
 const getId = (): string => {

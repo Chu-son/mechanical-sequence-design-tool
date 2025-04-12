@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import Database from '../utils/database';
+import DatabaseFactory from '../utils/DatabaseFactory';
 
-const ProjectsDB = Database;
+const ProjectsDB = DatabaseFactory.createDatabase();
 import './UnitDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
@@ -27,22 +27,21 @@ export default function UnitDetail() {
 
   useEffect(() => {
     const fetchUnit = async () => {
-      const projects = await ProjectsDB.getAll();
-      for (const project of projects) {
-        const foundUnit = project.units.find((u) => u.id === Number(unitId));
-        if (foundUnit) {
-          setUnit(foundUnit);
-          const childUnits = project.units.filter(
-            (u) => u.parentId === foundUnit.id,
-          );
-          setSubUnits(childUnits);
-          break;
-        }
+      const unit = await ProjectsDB.getUnitById({
+        projectId: Number(projectId),
+        unitId: Number(unitId),
+      });
+      const childUnits = await ProjectsDB.getUnitsByProjectId({
+        projectId: Number(projectId),
+      });
+      if (unit) {
+        setUnit(unit);
+        setSubUnits(childUnits);
       }
       setLoading(false); // データ取得後にローディングを終了
     };
     fetchUnit();
-  }, [unitId]);
+  }, [unitId, projectId]);
 
   if (loading) return <div>Loading...</div>; // ローディング中の表示
 

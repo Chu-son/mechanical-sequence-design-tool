@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import Database from '../utils/database';
+import DatabaseFactory from '../utils/DatabaseFactory';
 import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import '../styles/Common.css'; // 共通スタイルをインポート
 
-const ProjectsDB = Database;
+const ProjectsDB = DatabaseFactory.createDatabase();
 
 export default function Projects() {
   const [projects, setProjects] = useState<
@@ -19,7 +19,7 @@ export default function Projects() {
   useEffect(() => {
     setSidebarVisibility(false); // Sidebar を非表示に設定
     const fetchProjects = async () => {
-      const data = await ProjectsDB.getAll();
+      const data = await ProjectsDB.getAllProjects();
       setProjects(data);
     };
     fetchProjects();
@@ -34,7 +34,7 @@ export default function Projects() {
       name,
       updatedAt: new Date().toLocaleString(),
     };
-    await ProjectsDB.create(newProject);
+    await ProjectsDB.createProject(newProject);
     setProjects([...projects, newProject]);
   };
 

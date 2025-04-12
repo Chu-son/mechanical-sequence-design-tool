@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useParams, Link, useLocation } from 'react-router-dom';
-import Database from '../utils/database';
+import DatabaseFactory from '../utils/DatabaseFactory';
 
-const ProjectsDB = Database;
+const ProjectsDB = DatabaseFactory.createDatabase();
 import './ProjectDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 import NewUnitModal from '../components/NewUnitModal';
@@ -20,7 +20,9 @@ export default function ProjectDetail() {
 
   useEffect(() => {
     const fetchProject = async () => {
-      const data = await ProjectsDB.getById(Number(projectId));
+      const data = await ProjectsDB.getProjectById({
+        projectId: Number(projectId),
+      });
       setProject(data);
     };
     fetchProject();
@@ -30,7 +32,7 @@ export default function ProjectDetail() {
     if (project) {
       const newUnit = { id: Date.now(), name, parentId: null };
       const updatedProject = { ...project, units: [...project.units, newUnit] };
-      await ProjectsDB.update(project.id, updatedProject);
+      await ProjectsDB.updateProject({ projectId: project.id }, updatedProject);
       setProject(updatedProject);
     }
   };

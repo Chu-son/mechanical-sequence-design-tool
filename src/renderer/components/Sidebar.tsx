@@ -2,10 +2,11 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import './Sidebar.css';
-import Database from '../utils/database';
+import DatabaseFactory from '../utils/DatabaseFactory';
 import { Project, Unit, Config } from '../types/databaseTypes';
 
-const ProjectsDB = Database;
+// ファクトリーからデータベースインスタンスを取得
+const ProjectsDB = DatabaseFactory.createDatabase();
 
 export default function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -16,7 +17,7 @@ export default function Sidebar() {
   useEffect(() => {
     const fetchCurrentProject = async () => {
       try {
-        const data = await ProjectsDB.getAll();
+        const data = await ProjectsDB.getAllProjects();
         const currentPath = location.pathname;
         const projectId = parseInt(currentPath.split('/')[2], 10); // Assuming URL structure includes project ID
         const currentProject = data.find((project) => project.id === projectId);

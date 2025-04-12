@@ -1,12 +1,12 @@
 import React from 'react';
 import { useReactFlow } from '@xyflow/react';
-import Database from '../../utils/database';
+import DatabaseFactory from '../../utils/DatabaseFactory';
 import { Config, FlowData, ConfigIdentifier } from '../../types/databaseTypes';
 
 import DriveConfigSidebar from './DriveConfigSidebar';
 import OperationConfigSidebar from './OperationConfigSidebar';
 
-const ProjectsDB = Database;
+const ProjectsDB = DatabaseFactory.createDatabase();
 
 interface FlowchartSidebarProps {
   configIdentifier: ConfigIdentifier;
@@ -19,7 +19,7 @@ function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
     const flow = toObject();
 
     try {
-      const projects = await ProjectsDB.getAll();
+      const projects = await ProjectsDB.getAllProjects();
 
       console.log('Debug: identifier:', identifier);
       console.log('Debug: projects:', projects);
@@ -47,7 +47,10 @@ function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
         edges: flow.edges,
         viewport: flow.viewport,
       };
-      await ProjectsDB.update(configIdentifier.projectId, project);
+      await ProjectsDB.updateProject(
+        { projectId: configIdentifier.projectId },
+        project,
+      );
       console.log('Flow data saved successfully');
     } catch (error) {
       console.error('Error saving flow data:', error);
