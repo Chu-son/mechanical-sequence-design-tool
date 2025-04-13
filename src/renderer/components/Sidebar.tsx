@@ -88,10 +88,10 @@ export default function Sidebar() {
           // デフォルトで全てのユニットを展開状態にする
           const expanded: Record<string, boolean> = {};
           currentProject.units.forEach((unit) => {
-            expanded[`unit-${unit.id}`] = true;
-            expanded[`drive-${unit.id}`] = true;
-            expanded[`operation-${unit.id}`] = true;
-            expanded[`subunits-${unit.id}`] = true;
+            expanded[`unit-${unit.id}`] = false;
+            expanded[`drive-${unit.id}`] = false;
+            expanded[`operation-${unit.id}`] = false;
+            expanded[`subunits-${unit.id}`] = false;
           });
           setExpandedItems(expanded);
         } else {
@@ -152,9 +152,6 @@ export default function Sidebar() {
           // 深さに応じたスタイルを動的に生成
           const depthStyles = getDepthStyles(depth);
 
-          // CSS in JSではなくDOM要素に直接スタイルを適用するため、
-          // ::beforeのような疑似要素を処理できない
-
           return (
             <li key={unit.id} className="tree-item" style={depthStyles}>
               {/* 縦線のための要素（深さが0以上の場合のみ表示） */}
@@ -174,15 +171,13 @@ export default function Sidebar() {
               )}
 
               <div className="tree-item-header">
-                {(hasChildUnits || hasDriveConfigs || hasOperationConfigs) && (
-                  <button
-                    type="button"
-                    className="toggle-button"
-                    onClick={() => toggleExpand(unitKey)}
-                  >
-                    {renderExpandIcon(isUnitExpanded)}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className="toggle-button"
+                  onClick={() => toggleExpand(unitKey)}
+                >
+                  {renderExpandIcon(isUnitExpanded)}
+                </button>
                 <Link
                   to={`/projects/${projects[0].id}/unit/${unit.id}`}
                   className="unit-link"
