@@ -4,9 +4,16 @@ export interface FlowData {
   viewport: { x: number; y: number; zoom: number };
 }
 
-export interface Config {
+// 基本的なエンティティの型定義（共通フィールド）
+export interface BaseEntity {
   id: number;
+  createdAt: string; // 作成日
+  updatedAt: string; // 最終更新日
+}
+
+export interface Config extends BaseEntity {
   label: string;
+  description?: string; // 説明を追加
   flow_data: FlowData;
 }
 
@@ -14,23 +21,23 @@ export interface Config {
 export interface DriveConfig extends Config {}
 export interface OperationConfig extends Config {}
 
-export interface Unit {
-  id: number;
+export interface Unit extends BaseEntity {
   name: string;
+  description?: string; // 説明を追加
   parentId: number | null;
   driveConfigs: DriveConfig[];
   operationConfigs: OperationConfig[];
 }
 
-export interface Project {
-  id: number;
+export interface Project extends BaseEntity {
   name: string;
-  updatedAt: string;
+  description?: string; // 説明を追加
   units: Unit[];
 }
 
 export type ConfigType = 'driveConfigs' | 'operationConfigs';
 
+// 以下はそのまま
 export interface ConfigIdentifier {
   projectId: number;
   unitId: number;
@@ -55,18 +62,27 @@ export interface DatabaseInterface {
   // プロジェクト操作
   getAllProjects(): Promise<Project[]>;
   getProjectById(identifier: ProjectIdentifier): Promise<Project | null>;
-  createProject(project: Project): Promise<void>;
+  createProject(project: Partial<Project>): Promise<void>;
   updateProject(
     identifier: ProjectIdentifier,
-    updatedProject: Project,
+    updatedProject: Partial<Project>,
   ): Promise<void>;
   deleteProject(identifier: ProjectIdentifier): Promise<void>;
 
   // ユニット操作
   getUnitsByProjectId(identifier: ProjectIdentifier): Promise<Unit[]>;
   getUnitById(identifier: UnitIdentifier): Promise<Unit | null>;
-  createUnit(identifier: ProjectIdentifier, unit: Unit): Promise<void>;
-  updateUnit(identifier: UnitIdentifier, updatedUnit: Unit): Promise<void>;
+  createUnit(
+    identifier: UnitIdentifier & {
+      name: string;
+      description?: string;
+      parentId?: number | null;
+    },
+  ): Promise<void>;
+  updateUnit(
+    identifier: UnitIdentifier,
+    updatedUnit: Partial<Unit>,
+  ): Promise<void>;
   deleteUnit(identifier: UnitIdentifier): Promise<void>;
 
   // 駆動構成・動作構成操作
@@ -79,20 +95,24 @@ export interface DatabaseInterface {
     identifier: ConfigIdentifier,
   ): Promise<OperationConfig | null>;
   createDriveConfig(
-    identifier: UnitIdentifier,
-    config: DriveConfig,
+    identifier: UnitIdentifier & {
+      label: string;
+      description?: string;
+    },
   ): Promise<void>;
   createOperationConfig(
-    identifier: UnitIdentifier,
-    config: OperationConfig,
+    identifier: UnitIdentifier & {
+      label: string;
+      description?: string;
+    },
   ): Promise<void>;
   updateDriveConfig(
     identifier: ConfigIdentifier,
-    updatedConfig: DriveConfig,
+    updatedConfig: Partial<DriveConfig>,
   ): Promise<void>;
   updateOperationConfig(
     identifier: ConfigIdentifier,
-    updatedConfig: OperationConfig,
+    updatedConfig: Partial<OperationConfig>,
   ): Promise<void>;
   deleteDriveConfig(identifier: ConfigIdentifier): Promise<void>;
   deleteOperationConfig(identifier: ConfigIdentifier): Promise<void>;

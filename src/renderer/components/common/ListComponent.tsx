@@ -33,6 +33,11 @@ const ListComponent: React.FC<ListComponentProps> = ({
   onAddNew,
   addButtonLabel = '新規作成',
 }) => {
+  // 固定幅が指定されていない場合は均等に配分
+  const columnWidths = headers.map(
+    (header) => header.width || `${100 / headers.length}%`,
+  );
+
   return (
     <div className="DetailPage">
       {(title || onAddNew) && (
@@ -50,25 +55,32 @@ const ListComponent: React.FC<ListComponentProps> = ({
           {headers.map((header, headerIndex) => (
             <span
               key={`header-${headerIndex}`}
-              style={header.width ? { width: header.width } : undefined}
+              style={{ width: columnWidths[headerIndex] }}
+              className="list-column"
             >
               {header.label}
             </span>
           ))}
         </div>
-        <ul>
+        <ul className="ListItems">
           {items.map((item) => {
             // リンクとしてレンダリングする場合
             if (item.to) {
               return (
                 <li key={`item-${item.id}`}>
-                  <Link to={item.to}>
+                  <Link to={item.to} className="list-row">
                     {item.columns.map((column, colIndex) => (
                       <span
                         key={`col-${item.id}-${colIndex}`}
-                        style={
-                          column.width ? { width: column.width } : undefined
-                        }
+                        style={{
+                          width:
+                            columnWidths[
+                              colIndex < columnWidths.length
+                                ? colIndex
+                                : columnWidths.length - 1
+                            ],
+                        }}
+                        className="list-column"
                       >
                         {column.content}
                       </span>
@@ -91,14 +103,24 @@ const ListComponent: React.FC<ListComponentProps> = ({
                   tabIndex={0}
                   style={{ cursor: 'pointer' }}
                 >
-                  {item.columns.map((column, colIndex) => (
-                    <span
-                      key={`col-${item.id}-${colIndex}`}
-                      style={column.width ? { width: column.width } : undefined}
-                    >
-                      {column.content}
-                    </span>
-                  ))}
+                  <div className="list-row">
+                    {item.columns.map((column, colIndex) => (
+                      <span
+                        key={`col-${item.id}-${colIndex}`}
+                        style={{
+                          width:
+                            columnWidths[
+                              colIndex < columnWidths.length
+                                ? colIndex
+                                : columnWidths.length - 1
+                            ],
+                        }}
+                        className="list-column"
+                      >
+                        {column.content}
+                      </span>
+                    ))}
+                  </div>
                 </li>
               );
             }
@@ -106,14 +128,24 @@ const ListComponent: React.FC<ListComponentProps> = ({
             // 通常の項目
             return (
               <li key={`item-${item.id}`}>
-                {item.columns.map((column, colIndex) => (
-                  <span
-                    key={`col-${item.id}-${colIndex}`}
-                    style={column.width ? { width: column.width } : undefined}
-                  >
-                    {column.content}
-                  </span>
-                ))}
+                <div className="list-row">
+                  {item.columns.map((column, colIndex) => (
+                    <span
+                      key={`col-${item.id}-${colIndex}`}
+                      style={{
+                        width:
+                          columnWidths[
+                            colIndex < columnWidths.length
+                              ? colIndex
+                              : columnWidths.length - 1
+                          ],
+                      }}
+                      className="list-column"
+                    >
+                      {column.content}
+                    </span>
+                  ))}
+                </div>
               </li>
             );
           })}

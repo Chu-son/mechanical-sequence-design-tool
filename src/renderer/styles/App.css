@@ -7,8 +7,9 @@ body {
   height: 100vh;
   background: black;
   font-family: sans-serif;
-  overflow-y: hidden;
+  /* overflow-y: hidden; を削除 - スクロールを許可するため */
   display: flex;
+  margin: 0;
 }
 
 button {
@@ -43,12 +44,16 @@ a:hover {
   display: flex;
   height: 100vh;
   width: 100vw; /* ウィンドウ幅いっぱいに表示 */
+  overflow: hidden; /* Appコンテナ内でオーバーフローを制御 */
 }
 
 .Content {
   flex-grow: 1; /* コンテンツが残りの幅を占めるように */
   padding: 20px;
   margin-left: 0; /* サイドバーが非表示の場合の調整 */
+  overflow-y: auto; /* 縦方向のスクロールを追加 */
+  height: 100%; /* 高さを100%に設定して、スクロールエリアを確保 */
+  box-sizing: border-box; /* パディングを含めた全体の高さを計算 */
 }
 
 .Sidebar + .Content {
