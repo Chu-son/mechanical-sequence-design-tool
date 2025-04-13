@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import { Link } from 'react-router-dom';
-import '../../styles/Common.css';
+import '@/renderer/styles/Common.css';
 
 // リスト項目の型定義
 export interface ListItemProps {

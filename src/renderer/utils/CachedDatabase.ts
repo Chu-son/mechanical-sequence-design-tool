@@ -8,7 +8,7 @@ import {
   UnitIdentifier,
   ConfigIdentifier,
   FlowData,
-} from '../types/databaseTypes';
+} from '@/renderer/types/databaseTypes';
 
 class CachedDatabase implements DatabaseInterface {
   private database: DatabaseInterface;

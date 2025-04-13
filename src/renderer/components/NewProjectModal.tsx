@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './NewProjectModal.css';
+import '@/renderer/components/NewProjectModal.css';
 
 interface NewProjectModalProps {
   isOpen: boolean;

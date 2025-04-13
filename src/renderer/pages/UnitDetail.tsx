@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import './UnitDetail.css';
-import '../styles/Common.css'; // 共通スタイルをインポート
-import DatabaseFactory from '../utils/DatabaseFactory';
-import ListComponent from '../components/common/ListComponent';
+import '@/renderer/pages/UnitDetail.css';
+import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import ListComponent from '@/renderer/components/common/ListComponent';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

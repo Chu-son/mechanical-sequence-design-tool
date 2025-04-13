@@ -7,10 +7,13 @@ import {
   useNodesData,
   type NodeProps,
 } from '@xyflow/react';
-import { roundToDigits, TaskNodeData } from './common';
-import '../../styles/common.css'; // flowchart共通スタイルを適用
+import {
+  roundToDigits,
+  TaskNodeData,
+} from '@/renderer/flowchart/components/operation-config-nodes/common';
+import '@/renderer/flowchart/styles/common.css'; // flowchart共通スタイルを適用
 
-import { ROUND_DIGITS } from './common';
+import { ROUND_DIGITS } from '@/renderer/flowchart/components/operation-config-nodes/common';
 
 function SimpleActuatorTaskNode({
   id,

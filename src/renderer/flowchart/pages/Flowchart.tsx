@@ -17,17 +17,17 @@ import {
   getConnectedEdges,
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
-import DatabaseFactory from '../../utils/DatabaseFactory';
-import { DnDProvider, useDnD } from '../utils/DnDContext';
-import { nodeTypes as operationNodeTypes } from '../components/operation-config-nodes';
-import { nodeTypes as driveNodeTypes } from '../components/drive-config-nodes';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import { DnDProvider, useDnD } from '@/renderer/flowchart/utils/DnDContext';
+import { nodeTypes as operationNodeTypes } from '@/renderer/flowchart/components/operation-config-nodes';
+import { nodeTypes as driveNodeTypes } from '@/renderer/flowchart/components/drive-config-nodes';
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
   interactionWidth: 75,
 };
 
 const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
-import FlowchartSidebar from '../components/FlowchartSidebar';
+import FlowchartSidebar from '@/renderer/flowchart/components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
 const ProjectsDB = DatabaseFactory.createDatabase();

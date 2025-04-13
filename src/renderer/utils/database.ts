@@ -12,7 +12,7 @@ import {
   UnitIdentifier,
   DriveConfig,
   OperationConfig,
-} from '../types/databaseTypes';
+} from '@/renderer/types/databaseTypes';
 
 // window.electronが存在する場合はipcRendererを使用し、テスト環境では代替を提供
 const ipcRenderer =

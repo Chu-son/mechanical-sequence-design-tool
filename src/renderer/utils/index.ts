@@ -5,13 +5,13 @@
  *
  * 例:
  * ```typescript
- * import { DatabaseFactory } from '../utils';
+ * import { DatabaseFactory } from '@/renderer/utils';
  *
  * const db = DatabaseFactory.createDatabase();
  * const projects = await db.getAllProjects();
  * ```
  */
-import DatabaseFactory from './DatabaseFactory';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 
 // 直接JsonDatabaseやCachedDatabaseをインポートすることは非推奨です
 // 代わりに、DatabaseFactoryを使用してください

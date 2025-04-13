@@ -1,5 +1,5 @@
 import React from 'react';
-import { useDnD } from '../utils/DnDContext';
+import { useDnD } from '@/renderer/flowchart/utils/DnDContext';
 
 const OperationConfigSidebar: React.FC = () => {
   const dndContext = useDnD();

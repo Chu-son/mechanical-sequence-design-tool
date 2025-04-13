@@ -1,7 +1,7 @@
-import { DatabaseInterface } from '../types/databaseTypes';
-import { JsonDatabase } from './database';
-import { config } from '../config';
-import CachedDatabase from './CachedDatabase';
+import { DatabaseInterface } from '@/renderer/types/databaseTypes';
+import { JsonDatabase } from '@/renderer/utils/database';
+import { config } from '@/renderer/config';
+import CachedDatabase from '@/renderer/utils/CachedDatabase';
 
 class DatabaseFactory {
   static createDatabase(): DatabaseInterface {

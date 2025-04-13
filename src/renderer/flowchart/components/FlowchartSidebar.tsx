@@ -1,10 +1,14 @@
 import React from 'react';
 import { useReactFlow } from '@xyflow/react';
-import DatabaseFactory from '../../utils/DatabaseFactory';
-import { Config, FlowData, ConfigIdentifier } from '../../types/databaseTypes';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import {
+  Config,
+  FlowData,
+  ConfigIdentifier,
+} from '@/renderer/types/databaseTypes';
 
-import DriveConfigSidebar from './DriveConfigSidebar';
-import OperationConfigSidebar from './OperationConfigSidebar';
+import DriveConfigSidebar from '@/renderer/flowchart/components/DriveConfigSidebar';
+import OperationConfigSidebar from '@/renderer/flowchart/components/OperationConfigSidebar';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

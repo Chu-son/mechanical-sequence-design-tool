@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import DatabaseFactory from '../utils/DatabaseFactory';
-import './Projects.css';
-import { useGlobalFlag } from '../context/GlobalFlagContext';
-import '../styles/Common.css'; // 共通スタイルをインポート
-import ListComponent from '../components/common/ListComponent';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import '@/renderer/pages/Projects.css';
+import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
+import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
+import ListComponent from '@/renderer/components/common/ListComponent';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

@@ -1,9 +1,9 @@
 import { useState, useEffect, CSSProperties, useRef, ReactNode } from 'react';
 import { useLocation, Link } from 'react-router-dom';
-import { useGlobalFlag } from '../context/GlobalFlagContext';
-import './Sidebar.css';
-import DatabaseFactory from '../utils/DatabaseFactory';
-import { Project, Unit, Config } from '../types/databaseTypes';
+import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
+import '@/renderer/components/Sidebar.css';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import { Project, Unit, Config } from '@/renderer/types/databaseTypes';
 
 // ファクトリーからデータベースインスタンスを取得
 const ProjectsDB = DatabaseFactory.createDatabase();

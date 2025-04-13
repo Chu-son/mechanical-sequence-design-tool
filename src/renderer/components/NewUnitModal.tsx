@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './NewUnitModal.css';
+import '@/renderer/components/NewUnitModal.css';
 
 interface NewUnitModalProps {
   isOpen: boolean;
