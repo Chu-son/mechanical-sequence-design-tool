@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import './UnitDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
 import DatabaseFactory from '../utils/DatabaseFactory';
+import ListComponent from '../components/common/ListComponent';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 
@@ -11,7 +12,6 @@ export default function UnitDetail() {
     projectId: string;
     unitId: string;
   }>();
-  const navigate = useNavigate();
   const [unit, setUnit] = useState<{
     id: number;
     name: string;
@@ -61,84 +61,38 @@ export default function UnitDetail() {
         </div>
       </div>
 
-      <div className="DetailPage">
-        <div className="Header">
-          <h1>駆動構成</h1>
-          <button type="button" onClick={() => setShowDriveConfigModal(true)}>
-            新規作成
-          </button>
-        </div>
-        <div className="List">
-          <div className="ListHeader">
-            <span>駆動名</span>
-          </div>
-          <ul>
-            {unit.driveConfigs.map((driveConfig) => (
-              <li
-                key={driveConfig.id}
-                onClick={() =>
-                  navigate(
-                    `/projects/${projectId}/unit/${unit.id}/flowchart/driveConfigs/${driveConfig.id}`,
-                  )
-                }
-              >
-                {driveConfig.label}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <ListComponent
+        title="駆動構成"
+        onAddNew={() => setShowDriveConfigModal(true)}
+        headers={[{ label: '駆動名' }]}
+        items={unit.driveConfigs.map((driveConfig) => ({
+          id: driveConfig.id,
+          to: `/projects/${projectId}/unit/${unit.id}/flowchart/driveConfigs/${driveConfig.id}`,
+          columns: [{ content: driveConfig.label }],
+        }))}
+      />
 
-      <div className="DetailPage">
-        <div className="Header">
-          <h1>動作構成</h1>
-          <button
-            type="button"
-            onClick={() => setShowOperationConfigModal(true)}
-          >
-            新規作成
-          </button>
-        </div>
+      <ListComponent
+        title="動作構成"
+        onAddNew={() => setShowOperationConfigModal(true)}
+        headers={[{ label: '動作名' }]}
+        items={unit.operationConfigs.map((operationConfig) => ({
+          id: operationConfig.id,
+          to: `/projects/${projectId}/unit/${unit.id}/flowchart/operationConfigs/${operationConfig.id}`,
+          columns: [{ content: operationConfig.label }],
+        }))}
+      />
 
-        <div className="List">
-          <div className="ListHeader">
-            <span>動作名</span>
-          </div>
-          <ul>
-            {unit.operationConfigs.map((operationConfig) => (
-              <li
-                key={operationConfig.id}
-                onClick={() =>
-                  navigate(
-                    `/projects/${projectId}/unit/${unit.id}/flowchart/operationConfigs/${operationConfig.id}`,
-                  )
-                }
-              >
-                {operationConfig.label}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </div>
-
-      <div className="DetailPage">
-        <div className="Header">
-          <h1>サブユニット</h1>
-          <button type="button" onClick={() => setShowSubUnitModal(true)}>
-            新規作成
-          </button>
-        </div>
-        <div className="List">
-          <div className="ListHeader">
-            <span>名前</span>
-          </div>
-          <ul>
-            {subUnits.map((subUnit) => (
-              <li key={subUnit.id}>{subUnit.name}</li>
-            ))}
-          </ul>
-        </div>
-      </div>
+      <ListComponent
+        title="サブユニット"
+        onAddNew={() => setShowSubUnitModal(true)}
+        headers={[{ label: '名前' }]}
+        items={subUnits.map((subUnit) => ({
+          id: subUnit.id,
+          to: `/projects/${projectId}/unit/${subUnit.id}`,
+          columns: [{ content: subUnit.name }],
+        }))}
+      />
 
       {showDriveConfigModal && (
         <div className="modal">

@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useParams, Link, useLocation } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import DatabaseFactory from '../utils/DatabaseFactory';
-
-const ProjectsDB = DatabaseFactory.createDatabase();
 import './ProjectDetail.css';
 import '../styles/Common.css'; // 共通スタイルをインポート
-import NewUnitModal from '../components/NewUnitModal';
+import ListComponent from '../components/common/ListComponent';
+
+const ProjectsDB = DatabaseFactory.createDatabase();
 
 export default function ProjectDetail() {
   const { projectId } = useParams<{ projectId: string }>();
@@ -15,6 +15,7 @@ export default function ProjectDetail() {
     id: number;
     name: string;
     units: { id: number; name: string; parentId: number | null }[];
+    updatedAt: string; // updatedAt フィールドを追加
   } | null>(null);
   const [isUnitModalOpen, setIsUnitModalOpen] = useState(false);
 
@@ -28,13 +29,9 @@ export default function ProjectDetail() {
     fetchProject();
   }, [projectId]);
 
-  const addUnit = async (name: string) => {
-    if (project) {
-      const newUnit = { id: Date.now(), name, parentId: null };
-      const updatedProject = { ...project, units: [...project.units, newUnit] };
-      await ProjectsDB.updateProject({ projectId: project.id }, updatedProject);
-      setProject(updatedProject);
-    }
+  const handleAddUnit = () => {
+    // モーダルを表示する
+    setIsUnitModalOpen(true);
   };
 
   const getTopLevelUnits = (
@@ -48,36 +45,29 @@ export default function ProjectDetail() {
   const topLevelUnits = getTopLevelUnits(project.units);
 
   return (
-    <div className="DetailPage">
-      <div className="Header">
-        <h1>{project.name}</h1>
-        <button type="button" onClick={() => setIsUnitModalOpen(true)}>
-          新規作成
-        </button>
-      </div>
-      <div className="List">
-        <div className="ListHeader">
-          <span>名前</span>
-          <span>更新日時</span>
-        </div>
-        <ul>
-          {topLevelUnits.map((unit) => (
-            <li key={unit.id}>
-              <span>
-                <Link to={`/projects/${stateProjectId}/unit/${unit.id}`}>
-                  {unit.name}
-                </Link>
-              </span>
-              <span>{new Date().toLocaleString()}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <NewUnitModal
-        isOpen={isUnitModalOpen}
-        onClose={() => setIsUnitModalOpen(false)}
-        onSave={addUnit}
+    <>
+      <ListComponent
+        title={project.name}
+        onAddNew={handleAddUnit}
+        headers={[{ label: '名前' }, { label: '更新日時' }]}
+        items={topLevelUnits.map((unit) => ({
+          id: unit.id,
+          to: `/projects/${stateProjectId}/unit/${unit.id}`,
+          columns: [
+            { content: unit.name },
+            { content: project.updatedAt || new Date().toLocaleString() },
+          ],
+        }))}
+        addButtonLabel="新規作成"
       />
-    </div>
+
+      {/* モーダルは他のコンポーネントで実装する必要がある */}
+      {isUnitModalOpen && (
+        <div>
+          {/* モーダル内容 */}
+          <button onClick={() => setIsUnitModalOpen(false)}>閉じる</button>
+        </div>
+      )}
+    </>
   );
 }

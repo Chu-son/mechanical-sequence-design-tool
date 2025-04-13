@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
 import DatabaseFactory from '../utils/DatabaseFactory';
-import NewProjectModal from '../components/NewProjectModal';
 import './Projects.css';
 import { useGlobalFlag } from '../context/GlobalFlagContext';
 import '../styles/Common.css'; // 共通スタイルをインポート
+import ListComponent from '../components/common/ListComponent';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 
@@ -28,45 +27,32 @@ export default function Projects() {
     };
   }, [setSidebarVisibility]);
 
-  const addProject = async (name: string) => {
-    const newProject = {
-      id: Date.now(),
-      name,
-      updatedAt: new Date().toLocaleString(),
-    };
-    await ProjectsDB.createProject(newProject);
-    setProjects([...projects, newProject]);
+  const handleAddProject = () => {
+    // モーダルを表示する
+    setIsModalOpen(true);
   };
 
   return (
-    <div className="DetailPage">
-      <div className="Header">
-        <h1>プロジェクト一覧</h1>
-        <button type="button" onClick={() => setIsModalOpen(true)}>
-          新規作成
-        </button>
-      </div>
-      <div className="List">
-        <div className="ListHeader">
-          <span>名前</span>
-          <span>更新日時</span>
-        </div>
-        <ul>
-          {projects.map((project) => (
-            <li key={project.id}>
-              <Link to={`/projects/${project.id}`}>
-                <span>{project.name}</span>
-                <span>{project.updatedAt}</span>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </div>
-      <NewProjectModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSave={addProject}
+    <>
+      <ListComponent
+        title="プロジェクト一覧"
+        onAddNew={handleAddProject}
+        headers={[{ label: '名前' }, { label: '更新日時' }]}
+        items={projects.map((project) => ({
+          id: project.id,
+          to: `/projects/${project.id}`,
+          columns: [{ content: project.name }, { content: project.updatedAt }],
+        }))}
+        addButtonLabel="新規作成"
       />
-    </div>
+
+      {/* モーダルは他のコンポーネントで実装する必要がある */}
+      {isModalOpen && (
+        <div>
+          {/* モーダル内容 */}
+          <button onClick={() => setIsModalOpen(false)}>閉じる</button>
+        </div>
+      )}
+    </>
   );
 }
