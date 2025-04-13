@@ -191,15 +191,15 @@
 }
 
 /* 各カテゴリの色はタイプ属性で定義 */
-.category-item[data-type='drive'] {
+li.category-item[data-type='drive'] {
   border-left-color: var(--drive-color);
 }
 
-.category-item[data-type='operation'] {
+li.category-item[data-type='operation'] {
   border-left-color: var(--operation-color);
 }
 
-.category-item[data-type='subunit'] {
+li.category-item[data-type='subunit'] {
   border-left-color: var(--subunit-color);
 }
 
@@ -213,15 +213,15 @@
 }
 
 /* カテゴリのテキスト色もデータ属性から取得 */
-.category-item[data-type='drive'] .category-header span {
+li.category-item[data-type='drive'] .category-header span {
   color: var(--drive-color);
 }
 
-.category-item[data-type='operation'] .category-header span {
+li.category-item[data-type='operation'] .category-header span {
   color: var(--operation-color);
 }
 
-.category-item[data-type='subunit'] .category-header span {
+li.category-item[data-type='subunit'] .category-header span {
   color: var(--subunit-color);
 }
 
@@ -258,11 +258,11 @@
 }
 
 /* マーカーの色もデータ属性から取得 */
-.config-item[data-type='drive'] a::before {
+li.config-item[data-type='drive'] a::before {
   background-color: var(--drive-color);
 }
 
-.config-item[data-type='operation'] a::before {
+li.config-item[data-type='operation'] a::before {
   background-color: var(--operation-color);
 }
 
