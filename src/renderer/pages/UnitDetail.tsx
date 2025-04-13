@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
-import { useParams, useLocation, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
+import './UnitDetail.css';
+import '../styles/Common.css'; // 共通スタイルをインポート
 import DatabaseFactory from '../utils/DatabaseFactory';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
-import './UnitDetail.css';
-import '../styles/Common.css'; // 共通スタイルをインポート
 
 export default function UnitDetail() {
   const { projectId, unitId } = useParams<{
@@ -27,15 +27,21 @@ export default function UnitDetail() {
 
   useEffect(() => {
     const fetchUnit = async () => {
-      const unit = await ProjectsDB.getUnitById({
+      const unitData = await ProjectsDB.getUnitById({
         projectId: Number(projectId),
         unitId: Number(unitId),
       });
-      const childUnits = await ProjectsDB.getUnitsByProjectId({
+      const allUnitsInProject = await ProjectsDB.getUnitsByProjectId({
         projectId: Number(projectId),
       });
-      if (unit) {
-        setUnit(unit);
+
+      // 親IDが現在表示しているユニットのIDと一致するユニットのみをフィルタリング
+      const childUnits = allUnitsInProject.filter(
+        (u) => u.parentId === Number(unitId),
+      );
+
+      if (unitData) {
+        setUnit(unitData);
         setSubUnits(childUnits);
       }
       setLoading(false); // データ取得後にローディングを終了
@@ -58,7 +64,7 @@ export default function UnitDetail() {
       <div className="DetailPage">
         <div className="Header">
           <h1>駆動構成</h1>
-          <button onClick={() => setShowDriveConfigModal(true)}>
+          <button type="button" onClick={() => setShowDriveConfigModal(true)}>
             新規作成
           </button>
         </div>
@@ -86,7 +92,10 @@ export default function UnitDetail() {
       <div className="DetailPage">
         <div className="Header">
           <h1>動作構成</h1>
-          <button onClick={() => setShowOperationConfigModal(true)}>
+          <button
+            type="button"
+            onClick={() => setShowOperationConfigModal(true)}
+          >
             新規作成
           </button>
         </div>
@@ -115,7 +124,9 @@ export default function UnitDetail() {
       <div className="DetailPage">
         <div className="Header">
           <h1>サブユニット</h1>
-          <button onClick={() => setShowSubUnitModal(true)}>新規作成</button>
+          <button type="button" onClick={() => setShowSubUnitModal(true)}>
+            新規作成
+          </button>
         </div>
         <div className="List">
           <div className="ListHeader">
@@ -132,12 +143,14 @@ export default function UnitDetail() {
       {showDriveConfigModal && (
         <div className="modal">
           <div className="modal-content">
-            <span
+            <button
+              type="button"
               className="close"
+              aria-label="閉じる"
               onClick={() => setShowDriveConfigModal(false)}
             >
               &times;
-            </span>
+            </button>
             <h2>駆動構成の新規作成</h2>
             {/* フォーム内容 */}
           </div>
@@ -147,12 +160,14 @@ export default function UnitDetail() {
       {showOperationConfigModal && (
         <div className="modal">
           <div className="modal-content">
-            <span
+            <button
+              type="button"
               className="close"
+              aria-label="閉じる"
               onClick={() => setShowOperationConfigModal(false)}
             >
               &times;
-            </span>
+            </button>
             <h2>動作構成の新規作成</h2>
             {/* フォーム内容 */}
           </div>
@@ -162,9 +177,14 @@ export default function UnitDetail() {
       {showSubUnitModal && (
         <div className="modal">
           <div className="modal-content">
-            <span className="close" onClick={() => setShowSubUnitModal(false)}>
+            <button
+              type="button"
+              className="close"
+              aria-label="閉じる"
+              onClick={() => setShowSubUnitModal(false)}
+            >
               &times;
-            </span>
+            </button>
             <h2>サブユニットの新規作成</h2>
             {/* フォーム内容 */}
           </div>
