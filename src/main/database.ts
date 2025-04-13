@@ -51,3 +51,14 @@ ipcMain.handle('delete', (event, fileName, id) => {
   data = data.filter((item) => item.id !== id);
   writeData(fileName, data);
 });
+
+// 'save'ハンドラーを追加 - プロジェクトデータ全体を保存するために使用
+ipcMain.handle('save', (event, fileName, data) => {
+  try {
+    writeData(fileName, data);
+    return { success: true };
+  } catch (error) {
+    console.error('Error saving data:', error);
+    return { success: false, error: error.message };
+  }
+});
