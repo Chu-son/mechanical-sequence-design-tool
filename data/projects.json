@@ -4,7 +4,7 @@
     "name": "【サンプル】プロジェクト",
     "description": "これはサンプルデータです。実際のプロジェクトに置き換えてご利用ください。",
     "createdAt": "2025-01-15T10:00:00.000Z",
-    "updatedAt": "2025-04-12T14:30:00.000Z",
+    "updatedAt": "2025-04-13T14:50:33.062Z",
     "units": [
       {
         "id": 1,
@@ -16,8 +16,8 @@
         "driveConfigs": [
           {
             "id": 1,
-            "label": "【サンプル】駆動構成1",
-            "description": "これはサンプルの駆動構成です。実際の駆動構成データに置き換えてご利用ください。",
+            "label": "【サンプル】駆動軸構成1",
+            "description": "これはサンプルの駆動軸構成です。実際の駆動軸構成データに置き換えてご利用ください。",
             "createdAt": "2025-01-16T09:30:00.000Z",
             "updatedAt": "2025-04-05T16:40:00.000Z",
             "flow_data": {
@@ -26,8 +26,8 @@
                   "id": "1",
                   "type": "taskStart",
                   "position": {
-                    "x": 441,
-                    "y": 213
+                    "x": 11.5,
+                    "y": 0
                   },
                   "data": {
                     "label": "開始"
@@ -38,75 +38,18 @@
                   }
                 },
                 {
-                  "id": "2",
-                  "type": "task",
-                  "position": {
-                    "x": 436.6579141786565,
-                    "y": 330.92122760790915
-                  },
-                  "data": {
-                    "label": "タスク1",
-                    "totalDuration": 10,
-                    "duration": 10
-                  },
-                  "measured": {
-                    "width": 338,
-                    "height": 253
-                  },
-                  "selected": false,
-                  "dragging": false
-                },
-                {
-                  "id": "3",
-                  "type": "task",
-                  "position": {
-                    "x": 841.5487950591131,
-                    "y": 554.894230745344
-                  },
-                  "data": {
-                    "label": "タスク2",
-                    "totalDuration": 14,
-                    "duration": 4
-                  },
-                  "measured": {
-                    "width": 338,
-                    "height": 253
-                  },
-                  "selected": false,
-                  "dragging": false
-                },
-                {
-                  "id": "4",
-                  "type": "task",
-                  "position": {
-                    "x": 83.61914424635941,
-                    "y": 654.8683302170755
-                  },
-                  "data": {
-                    "label": "タスク3",
-                    "totalDuration": 16,
-                    "duration": 2
-                  },
-                  "measured": {
-                    "width": 338,
-                    "height": 253
-                  },
-                  "selected": false,
-                  "dragging": false
-                },
-                {
                   "id": "5",
                   "type": "taskEnd",
                   "position": {
-                    "x": 198.9017799134657,
-                    "y": 1148.04693424231
+                    "x": 0,
+                    "y": 137
                   },
                   "data": {
                     "label": "終了",
-                    "totalDuration": 16
+                    "totalDuration": 0
                   },
                   "measured": {
-                    "width": 170,
+                    "width": 163,
                     "height": 128
                   },
                   "selected": false,
@@ -115,31 +58,15 @@
               ],
               "edges": [
                 {
+                  "id": "1->5",
                   "source": "1",
-                  "target": "2",
-                  "id": "xy-edge__1-2"
-                },
-                {
-                  "source": "2",
-                  "target": "3",
-                  "id": "xy-edge__2-3"
-                },
-                {
-                  "source": "3",
-                  "target": "4",
-                  "id": "xy-edge__3-4",
-                  "selected": false
-                },
-                {
-                  "source": "4",
-                  "target": "5",
-                  "id": "xy-edge__4-5"
+                  "target": "5"
                 }
               ],
               "viewport": {
-                "x": 51.23302081704105,
-                "y": 108.71286443450623,
-                "zoom": 0.6104566782847985
+                "x": 250.33396226415093,
+                "y": 111,
+                "zoom": 1.6830188679245284
               }
             }
           }
@@ -147,8 +74,8 @@
         "operationConfigs": [
           {
             "id": 1,
-            "label": "【サンプル】動作構成1",
-            "description": "これはサンプルの動作構成です。実際の動作構成データに置き換えてご利用ください。",
+            "label": "【サンプル】動作シーケンス1",
+            "description": "これはサンプルの動作シーケンスです。実際の動作シーケンスデータに置き換えてご利用ください。",
             "createdAt": "2025-01-18T14:20:00.000Z",
             "updatedAt": "2025-04-08T13:15:00.000Z",
             "flow_data": {
@@ -258,8 +185,8 @@
         "driveConfigs": [
           {
             "id": 2,
-            "label": "【サンプル】駆動構成2",
-            "description": "これはサンプルの駆動構成です。実際の駆動構成データに置き換えてご利用ください。",
+            "label": "【サンプル】駆動軸構成2",
+            "description": "これはサンプルの駆動軸構成です。実際の駆動軸構成データに置き換えてご利用ください。",
             "createdAt": "2025-01-22T11:30:00.000Z",
             "updatedAt": "2025-04-02T10:20:00.000Z",
             "flow_data": {
@@ -336,8 +263,8 @@
         "operationConfigs": [
           {
             "id": 2,
-            "label": "【サンプル】動作構成2",
-            "description": "これはサンプルの動作構成です。実際の動作構成データに置き換えてご利用ください。",
+            "label": "【サンプル】動作シーケンス2",
+            "description": "これはサンプルの動作シーケンスです。実際の動作シーケンスデータに置き換えてご利用ください。",
             "createdAt": "2025-01-25T13:40:00.000Z",
             "updatedAt": "2025-04-05T09:15:00.000Z",
             "flow_data": {

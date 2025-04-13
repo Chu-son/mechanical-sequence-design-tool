@@ -283,7 +283,7 @@ li.config-item[data-type='operation'] a::before {
 
 /* カテゴリタイプごとの色定義 */
 :root {
-  --drive-color: #4caf50; /* 緑色 - 駆動構成 */
-  --operation-color: #2196f3; /* 青色 - 動作構成 */
+  --drive-color: #4caf50; /* 緑色 - 駆動軸構成 */
+  --operation-color: #2196f3; /* 青色 - 動作シーケンス */
   --subunit-color: #ff9800; /* オレンジ色 - サブユニット */
 }

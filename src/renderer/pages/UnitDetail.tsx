@@ -56,7 +56,7 @@ export default function UnitDetail() {
     label: string;
     description?: string;
   }>(async (data) => {
-    // 駆動構成の保存処理
+    // 駆動軸構成の保存処理
     if (unit) {
       await ProjectsDB.createDriveConfig({
         projectId: Number(projectId),
@@ -73,7 +73,7 @@ export default function UnitDetail() {
     label: string;
     description?: string;
   }>(async (data) => {
-    // 動作構成の保存処理
+    // 動作シーケンスの保存処理
     if (unit) {
       await ProjectsDB.createOperationConfig({
         projectId: Number(projectId),
@@ -147,10 +147,10 @@ export default function UnitDetail() {
       </div>
 
       <ListComponent
-        title="駆動構成"
+        title="駆動軸構成"
         onAddNew={driveConfigModal.open}
         headers={[
-          { label: '駆動名' },
+          { label: '構成名' },
           { label: '説明' },
           { label: '作成日' },
           { label: '更新日時' },
@@ -176,10 +176,10 @@ export default function UnitDetail() {
       />
 
       <ListComponent
-        title="動作構成"
+        title="動作シーケンス"
         onAddNew={operationConfigModal.open}
         headers={[
-          { label: '動作名' },
+          { label: 'シーケンス名' },
           { label: '説明' },
           { label: '作成日' },
           { label: '更新日時' },
@@ -229,7 +229,7 @@ export default function UnitDetail() {
         }))}
       />
 
-      {/* 駆動構成モーダル */}
+      {/* 駆動軸構成モーダル */}
       <FormModal
         isOpen={driveConfigModal.isOpen}
         onClose={driveConfigModal.close}
@@ -237,7 +237,7 @@ export default function UnitDetail() {
         {...driveConfigModalConfig}
       />
 
-      {/* 動作構成モーダル */}
+      {/* 動作シーケンスモーダル */}
       <FormModal
         isOpen={operationConfigModal.isOpen}
         onClose={operationConfigModal.close}

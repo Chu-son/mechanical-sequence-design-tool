@@ -66,20 +66,20 @@ export const unitModalConfig = {
 };
 
 /**
- * 駆動構成モーダルの設定
+ * 駆動軸構成モーダルの設定
  */
 export const driveConfigModalConfig = {
-  title: '駆動構成の新規作成',
+  title: '駆動軸構成の新規作成',
   fields: [
     {
       id: 'label',
-      label: '駆動名',
+      label: '構成名',
       type: 'text' as const,
       required: true,
-      placeholder: '駆動構成の名前を入力してください',
+      placeholder: '駆動軸構成の名前を入力してください',
       validation: (value: string) => {
         if (!value || value.trim() === '') {
-          return '駆動名は必須です';
+          return '構成名は必須です';
         }
         return null;
       },
@@ -88,7 +88,7 @@ export const driveConfigModalConfig = {
       id: 'description',
       label: '説明',
       type: 'textarea' as const,
-      placeholder: '駆動構成の説明を入力してください（任意）',
+      placeholder: '駆動軸構成の説明を入力してください（任意）',
     },
   ],
   saveButtonLabel: '作成',
@@ -96,20 +96,20 @@ export const driveConfigModalConfig = {
 };
 
 /**
- * 動作構成モーダルの設定
+ * 動作シーケンスモーダルの設定
  */
 export const operationConfigModalConfig = {
-  title: '動作構成の新規作成',
+  title: '動作シーケンスの新規作成',
   fields: [
     {
       id: 'label',
-      label: '動作名',
+      label: 'シーケンス名',
       type: 'text' as const,
       required: true,
-      placeholder: '動作構成の名前を入力してください',
+      placeholder: '動作シーケンスの名前を入力してください',
       validation: (value: string) => {
         if (!value || value.trim() === '') {
-          return '動作名は必須です';
+          return 'シーケンス名は必須です';
         }
         return null;
       },
@@ -118,7 +118,7 @@ export const operationConfigModalConfig = {
       id: 'description',
       label: '説明',
       type: 'textarea' as const,
-      placeholder: '動作構成の説明を入力してください（任意）',
+      placeholder: '動作シーケンスの説明を入力してください（任意）',
     },
   ],
   saveButtonLabel: '作成',

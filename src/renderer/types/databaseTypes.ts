@@ -85,7 +85,7 @@ export interface DatabaseInterface {
   ): Promise<void>;
   deleteUnit(identifier: UnitIdentifier): Promise<void>;
 
-  // 駆動構成・動作構成操作
+  // 駆動軸構成・動作シーケンス操作
   getDriveConfigsByUnitId(identifier: UnitIdentifier): Promise<DriveConfig[]>;
   getOperationConfigsByUnitId(
     identifier: UnitIdentifier,

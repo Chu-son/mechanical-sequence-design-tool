@@ -38,7 +38,7 @@ const ExpandIcon = ({ isExpanded }: { isExpanded: boolean }) => (
   <span className="expand-icon">{isExpanded ? '▼' : '►'}</span>
 );
 
-// カテゴリコンポーネント - 駆動構成、動作構成、サブユニットの共通表示部分
+// カテゴリコンポーネント - 駆動軸構成、動作シーケンス、サブユニットの共通表示部分
 const CategoryItem = ({
   type,
   label,
@@ -157,10 +157,10 @@ const UnitItem = ({
 
       {isUnitExpanded && (
         <ul className="unit-contents">
-          {/* 駆動構成カテゴリ */}
+          {/* 駆動軸構成カテゴリ */}
           <CategoryItem
             type="drive"
-            label="駆動構成"
+            label="駆動軸構成"
             expandKey={driveKey}
             isExpanded={isDriveExpanded}
             hasItems={hasDriveConfigs}
@@ -178,10 +178,10 @@ const UnitItem = ({
             ))}
           </CategoryItem>
 
-          {/* 動作構成カテゴリ */}
+          {/* 動作シーケンスカテゴリ */}
           <CategoryItem
             type="operation"
-            label="動作構成"
+            label="動作シーケンス"
             expandKey={operationKey}
             isExpanded={isOperationExpanded}
             hasItems={hasOperationConfigs}
