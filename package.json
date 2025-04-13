@@ -1,6 +1,6 @@
 {
-  "name": "electron-react-boilerplate",
-  "description": "A foundation for scalable desktop apps",
+  "name": "mechanical-sequence-design-tool",
+  "description": "A tool for designing mechanical sequences and optimizing tact time",
   "keywords": [
     "electron",
     "boilerplate",
@@ -178,8 +178,8 @@
     "webpack-merge": "^5.9.0"
   },
   "build": {
-    "productName": "ElectronReact",
-    "appId": "org.erb.ElectronReact",
+    "productName": "MechanicalSequenceDesignTool",
+    "appId": "org.msdt.MechanicalSequenceDesignTool",
     "asar": true,
     "asarUnpack": "**\\*.{node,dll}",
     "files": [
