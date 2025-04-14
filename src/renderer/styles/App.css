@@ -76,7 +76,6 @@ a:hover {
 
 /* すべての子コンテンツ要素がコンテナ内に収まるように */
 * {
-  max-width: 100%;
   box-sizing: border-box;
 }
 
