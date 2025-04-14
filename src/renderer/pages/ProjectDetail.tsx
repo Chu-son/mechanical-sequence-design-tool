@@ -49,13 +49,24 @@ export default function ProjectDetail() {
     const data = await ProjectsDB.getProjectById({
       projectId: Number(projectId),
     });
-    setProject(data);
+
+    if (data) {
+      // プロジェクトデータをセットする前に、units配列を確実にトップレベルのみにフィルタリング
+      const topLevelUnits = data.units.filter((unit) => unit.parentId === null);
+      setProject({
+        ...data,
+        units: topLevelUnits, // トップレベルユニットのみをセット
+      });
+    } else {
+      setProject(null);
+    }
   };
 
   useEffect(() => {
     fetchProject();
   }, [projectId]);
 
+  // 念のためこの関数も維持（他の場所で使われる可能性があるため）
   const getTopLevelUnits = (
     units: { id: number; name: string; parentId: number | null }[],
   ) => {
@@ -64,7 +75,8 @@ export default function ProjectDetail() {
 
   if (!project) return <div>Loading...</div>;
 
-  const topLevelUnits = getTopLevelUnits(project.units);
+  // ここではすでにフィルタリング済みのunitsを使用
+  const topLevelUnits = project.units;
 
   return (
     <>
