@@ -7,8 +7,9 @@ import {
   ConfigIdentifier,
 } from '@/renderer/types/databaseTypes';
 
-import DriveConfigSidebar from '@/renderer/flowchart/components/DriveConfigSidebar';
-import OperationConfigSidebar from '@/renderer/flowchart/components/OperationConfigSidebar';
+import NodeBlockDisplay from './NodeBlockDisplay';
+import { driveConfigBlocks } from './drive-config-nodes/DriveConfigBlocks';
+import { operationConfigBlocks } from './operation-config-nodes/OperationConfigBlocks';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 
@@ -74,9 +75,13 @@ function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
       >
         Save
       </button>
-      {configIdentifier.configType === 'driveConfigs' && <DriveConfigSidebar />}
+
+      {configIdentifier.configType === 'driveConfigs' && (
+        <NodeBlockDisplay blocks={driveConfigBlocks.blocks} />
+      )}
+
       {configIdentifier.configType === 'operationConfigs' && (
-        <OperationConfigSidebar />
+        <NodeBlockDisplay blocks={operationConfigBlocks.blocks} />
       )}
     </aside>
   );
