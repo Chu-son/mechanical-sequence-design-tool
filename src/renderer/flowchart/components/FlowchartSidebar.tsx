@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useReactFlow } from '@xyflow/react';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import {
   Config,
   FlowData,
   ConfigIdentifier,
+  DriveConfig,
 } from '@/renderer/types/databaseTypes';
 
 import NodeBlockDisplay from './NodeBlockDisplay';
 import { driveConfigBlocks } from './drive-config-nodes/DriveConfigBlocks';
-import { operationConfigBlocks } from './operation-config-nodes/OperationConfigBlocks';
+import { getOperationConfigBlocks } from './operation-config-nodes/OperationConfigBlocks';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 
@@ -19,6 +20,35 @@ interface FlowchartSidebarProps {
 
 function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
   const { toObject } = useReactFlow();
+  const [unitDriveConfigs, setUnitDriveConfigs] = useState<DriveConfig[]>([]);
+
+  // 現在のユニットからDriveConfigを読み込む
+  useEffect(() => {
+    const loadDriveConfigs = async () => {
+      try {
+        // OperationConfig表示時のみDriveConfigを読み込む
+        if (configIdentifier.configType !== 'operationConfigs') return;
+
+        const projects = await ProjectsDB.getAllProjects();
+        const project = projects.find(
+          (p) => p.id === configIdentifier.projectId,
+        );
+        if (!project) return;
+
+        const unit = project.units.find(
+          (u) => u.id === configIdentifier.unitId,
+        );
+        if (!unit) return;
+
+        // 現在のユニットの駆動軸構成をセット
+        setUnitDriveConfigs(unit.driveConfigs || []);
+      } catch (error) {
+        console.error('Failed to load drive configurations:', error);
+      }
+    };
+
+    loadDriveConfigs();
+  }, [configIdentifier]);
 
   const saveFlowData = async (identifier: ConfigIdentifier) => {
     const flow = toObject();
@@ -81,7 +111,9 @@ function FlowchartSidebar({ configIdentifier }: FlowchartSidebarProps) {
       )}
 
       {configIdentifier.configType === 'operationConfigs' && (
-        <NodeBlockDisplay blocks={operationConfigBlocks.blocks} />
+        <NodeBlockDisplay
+          blocks={getOperationConfigBlocks(unitDriveConfigs).blocks}
+        />
       )}
     </aside>
   );
