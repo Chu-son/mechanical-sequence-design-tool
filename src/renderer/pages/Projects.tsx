@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import '@/renderer/pages/Projects.css';
-import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
 import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
 import ListComponent from '@/renderer/components/common/ListComponent';
 import FormModal from '@/renderer/components/common/FormModal';
@@ -20,8 +19,6 @@ export default function Projects() {
       createdAt: string;
     }[]
   >([]);
-
-  const { setSidebarVisibility } = useGlobalFlag();
 
   // プロジェクト作成モーダルのための状態管理
   const projectModal = useFormModal<{ name: string; description?: string }>(
@@ -42,12 +39,9 @@ export default function Projects() {
   };
 
   useEffect(() => {
-    setSidebarVisibility(false); // Sidebar を非表示に設定
+    // サイドバーの非表示設定を削除し、常に表示されるようにする
     fetchProjects();
-    return () => {
-      setSidebarVisibility(true); // クリーンアップ時に Sidebar を再表示
-    };
-  }, [setSidebarVisibility]);
+  }, []);
 
   return (
     <>

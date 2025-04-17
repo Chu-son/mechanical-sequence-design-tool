@@ -54,24 +54,33 @@ a:hover {
 
 .Content {
   flex-grow: 1; /* コンテンツが残りの幅を占めるように */
-  padding: 20px 20px 20px 20px; /* 上 右 下 左のパディング */
-  margin-left: 0; /* サイドバーが非表示の場合の調整 */
-  height: 100%; /* 高さを100%に設定して、スクロールエリアを確保 */
+  padding: 20px;
+  height: calc(100% - 30px); /* タイトルバーの高さを考慮 */
+  margin-top: 30px;
   box-sizing: border-box; /* パディングを含めた全体の高さを計算 */
   overflow-y: auto; /* Contentクラスのみでスクロールを有効化 */
   overflow-x: hidden; /* 横方向のスクロールを防止 */
-  width: 100%; /* 幅を明示的に設定 */
-  max-width: 100vw; /* 最大幅を100vwに設定 */
+  width: calc(100% - 60px); /* 左サイドバーアイコン領域分を引く */
+  margin-left: 60px; /* 左サイドバーアイコン領域の幅 */
+  max-width: calc(
+    100vw - 60px
+  ); /* 最大幅を調整（左サイドバーアイコン幅を考慮） */
+  transition:
+    margin-left 0.3s ease,
+    width 0.3s ease; /* スムーズな遷移 */
 }
 
-.Sidebar + .Content {
-  margin-left: 250px; /* サイドバーが表示されている場合の幅 */
-  max-width: calc(100vw - 250px); /* サイドバーが表示されている場合の最大幅 */
+/* サイドバーパネルが開いている時の調整 */
+.Content.sidebar-open {
+  width: calc(
+    100% - 310px
+  ); /* 左側のサイドバーパネル(250px)とアイコン領域(60px)を考慮 */
+  margin-left: 310px; /* 左サイドバーパネル + アイコン領域 */
 }
 
-.Sidebar.closed + .Content {
-  margin-left: 50px; /* サイドバーが閉じた際の幅 */
-  max-width: calc(100vw - 50px); /* サイドバーが閉じている場合の最大幅 */
+/* サイドバーがピン留めされている時の調整 */
+.Content.sidebar-pinned {
+  /* ピン留め時のスタイルがあれば追加 */
 }
 
 /* すべての子コンテンツ要素がコンテナ内に収まるように */
