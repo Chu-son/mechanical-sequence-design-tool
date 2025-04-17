@@ -4,7 +4,7 @@
     "name": "【サンプル】プロジェクト",
     "description": "これはサンプルデータです。実際のプロジェクトに置き換えてご利用ください。",
     "createdAt": "2025-01-15T10:00:00.000Z",
-    "updatedAt": "2025-04-13T14:50:33.062Z",
+    "updatedAt": "2025-04-17T14:59:29.033Z",
     "units": [
       {
         "id": 1,
@@ -24,49 +24,120 @@
               "nodes": [
                 {
                   "id": "1",
-                  "type": "taskStart",
+                  "type": "simpleRotationalActuator",
                   "position": {
-                    "x": 11.5,
+                    "x": 0,
                     "y": 0
                   },
                   "data": {
-                    "label": "開始"
+                    "label": "simpleRotationalActuator node",
+                    "id": "1",
+                    "type": "rotational",
+                    "ratedTorque": 1,
+                    "ratedSpeed": 3000,
+                    "maxSpeed": 5000,
+                    "rotorInertia": 0.0001,
+                    "calculatedOutput": {
+                      "rotational": {
+                        "torque": 0.95,
+                        "speed": 3000,
+                        "power": 298.4513020910303,
+                        "inertia": 0.0001,
+                        "direction": 1
+                      },
+                      "efficiency": 0.95,
+                      "maxLoad": 1,
+                      "isOverloaded": false
+                    }
                   },
                   "measured": {
-                    "width": 140,
-                    "height": 87
+                    "width": 342,
+                    "height": 421
                   }
                 },
                 {
-                  "id": "5",
-                  "type": "taskEnd",
+                  "id": "2",
+                  "type": "simpleRotToRotConverter",
                   "position": {
-                    "x": 0,
-                    "y": 137
+                    "x": 7.5,
+                    "y": 471
                   },
                   "data": {
-                    "label": "終了",
-                    "totalDuration": 0
+                    "label": "simpleRotToRotConverter node",
+                    "id": "2",
+                    "type": "rotational",
+                    "inputType": "rotational",
+                    "outputType": "rotational",
+                    "gearRatio": 10,
+                    "inertia": 0.0005,
+                    "maxTorque": 20,
+                    "efficiency": 0.9,
+                    "calculatedOutput": {
+                      "rotational": {
+                        "torque": 8.55,
+                        "speed": 300,
+                        "power": 268.6061718819273,
+                        "inertia": 0.000501,
+                        "direction": 1
+                      },
+                      "efficiency": 0.9,
+                      "maxLoad": 20,
+                      "isOverloaded": false
+                    }
                   },
                   "measured": {
-                    "width": 163,
-                    "height": 128
+                    "width": 327,
+                    "height": 397
                   },
-                  "selected": false,
-                  "dragging": false
+                  "selected": false
+                },
+                {
+                  "id": "3",
+                  "type": "outputNode",
+                  "position": {
+                    "x": 65,
+                    "y": 918
+                  },
+                  "data": {
+                    "label": "outputNode node",
+                    "id": "3",
+                    "type": "rotational",
+                    "calculatedOutput": {
+                      "rotational": {
+                        "torque": 8.55,
+                        "speed": 300,
+                        "power": 268.6061718819273,
+                        "inertia": 0.000501,
+                        "direction": 1
+                      },
+                      "isOverloaded": false,
+                      "sourceEfficiency": 0.9
+                    }
+                  },
+                  "measured": {
+                    "width": 212,
+                    "height": 311
+                  }
                 }
               ],
               "edges": [
                 {
-                  "id": "1->5",
+                  "interactionWidth": 75,
                   "source": "1",
-                  "target": "5"
+                  "target": "2",
+                  "id": "xy-edge__1-2"
+                },
+                {
+                  "interactionWidth": 75,
+                  "source": "2",
+                  "target": "3",
+                  "id": "xy-edge__2-3"
                 }
               ],
               "viewport": {
-                "x": 250.33396226415093,
-                "y": 111,
-                "zoom": 1.6830188679245284
+                "x": 171.0354134383221,
+                "y": -362.86705369954063,
+                "zoom": 0.8235910172675734
               }
             }
           }

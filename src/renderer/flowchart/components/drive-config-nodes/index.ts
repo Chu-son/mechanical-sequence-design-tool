@@ -1,12 +1,37 @@
-import RootNode from '@/renderer/flowchart/components/drive-config-nodes/RootNode';
-import OutputNode from '@/renderer/flowchart/components/drive-config-nodes/OutputNode';
-import SimpleLinearActuatorNode from '@/renderer/flowchart/components/drive-config-nodes/SimpleLinearActuatorNode';
+// ノードタイプのインポート
+import SimpleRotationalActuatorNode from './SimpleRotationalActuatorNode';
+import SimpleLinearActuatorNode from './SimpleLinearActuatorNode';
+import SimpleRotToRotConverterNode from './SimpleRotToRotConverterNode';
+import SimpleLinToRotConverterNode from './SimpleLinToRotConverter';
+import SimpleRotToLinConverterNode from './SimpleRotToLinConverter';
+import SimpleLinToLinConverterNode from './SimpleLinToLinConverter';
+import OutputNode from './OutputNode';
 
-export { RootNode, OutputNode, SimpleLinearActuatorNode };
-export * from '@/renderer/flowchart/components/drive-config-nodes/common';
+// 個別にエクスポート
+export { SimpleRotationalActuatorNode };
+export { SimpleLinearActuatorNode };
+export { SimpleRotToRotConverterNode };
+export { SimpleLinToRotConverterNode };
+export { SimpleRotToLinConverterNode };
+export { SimpleLinToLinConverterNode };
+export { OutputNode };
 
+// Common
+export * from './common';
+export * from './DriveConfigBlocks';
+
+// ノードタイプの登録
 export const nodeTypes = {
-  rootNode: RootNode,
+  // Common Nodes
   outputNode: OutputNode,
+
+  // Actuator Nodes
+  simpleRotationalActuator: SimpleRotationalActuatorNode,
   simpleLinearActuator: SimpleLinearActuatorNode,
+
+  // Drive Component Nodes
+  simpleRotToRotConverter: SimpleRotToRotConverterNode,
+  simpleLinToRotConverter: SimpleLinToRotConverterNode,
+  simpleRotToLinConverter: SimpleRotToLinConverterNode,
+  simpleLinToLinConverter: SimpleLinToLinConverterNode,
 };
