@@ -325,34 +325,13 @@ export default function Sidebar() {
 
   // サイドバーアイテムの初期化
   useEffect(() => {
-    // 初期のサイドバーアイテム設定
+    // 初期のサイドバーアイテム設定 - 実装のないパネルを削除
     const initialItems: SidebarItem[] = [
       {
         id: 'projects',
         type: 'project',
         title: 'プロジェクト/ユニット',
         icon: '📁',
-        isOpen: false,
-      },
-      {
-        id: 'drive',
-        type: 'drive',
-        title: '駆動軸構成',
-        icon: '⚙️',
-        isOpen: false,
-      },
-      {
-        id: 'operation',
-        type: 'operation',
-        title: '動作シーケンス',
-        icon: '▶️',
-        isOpen: false,
-      },
-      {
-        id: 'settings',
-        type: 'subunit',
-        title: '設定',
-        icon: '🔧',
         isOpen: false,
       },
     ];
