@@ -1,6 +1,12 @@
 import React, { useRef, useCallback, useEffect } from 'react';
 import Dagre from '@dagrejs/dagre';
-import type { Edge, Connection, Node } from '@xyflow/react';
+import type {
+  Edge,
+  Connection,
+  Node,
+  DefaultEdgeOptions,
+  FlowData,
+} from '@xyflow/react';
 import {
   ReactFlow,
   ReactFlowProvider,
@@ -18,7 +24,7 @@ import {
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import { DnDProvider, useDnD } from '@/renderer/flowchart/utils/DnDContext';
+import { useDnD } from '@/renderer/flowchart/utils/DnDContext';
 import { nodeTypes as operationNodeTypes } from '@/renderer/flowchart/components/operation-config-nodes';
 import { nodeTypes as driveNodeTypes } from '@/renderer/flowchart/components/drive-config-nodes';
 
@@ -62,8 +68,14 @@ function DnDFlow() {
     configId: string;
   }>();
 
-  const { fitView, getEdge, updateEdge, addEdges, screenToFlowPosition } =
-    useReactFlow();
+  const {
+    fitView,
+    getEdge,
+    updateEdge,
+    addEdges,
+    screenToFlowPosition,
+    toObject,
+  } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>();
   const [type] = useDnD();
@@ -185,6 +197,54 @@ function DnDFlow() {
     fitView({ padding: 0.2 });
   }, [nodes, edges, setNodes, setEdges]);
 
+  const saveFlowData = async () => {
+    const flow = toObject();
+
+    try {
+      const projects = await ProjectsDB.getAllProjects();
+
+      const parsedProjectId = Number(projectId);
+      const parsedUnitId = Number(unitId);
+      const parsedConfigId = Number(configId);
+      const parsedConfigType = configType as
+        | 'driveConfigs'
+        | 'operationConfigs';
+
+      console.log('Debug: identifier:', {
+        projectId: parsedProjectId,
+        unitId: parsedUnitId,
+        configType: parsedConfigType,
+        configId: parsedConfigId,
+      });
+
+      const project = projects.find((p) => p.id === parsedProjectId);
+      if (!project) throw new Error('Project not found');
+
+      const unit = project.units.find((u) => u.id === parsedUnitId);
+      if (!unit) throw new Error('Unit not found');
+
+      const configList = unit[parsedConfigType];
+      console.log('Debug: unit[configType]:', configList);
+      if (!configList || configList.length === 0) {
+        throw new Error(
+          `No configurations found for type: ${parsedConfigType}`,
+        );
+      }
+      const config = configList.find((c) => c.id === parsedConfigId);
+      if (!config) throw new Error('Configuration not found');
+
+      config.flow_data = {
+        nodes: flow.nodes as unknown as FlowData['nodes'],
+        edges: flow.edges,
+        viewport: flow.viewport,
+      };
+      await ProjectsDB.updateProject({ projectId: parsedProjectId }, project);
+      console.log('Flow data saved successfully');
+    } catch (error) {
+      console.error('Error saving flow data:', error);
+    }
+  };
+
   const onDragOver = useCallback((event: React.DragEvent) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
@@ -299,22 +359,24 @@ function DnDFlow() {
               style={{
                 padding: '5px 10px',
                 fontSize: '12px',
+                marginRight: '5px',
               }}
             >
               Align Vertically
+            </button>
+            <button
+              onClick={saveFlowData}
+              style={{
+                padding: '5px 10px',
+                fontSize: '12px',
+              }}
+            >
+              Save
             </button>
           </Panel>
           <Background />
         </ReactFlow>
       </div>
-      <FlowchartSidebar
-        configIdentifier={{
-          projectId: Number(projectId),
-          unitId: Number(unitId),
-          configType: configType as 'driveConfigs' | 'operationConfigs',
-          configId: Number(configId),
-        }}
-      />
     </div>
   );
 }
@@ -330,9 +392,7 @@ export default function Flowchart({
 }) {
   return (
     <ReactFlowProvider>
-      <DnDProvider>
-        <DnDFlow />
-      </DnDProvider>
+      <DnDFlow />
     </ReactFlowProvider>
   );
 }

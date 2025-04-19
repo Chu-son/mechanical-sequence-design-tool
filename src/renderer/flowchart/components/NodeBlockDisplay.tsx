@@ -1,6 +1,5 @@
 import React from 'react';
 import { NodeBlock } from '../types/nodeBlocks';
-import { useReactFlow } from '@xyflow/react';
 import { useDnD } from '../utils/DnDContext';
 
 interface NodeBlockDisplayProps {
@@ -13,7 +12,6 @@ interface NodeBlockDisplayProps {
  */
 export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
   const [, setType] = useDnD();
-  const { addNodes } = useReactFlow();
 
   const onDragStart = (event: React.DragEvent, nodeType: string) => {
     event.dataTransfer.setData('application/reactflow', nodeType);

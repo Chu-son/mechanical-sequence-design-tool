@@ -2,6 +2,7 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Sidebar from '@/renderer/components/Sidebar';
 import { GlobalFlagProvider } from '@/renderer/context/GlobalFlagContext';
+import { DnDProvider } from '@/renderer/flowchart/utils/DnDContext';
 import TitleBar from '@/renderer/components/TitleBar';
 import Projects from '@/renderer/pages/Projects';
 import Devices from '@/renderer/pages/Devices';
@@ -75,12 +76,14 @@ const AppContent = () => {
 export default function App() {
   return (
     <GlobalFlagProvider>
-      <Router>
-        <header>
-          <TitleBar />
-        </header>
-        <AppContent />
-      </Router>
+      <DnDProvider>
+        <Router>
+          <header>
+            <TitleBar />
+          </header>
+          <AppContent />
+        </Router>
+      </DnDProvider>
     </GlobalFlagProvider>
   );
 }

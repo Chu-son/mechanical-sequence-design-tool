@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 
-export type SidebarItemType = 'project' | 'drive' | 'operation' | 'subunit';
+export type SidebarItemType = 'project' | 'flowchart-nodes';
 
 export interface SidebarItem {
   id: string;
