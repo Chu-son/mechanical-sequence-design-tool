@@ -4,7 +4,6 @@ import { useDnD } from '@/renderer/flowchart/utils/DnDContext';
 const DriveConfigSidebar: React.FC = () => {
   const dndContext = useDnD();
   if (!dndContext) {
-    console.error('DnDContext is not initialized');
     return null;
   }
   const [, setType] = dndContext || [null, () => {}];

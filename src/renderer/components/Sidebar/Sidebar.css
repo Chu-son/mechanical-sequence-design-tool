@@ -1,3 +1,4 @@
+/* ベーススタイル */
 .Sidebar {
   position: fixed;
   left: 0;
@@ -72,6 +73,33 @@
   color: #ffcc00;
 }
 
+/* サイドバーパネルのピン留めボタン */
+.sidebar-panel .pin-button {
+  position: static;
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.sidebar-panel .pin-button:hover {
+  background: #444;
+  transform: none;
+}
+
+.sidebar-panel .pin-button.pinned {
+  color: #0088cc;
+}
+
 /* ピン留めされている場合の表示 */
 .Sidebar.pinned {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
@@ -95,9 +123,27 @@
   margin: 0;
 }
 
+/* リスト項目のマーカー（点）をデフォルトで非表示に */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
 .tree-item {
   margin: 8px 0;
   position: relative;
+}
+
+/* インデントラインのスタイル */
+.indent-line {
+  position: absolute;
+  left: -10px;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background-color: #555;
+  height: 100%;
 }
 
 /* インデントラインのスタイル */
@@ -117,30 +163,55 @@
   padding: 4px 0;
 }
 
+/* 三角ボタンのスタイルを強化 - クリック領域を拡大 */
 .toggle-button {
-  background: none;
+  min-width: 30px; /* 幅を拡大 */
+  min-height: 30px; /* 高さを拡大 */
+  padding: 8px; /* パディングを追加 */
+  margin: 0;
+  background: transparent;
   border: none;
-  color: white;
-  padding: 0;
-  margin-right: 5px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+  color: white;
+  z-index: 10; /* 確実にクリックイベントを受け取るため値を大きく */
 }
 
+.toggle-button:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+/* トグルボタンプレースホルダーもサイズ合わせ */
+.toggle-button-placeholder {
+  min-width: 30px;
+  min-height: 30px;
+  margin: 0;
+  display: inline-block;
+}
+
+/* カテゴリのトグルボタン - サイズ調整 */
+.category-header .toggle-button {
+  margin-right: 6px;
+  min-width: 24px;
+  min-height: 24px;
+  padding: 4px;
+}
+
+/* 三角アイコンの表示改善 */
 .expand-icon {
-  font-size: 0.7rem;
+  font-size: 10px;
   display: inline-block;
   width: 14px;
   height: 14px;
-  text-align: center;
   line-height: 14px;
+  text-align: center;
 }
 
-/* 親ユニットリンクのスタイル */
+/* リンクスタイル */
 .unit-link {
   color: white;
   text-decoration: none;
@@ -152,8 +223,17 @@
   text-decoration: underline;
 }
 
+/* 親ユニットは太字で表示 */
+.parent-unit-link {
+  font-weight: 600;
+  color: white;
+  text-decoration: none;
+  flex-grow: 1;
+  padding: 2px 0;
+}
+
 /* サブユニットのリンクスタイル */
-.tree-item .unit-link {
+.subunit-link {
   color: #ddd;
   text-decoration: none;
   display: block;
@@ -162,18 +242,18 @@
   font-size: 0.9rem;
 }
 
-.tree-item .unit-link:hover {
+.subunit-link:hover {
   background-color: #444;
 }
 
 /* サブユニットのマーカー（オレンジ色の丸） */
-.tree-item .unit-link::before {
+.subunit-link::before {
   content: '';
   display: inline-block;
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  margin-right: 6px;
+  margin-right: 8px;
   background-color: var(--subunit-color);
   vertical-align: middle;
 }
@@ -207,9 +287,15 @@ li.category-item[data-type='subunit'] {
   display: flex;
   align-items: center;
   cursor: pointer;
-  padding: 2px 0;
+  padding: 6px 4px;
   font-size: 0.95rem;
   font-weight: 500;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+.category-header:hover {
+  background-color: rgba(255, 255, 255, 0.1);
 }
 
 /* カテゴリのテキスト色もデータ属性から取得 */
@@ -349,6 +435,11 @@ li.config-item[data-type='operation'] a::before {
   box-shadow: 0 0 0 2px #0088cc;
 }
 
+/* ドラッグ中のスタイル */
+.sidebar-icon.dragging {
+  opacity: 0.5;
+}
+
 /* アイコンタイプ別の色 */
 .sidebar-icon[data-type='project'] span {
   color: #ffcc00;
@@ -395,6 +486,11 @@ li.config-item[data-type='operation'] a::before {
   border-left: 2px solid #0088cc;
 }
 
+/* ドロップゾーン効果 */
+.sidebar-panel.dropzone {
+  background: #3a3a3a;
+}
+
 /* サイドバーヘッダー */
 .sidebar-panel-header {
   display: flex;
@@ -438,46 +534,11 @@ li.config-item[data-type='operation'] a::before {
   color: white;
 }
 
-/* ピン留めボタンのスタイル */
-.pin-button {
-  background: none;
-  border: none;
-  color: #999;
-  font-size: 16px;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  transition: all 0.2s;
-}
-
-.pin-button:hover {
-  background: #444;
-}
-
-.pin-button.pinned {
-  color: #0088cc;
-}
-
 /* サイドバーコンテンツエリア */
 .sidebar-panel-content {
   flex: 1;
   overflow-y: auto;
   padding: 10px;
-}
-
-/* ドラッグ中のスタイル */
-.sidebar-icon.dragging {
-  opacity: 0.5;
-}
-
-/* ドロップゾーン効果 */
-.sidebar-panel.dropzone {
-  background: #3a3a3a;
 }
 
 /* プロジェクトコンテナのスタイル */
