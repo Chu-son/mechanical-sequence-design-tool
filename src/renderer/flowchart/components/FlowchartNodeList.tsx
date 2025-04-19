@@ -51,12 +51,7 @@ function FlowchartNodeList({
       });
     } else {
       // パスからの取得に失敗した場合はデフォルト値を設定
-      setConfigIdentifier({
-        projectId: 0,
-        unitId: 0,
-        configType: 'operationConfigs',
-        configId: 0,
-      });
+      setConfigIdentifier(null);
     }
   }, [location.pathname, propConfigIdentifier]);
 
