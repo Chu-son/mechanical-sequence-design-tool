@@ -31,16 +31,38 @@ body {
   margin-bottom: 10px;
 }
 
-.dndflow .dndnode {
-  height: 20px;
-  padding: 4px;
-  border: 1px solid #1a192b;
-  border-radius: 2px;
-  margin-bottom: 10px;
+/* ノードブロック全体のスタイル - 追加 */
+.node-block {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.node-block h4 {
+  margin: 8px 0;
+}
+
+/* ノードブロックのスタイルを更新 */
+.dndnode {
+  padding: 8px 12px;
+  border: 1px solid #31ee19;
+  border-radius: 8px; /* 角丸の設定 */
+  margin-bottom: 8px;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: grab;
+  min-height: 35px; /* 最小高さを設定 */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: fit-content; /* 内容に合わせて幅を調整 */
+  max-width: 200px; /* 最大幅を設定 */
+  overflow: hidden; /* はみ出したテキストを隠す */
+  text-overflow: ellipsis; /* はみ出した場合は省略記号を表示 */
+  white-space: normal; /* テキストを複数行に折り返す */
+  word-break: break-word; /* 長い単語を折り返す */
+  font-size: 12px;
+  transition: all 0.2s ease;
 }
 
 .dndflow .dndnode.input {
@@ -58,6 +80,14 @@ body {
 
 .dndflow .selectall {
   margin-top: 10px;
+}
+
+/* ノードコンテナのスタイル */
+.dndnodes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%; /* コンテナの幅を設定 */
 }
 
 @media screen and (min-width: 768px) {

@@ -24,7 +24,7 @@ export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
   return (
     <div>
       {blocks.map((block, blockIndex) => (
-        <div key={`block-${blockIndex}`}>
+        <div key={`block-${blockIndex}`} className="node-block">
           <h4>{block.title}</h4>
           <div className="dndnodes">
             {block.nodes.map((node, nodeIndex) => (
