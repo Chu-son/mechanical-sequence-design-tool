@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
 import useSidebarDragDrop from '@/renderer/hooks/useSidebarDragDrop';
 import './Sidebar.css';
@@ -88,15 +89,21 @@ export default function Sidebar() {
       {/* サイドバーアイコン領域 */}
       <div className="sidebar-icons">
         <div className="icons-container">
-          {sidebarItems.map((item) => (
-            <SidebarIcon
-              key={item.id}
-              item={item}
-              isActive={activeItem === item.id}
-              onClick={handleIconClick}
-              onDragStart={handleDragStart}
-            />
-          ))}
+          {sidebarItems.map((item) => {
+            // 各アイコンの有効/無効状態を判定関数から取得
+            const isEnabled = item.isEnabled ? item.isEnabled() : true;
+
+            return (
+              <SidebarIcon
+                key={item.id}
+                item={item}
+                isActive={activeItem === item.id}
+                disabled={!isEnabled}
+                onClick={handleIconClick}
+                onDragStart={handleDragStart}
+              />
+            );
+          })}
         </div>
       </div>
 

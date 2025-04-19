@@ -435,6 +435,18 @@ li.config-item[data-type='operation'] a::before {
   box-shadow: 0 0 0 2px #0088cc;
 }
 
+/* 無効化されたアイコンのスタイル */
+.sidebar-icon.disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  background: #333;
+}
+
+.sidebar-icon.disabled:hover {
+  transform: none;
+  background: #333;
+}
+
 /* ドラッグ中のスタイル */
 .sidebar-icon.dragging {
   opacity: 0.5;

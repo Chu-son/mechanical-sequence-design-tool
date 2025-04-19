@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { DriveConfig, ConfigIdentifier } from '@/renderer/types/databaseTypes';
 
@@ -9,16 +10,63 @@ import { getOperationConfigBlocks } from './operation-config-nodes/OperationConf
 const ProjectsDB = DatabaseFactory.createDatabase();
 
 interface FlowchartNodeListProps {
-  configIdentifier: ConfigIdentifier;
+  configIdentifier?: ConfigIdentifier;
 }
 
-function FlowchartNodeList({ configIdentifier }: FlowchartNodeListProps) {
+// フローチャートノードリストが有効かどうかを判定するカスタムフック
+export const useFlowchartNodeListEnabled = (): boolean => {
+  const location = useLocation();
+  // フローチャート関連のパスかどうかを判定
+  return location.pathname.includes('/flowchart');
+};
+
+function FlowchartNodeList({
+  configIdentifier: propConfigIdentifier,
+}: FlowchartNodeListProps) {
   const [unitDriveConfigs, setUnitDriveConfigs] = useState<DriveConfig[]>([]);
+  const [configIdentifier, setConfigIdentifier] =
+    useState<ConfigIdentifier | null>(propConfigIdentifier || null);
+  const location = useLocation();
+
+  // URLパスからconfigIdentifierを取得
+  useEffect(() => {
+    // propsからconfigIdentifierが提供されている場合はそれを使用
+    if (propConfigIdentifier) {
+      setConfigIdentifier(propConfigIdentifier);
+      return;
+    }
+
+    // パスからパラメータを抽出 /projects/:projectId/unit/:unitId/flowchart/:configType/:configId
+    const pathRegex =
+      /\/projects\/(\d+)\/unit\/(\d+)\/flowchart\/(driveConfigs|operationConfigs)\/(\d+)/;
+    const match = location.pathname.match(pathRegex);
+
+    if (match) {
+      const [, projectId, unitId, configType, configId] = match;
+      setConfigIdentifier({
+        projectId: parseInt(projectId, 10),
+        unitId: parseInt(unitId, 10),
+        configType: configType as 'driveConfigs' | 'operationConfigs',
+        configId: parseInt(configId, 10),
+      });
+    } else {
+      // パスからの取得に失敗した場合はデフォルト値を設定
+      setConfigIdentifier({
+        projectId: 0,
+        unitId: 0,
+        configType: 'operationConfigs',
+        configId: 0,
+      });
+    }
+  }, [location.pathname, propConfigIdentifier]);
 
   // 現在のユニットからDriveConfigを読み込む
   useEffect(() => {
     const loadDriveConfigs = async () => {
       try {
+        // configIdentifierがnullの場合、または取得できない場合は読み込みをスキップ
+        if (!configIdentifier) return;
+
         // OperationConfig表示時のみDriveConfigを読み込む
         if (configIdentifier.configType !== 'operationConfigs') return;
 
@@ -42,6 +90,15 @@ function FlowchartNodeList({ configIdentifier }: FlowchartNodeListProps) {
 
     loadDriveConfigs();
   }, [configIdentifier]);
+
+  // configIdentifierが無効な場合はプレースホルダーを表示
+  if (!configIdentifier) {
+    return (
+      <div className="flowchart-node-list">
+        フローチャートノードを読み込んでいます...
+      </div>
+    );
+  }
 
   return (
     <div className="flowchart-node-list">

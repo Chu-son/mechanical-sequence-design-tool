@@ -4,6 +4,7 @@ import { SidebarItem } from '@/renderer/components/Sidebar/types';
 interface SidebarIconProps {
   item: SidebarItem;
   isActive: boolean;
+  disabled?: boolean; // アイコンを無効化するためのプロパティ
   onClick: (id: string) => void;
   onDragStart: (e: DragEvent<HTMLDivElement>, item: SidebarItem) => void;
 }
@@ -11,11 +12,13 @@ interface SidebarIconProps {
 const SidebarIcon = ({
   item,
   isActive,
+  disabled = false, // デフォルトは無効化しない
   onClick,
   onDragStart,
 }: SidebarIconProps) => {
   // ドラッグ開始ハンドラー
   const handleDragStart = (e: DragEvent<HTMLDivElement>) => {
+    if (disabled) return; // 無効化されている場合はドラッグ不可
     onDragStart(e, item);
     // ドラッグ中のスタイルを適用
     e.currentTarget.classList.add('dragging');
@@ -26,15 +29,21 @@ const SidebarIcon = ({
     e.currentTarget.classList.remove('dragging');
   };
 
+  // クリックハンドラー
+  const handleClick = () => {
+    if (disabled) return; // 無効化されている場合はクリック不可
+    onClick(item.id);
+  };
+
   return (
     <div
-      className={`sidebar-icon ${isActive ? 'active' : ''}`}
-      onClick={() => onClick(item.id)}
-      draggable
+      className={`sidebar-icon ${isActive ? 'active' : ''} ${disabled ? 'disabled' : ''}`}
+      onClick={handleClick}
+      draggable={!disabled}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
       data-type={item.type}
-      title={item.title}
+      title={disabled ? `${item.title}（無効）` : item.title}
     >
       <span>{item.icon}</span>
     </div>
