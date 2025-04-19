@@ -1,10 +1,10 @@
 import { CSSProperties, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Unit } from '@/renderer/types/databaseTypes';
-import { SidebarItemType } from '../types';
-import CategoryItem from './CategoryItem';
-import ConfigItem from './ConfigItem';
-import ExpandIcon from '../ExpandIcon';
+import { SidebarItemType } from '@/renderer/components/Sidebar/types';
+import CategoryItem from '@/renderer/components/Sidebar/items/CategoryItem';
+import ConfigItem from '@/renderer/components/Sidebar/items/ConfigItem';
+import ExpandIcon from '@/renderer/components/Sidebar/ExpandIcon';
 
 interface UnitItemProps {
   unit: Unit;

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useLocation, Link } from 'react-router-dom';
 import { Project } from '@/renderer/types/databaseTypes';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import UnitItem from './items/UnitItem';
+import UnitItem from '@/renderer/components/Sidebar/items/UnitItem';
 
 interface ProjectContentProps {
   projectId?: number; // 特定のプロジェクトIDを指定する場合（オプショナル）

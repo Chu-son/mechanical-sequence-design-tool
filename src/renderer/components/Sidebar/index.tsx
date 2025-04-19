@@ -1,5 +1,5 @@
-import Sidebar from './Sidebar';
+import Sidebar from '@/renderer/components/Sidebar/Sidebar';
 
 export default Sidebar;
-export * from './types';
-export { default as ProjectContent } from './ProjectContent';
+export * from '@/renderer/components/Sidebar/types';
+export { default as ProjectContent } from '@/renderer/components/Sidebar/ProjectContent';

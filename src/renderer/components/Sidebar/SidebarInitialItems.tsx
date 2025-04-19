@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { SidebarItem } from './types';
-import ProjectContent from './ProjectContent';
+import { SidebarItem } from '@/renderer/components/Sidebar/types';
+import ProjectContent from '@/renderer/components/Sidebar/ProjectContent';
 
 // サイドバーの初期アイテム
 export const getInitialItems = (): SidebarItem[] => {

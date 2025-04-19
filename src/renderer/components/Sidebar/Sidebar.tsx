@@ -2,9 +2,9 @@ import { useState, useEffect, useRef } from 'react';
 import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
 import useSidebarDragDrop from '@/renderer/hooks/useSidebarDragDrop';
 import './Sidebar.css';
-import SidebarIcon from './SidebarIcon';
-import SidebarPanel from './SidebarPanel';
-import { getInitialItems } from './SidebarInitialItems';
+import SidebarIcon from '@/renderer/components/Sidebar/SidebarIcon';
+import SidebarPanel from '@/renderer/components/Sidebar/SidebarPanel';
+import { getInitialItems } from '@/renderer/components/Sidebar/SidebarInitialItems';
 
 export default function Sidebar() {
   const [activeItem, setActiveItem] = useState<string | null>('projects'); // 初期値で'projects'を選択

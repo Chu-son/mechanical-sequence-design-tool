@@ -1,4 +1,4 @@
-import { SidebarItem } from './types';
+import { SidebarItem } from '@/renderer/components/Sidebar/types';
 
 interface SidebarPanelProps {
   activeItem: SidebarItem | null;

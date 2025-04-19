@@ -1,4 +1,4 @@
-import { SidebarItemType } from '../types';
+import { SidebarItemType } from '@/renderer/components/Sidebar/types';
 import { Link } from 'react-router-dom';
 
 interface ConfigItemProps {

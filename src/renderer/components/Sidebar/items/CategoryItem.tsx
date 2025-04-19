@@ -1,6 +1,6 @@
 import { ReactNode, useEffect } from 'react';
-import { SidebarItemType } from '../types';
-import ExpandIcon from '../ExpandIcon';
+import { SidebarItemType } from '@/renderer/components/Sidebar/types';
+import ExpandIcon from '@/renderer/components/Sidebar/ExpandIcon';
 
 interface CategoryItemProps {
   type: SidebarItemType;

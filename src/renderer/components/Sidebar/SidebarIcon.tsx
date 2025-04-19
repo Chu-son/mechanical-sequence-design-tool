@@ -1,5 +1,5 @@
 import { DragEvent } from 'react';
-import { SidebarItem } from './types';
+import { SidebarItem } from '@/renderer/components/Sidebar/types';
 
 interface SidebarIconProps {
   item: SidebarItem;
