@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link } from 'react-router-dom';
 import { Project } from '@/renderer/types/databaseTypes';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import UnitItem from './items/UnitItem';
@@ -10,6 +10,7 @@ interface ProjectContentProps {
 
 const ProjectContent = ({ projectId }: ProjectContentProps) => {
   const [project, setProject] = useState<Project | null>(null);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>(
     {},
   );
@@ -19,66 +20,77 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
   const location = useLocation();
   const projectsDB = DatabaseFactory.createDatabase();
 
-  // プロジェクトデータの取得
+  // 現在のページがプロジェクト一覧ページかどうか判定
+  const isProjectsPage =
+    location.pathname === '/' || location.pathname === '/projects';
+
+  // すべてのプロジェクトの取得
   useEffect(() => {
-    const fetchProject = async () => {
+    const fetchAllProjects = async () => {
       try {
         setIsLoading(true);
-        // すべてのプロジェクトを取得
-        const projects = await projectsDB.getAllProjects();
-        console.log('ProjectContent: すべてのプロジェクト', projects);
+        const allProjects = await projectsDB.getAllProjects();
+        setProjects(allProjects);
 
-        if (projects && projects.length > 0) {
-          // URLからプロジェクトIDを取得するか、指定されたIDを使用
-          let targetProjectId = projectId;
-
-          if (!targetProjectId) {
-            const currentPath = location.pathname;
-            const matches = currentPath.match(/\/projects\/(\d+)/);
-            targetProjectId = matches
-              ? parseInt(matches[1], 10)
-              : projects[0].id;
-          }
-
-          // 現在のプロジェクトをフィルタリング
-          const currentProject =
-            projects.find((p) => p.id === targetProjectId) || projects[0];
-
-          console.log('ProjectContent: 現在のプロジェクト', currentProject);
-          console.log('ProjectContent: ユニット一覧', currentProject.units);
-          // 各ユニットの駆動軸構成と動作シーケンスをログに出力
-          currentProject.units.forEach((unit) => {
-            console.log(
-              `ProjectContent: ユニット "${unit.name}" (ID: ${unit.id})`,
-            );
-            console.log('- driveConfigs:', unit.driveConfigs);
-            console.log('- operationConfigs:', unit.operationConfigs);
-          });
-
-          setProject(currentProject);
-
-          // 展開状態の初期化
-          const expanded: Record<string, boolean> = {};
-          currentProject.units.forEach((unit) => {
-            expanded[`unit-${unit.id}`] = true; // デフォルトですべて展開
-            expanded[`drive-${unit.id}`] = true;
-            expanded[`operation-${unit.id}`] = true;
-            expanded[`subunits-${unit.id}`] = true;
-          });
-          setExpandedItems(expanded);
+        // プロジェクト詳細ページの場合は特定のプロジェクトを取得
+        if (!isProjectsPage) {
+          fetchSpecificProject(allProjects);
         } else {
-          setError('プロジェクトが見つかりませんでした');
+          setIsLoading(false);
         }
       } catch (error) {
         console.error('プロジェクト読み込みエラー:', error);
         setError('プロジェクトの読み込みに失敗しました');
-      } finally {
         setIsLoading(false);
       }
     };
 
-    fetchProject();
-  }, [projectId, location.pathname]);
+    fetchAllProjects();
+  }, [isProjectsPage]);
+
+  // 特定のプロジェクトデータの取得
+  const fetchSpecificProject = async (availableProjects: Project[]) => {
+    try {
+      // URLからプロジェクトIDを取得するか、指定されたIDを使用
+      let targetProjectId = projectId;
+
+      if (!targetProjectId) {
+        const currentPath = location.pathname;
+        const matches = currentPath.match(/\/projects\/(\d+)/);
+        targetProjectId = matches
+          ? parseInt(matches[1], 10)
+          : availableProjects.length > 0
+            ? availableProjects[0].id
+            : null;
+      }
+
+      if (targetProjectId && availableProjects.length > 0) {
+        // 現在のプロジェクトをフィルタリング
+        const currentProject =
+          availableProjects.find((p) => p.id === targetProjectId) ||
+          availableProjects[0];
+
+        setProject(currentProject);
+
+        // 展開状態の初期化
+        const expanded: Record<string, boolean> = {};
+        currentProject.units.forEach((unit) => {
+          expanded[`unit-${unit.id}`] = true; // デフォルトですべて展開
+          expanded[`drive-${unit.id}`] = true;
+          expanded[`operation-${unit.id}`] = true;
+          expanded[`subunits-${unit.id}`] = true;
+        });
+        setExpandedItems(expanded);
+      } else {
+        setError('プロジェクトが見つかりませんでした');
+      }
+    } catch (error) {
+      console.error('プロジェクト読み込みエラー:', error);
+      setError('プロジェクトの読み込みに失敗しました');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   // 展開/折りたたみの切り替え処理
   const toggleExpand = (key: string) => {
@@ -104,6 +116,29 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
     );
   }
 
+  // プロジェクト一覧ページの場合、プロジェクト選択を促す
+  if (isProjectsPage) {
+    return (
+      <div className="sidebar-project-content">
+        <h3>プロジェクト/ユニット</h3>
+        <div className="project-selection-message">
+          <p>プロジェクトを選択するとユニット一覧が表示されます</p>
+          {projects.length > 0 ? (
+            <ul className="sidebar-project-list">
+              {projects.map((p) => (
+                <li key={p.id}>
+                  <Link to={`/projects/${p.id}`}>{p.name}</Link>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p>プロジェクトがありません</p>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   if (!project) {
     return (
       <div className="sidebar-project-content">
@@ -112,6 +147,7 @@ const ProjectContent = ({ projectId }: ProjectContentProps) => {
     );
   }
 
+  // プロジェクト詳細ページ以降の場合、ユニット一覧を表示
   // プロジェクトのルートユニットを取得
   const rootUnits = project.units.filter((unit) => !unit.parentId);
 
