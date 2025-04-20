@@ -1,5 +1,6 @@
 {
   "name": "mechanical-sequence-design-tool",
+  "version": "1.0.0",
   "description": "A tool for designing mechanical sequences and optimizing tact time",
   "keywords": [
     "electron",
