@@ -8,7 +8,7 @@ import SidebarPanel from '@/renderer/components/Sidebar/SidebarPanel';
 import { getInitialItems } from '@/renderer/components/Sidebar/SidebarInitialItems';
 
 export default function Sidebar() {
-  const [activeItem, setActiveItem] = useState<string | null>('projects'); // 初期値で'projects'を選択
+  const [activeItem, setActiveItem] = useState<string | null>(null); // 初期値で'projects'を選択
   const [isPinned, setIsPinned] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { isSidebarVisible } = useGlobalFlag();
