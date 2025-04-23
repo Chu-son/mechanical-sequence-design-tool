@@ -24,3 +24,22 @@
 .node-divider {
   margin: 10px 0; /* ノードの上下に余白を指定 */
 }
+
+/* ノードツールバーの共通スタイル */
+.node-toolbar button {
+  padding: 5px 10px;
+  font-size: 12px;
+  margin-right: 2px;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+.node-toolbar button:hover {
+  background-color: #f0f0f0;
+}
+
+.node-toolbar button:last-child {
+  margin-right: 0;
+}

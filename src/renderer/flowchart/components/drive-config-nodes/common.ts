@@ -1,24 +1,16 @@
 import { Node } from '@xyflow/react';
 
-/**
- * 共通ユーティリティ関数と型定義を格納するファイル
- */
-
-/**
- * 数値を丸める際の桁数
- */
-export const ROUND_DIGITS = 5;
-
-/**
- * 数値を指定の桁数で丸める
- */
-export function roundToDigits(
-  value: number,
-  digits: number = ROUND_DIGITS,
-): number {
-  const factor = 10 ** digits;
-  return Math.round(value * factor) / factor;
-}
+// 共通化した関数・型は flowchart/common/common.ts からimport
+// 使用しないものはimportしない
+import type {
+  ROUND_DIGITS,
+  roundToDigits,
+  VelocityProfilePoint,
+  VelocityProfileResult,
+  calculateVelocityProfile,
+  calculateDuration,
+  validateNumericInput,
+} from '@/renderer/flowchart/common/common';
 
 /**
  * ドライブノードのデータ型の基本インターフェース

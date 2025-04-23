@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
   Handle,
   Position,
@@ -9,15 +9,15 @@ import {
 } from '@xyflow/react';
 import {
   roundToDigits,
-  RotToRotComponentNodeData,
-  ROUND_DIGITS,
-} from './common';
+  validateNumericInput,
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { SimpleRotToRotConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
 import '@/renderer/flowchart/styles/common.css';
 
 function SimpleRotToRotConverterNode({
   id,
   data,
-}: NodeProps<{ data: RotToRotComponentNodeData }>) {
+}: NodeProps<{ data: SimpleRotToRotConverterNodeData }>) {
   const { updateNodeData } = useReactFlow();
 
   // 入力ノードとの接続情報を取得

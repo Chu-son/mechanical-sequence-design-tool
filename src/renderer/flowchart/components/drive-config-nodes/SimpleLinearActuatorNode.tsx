@@ -1,19 +1,11 @@
-import React, { memo, useEffect, useState, useCallback } from 'react';
-import {
-  Handle,
-  Position,
-  useReactFlow,
-  useNodeConnections,
-  useNodesData,
-  type NodeProps,
-} from '@xyflow/react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
+import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import {
   roundToDigits,
-  TaskNodeData,
-} from '@/renderer/flowchart/components/operation-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css'; // flowchart共通スタイルを適用
-
-import { ROUND_DIGITS } from '@/renderer/flowchart/components/operation-config-nodes/common';
+  validateNumericInput,
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { SimpleLinearActuatorNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
+import '@/renderer/flowchart/styles/common.css';
 
 function SimpleLinearActuatorNode({
   id,

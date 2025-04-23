@@ -7,7 +7,11 @@ import {
   useNodesData,
   type NodeProps,
 } from '@xyflow/react';
-import { roundToDigits, OutputNodeData, ROUND_DIGITS } from './common';
+import {
+  roundToDigits,
+  ROUND_DIGITS,
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { OutputNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
 import '@/renderer/flowchart/styles/common.css';
 
 function OutputNode({ id, data }: NodeProps<{ data: OutputNodeData }>) {

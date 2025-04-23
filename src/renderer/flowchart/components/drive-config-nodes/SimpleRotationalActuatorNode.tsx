@@ -1,10 +1,10 @@
-import React, { memo, useState, useCallback } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import {
   roundToDigits,
-  RotationalActuatorNodeData,
-  ROUND_DIGITS,
-} from './common';
+  validateNumericInput,
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { SimpleRotationalActuatorNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
 import '@/renderer/flowchart/styles/common.css';
 
 function SimpleRotationalActuatorNode({

@@ -26,6 +26,15 @@ const conceptBlock: NodeBlock = {
 };
 
 /**
+ * Visualization ブロック定義
+ * グラフやデータ可視化用のノードを含む
+ */
+const visualizationBlock: NodeBlock = {
+  title: 'Visualization',
+  nodes: [{ type: 'velocityFigure', label: 'Velocity Figure' }],
+};
+
+/**
  * DriveComponentsブロックを作成する関数
  * @param driveConfigs DriveConfigの配列（データベースから取得）
  * @returns DriveComponentsブロック
@@ -51,7 +60,7 @@ const createDriveComponentsBlock = (
 export const getOperationConfigBlocks = (
   driveConfigs: DriveConfig[] = [],
 ): ConfigBlocks => {
-  const blocks = [commonBlock, conceptBlock];
+  const blocks = [commonBlock, conceptBlock, visualizationBlock];
 
   if (driveConfigs.length > 0) {
     blocks.push(createDriveComponentsBlock(driveConfigs));

@@ -1,19 +1,19 @@
-import React, { memo, useEffect, useState } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import {
-  Position,
   Handle,
+  Position,
   useReactFlow,
-  type NodeProps,
   useNodeConnections,
   useNodesData,
+  type NodeProps,
 } from '@xyflow/react';
 import {
   roundToDigits,
-  TaskNodeData,
-} from '@/renderer/flowchart/components/operation-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css'; // flowchart共通スタイルを適用
-
-import { ROUND_DIGITS } from '@/renderer/flowchart/components/operation-config-nodes/common';
+  validateNumericInput,
+  ROUND_DIGITS,
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { TaskNodeData } from '@/renderer/flowchart/components/operation-config-nodes/common';
+import '@/renderer/flowchart/styles/common.css';
 
 function SimpleTaskNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   const { updateNodeData } = useReactFlow();
@@ -48,16 +48,12 @@ function SimpleTaskNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   }, [id, taskNode, updateNodeData, nodesData]);
 
   const handleBlur = (event: React.FocusEvent<HTMLInputElement>): void => {
-    let value = parseFloat(event.target.value || '0');
-    if (Number.isNaN(value)) {
-      value = 0;
-      value = roundToDigits(value, ROUND_DIGITS);
-    }
-    if (!Number.isNaN(value)) {
-      setTaskNode({ ...taskNode, duration: value });
-      updateNodeData(id, { ...taskNode, duration: value });
-      setInputValue(value.toFixed(ROUND_DIGITS));
-    }
+    // 共通のバリデーション関数を使用
+    const validatedValue = validateNumericInput(event.target.value);
+
+    setTaskNode({ ...taskNode, duration: validatedValue });
+    updateNodeData(id, { ...taskNode, duration: validatedValue });
+    setInputValue(validatedValue.toString());
   };
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>): void => {

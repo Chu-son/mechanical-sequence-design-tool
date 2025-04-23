@@ -2,26 +2,25 @@
  * 共通ユーティリティ関数と型定義を格納するファイル
  */
 
-/**
- * 数値を丸める際の桁数
- */
-export const ROUND_DIGITS = 2;
+// 共通化した関数・型は flowchart/common/common.ts からimport
+// 使用しないものはimportしない
+import type {
+  ROUND_DIGITS,
+  roundToDigits,
+  VelocityProfilePoint,
+  VelocityProfileResult,
+  calculateVelocityProfile,
+  calculateDuration,
+  validateNumericInput,
+} from '@/renderer/flowchart/common/common';
 
-/**
- * 指定された桁数に数値を丸める関数
- * @param value - 丸める対象の数値
- * @param digits - 桁数
- * @returns 丸められた数値
- */
-export function roundToDigits(value: number, digits: number): number {
-  return parseFloat(value.toFixed(digits));
-}
-
-/**
- * タスクノードのデータ型
- */
+// タスクノード固有の型のみ残す
 export type TaskNodeData = {
-  description: string;
-  duration: number;
-  totalDuration: number;
+  description?: string;
+  duration?: number;
+  totalDuration?: number;
+  position?: number;
+  velocity?: number;
+  acceleration?: number;
+  deceleration?: number;
 };

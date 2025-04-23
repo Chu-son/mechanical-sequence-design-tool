@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
   Handle,
   Position,
@@ -9,15 +9,16 @@ import {
 } from '@xyflow/react';
 import {
   roundToDigits,
-  LinToLinComponentNodeData,
+  validateNumericInput,
   ROUND_DIGITS,
-} from './common';
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { SimpleLinToLinConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
 import '@/renderer/flowchart/styles/common.css';
 
 function SimpleLinToLinConverterNode({
   id,
   data,
-}: NodeProps<{ data: LinToLinComponentNodeData }>) {
+}: NodeProps<{ data: SimpleLinToLinConverterNodeData }>) {
   const { updateNodeData } = useReactFlow();
 
   // 入力ノードとの接続情報を取得

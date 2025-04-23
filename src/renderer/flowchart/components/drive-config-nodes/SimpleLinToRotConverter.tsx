@@ -1,4 +1,4 @@
-import React, { memo, useState, useCallback, useEffect } from 'react';
+import React, { memo, useCallback, useEffect, useState } from 'react';
 import {
   Handle,
   Position,
@@ -9,9 +9,10 @@ import {
 } from '@xyflow/react';
 import {
   roundToDigits,
-  LinToRotComponentNodeData,
+  validateNumericInput,
   ROUND_DIGITS,
-} from './common';
+} from '@/renderer/flowchart/common/flowchartUtils';
+import { SimpleLinToRotConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
 import '@/renderer/flowchart/styles/common.css';
 
 function SimpleLinToRotConverterNode({
