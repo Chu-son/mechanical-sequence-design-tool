@@ -1,9 +1,12 @@
 /* flowchart共通スタイル */
 
 .node {
-  line-height: 2; /* 行間を広くする */
-  text-align: left; /* テキストを左寄せにする */
-  padding: 10px; /* ノード内の余白を指定 */
+  line-height: 2;
+  text-align: left;
+  padding: 10px;
+  width: 320px;
+  min-width: 220px;
+  max-width: 400px;
 }
 
 .node .node-title {
