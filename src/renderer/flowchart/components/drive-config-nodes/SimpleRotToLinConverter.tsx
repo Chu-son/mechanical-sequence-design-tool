@@ -107,56 +107,45 @@ function SimpleRotToLinConverterNode({
       <div className="node-title">Simple R→L Converter</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
-            Lead/Pitch [mm/rev]
-            <br />
-            <input
-              type="number"
-              value={conversionRatio}
-              step="0.1"
-              min="0.1"
-              onChange={(e) =>
-                setConversionRatio(parseFloat(e.target.value) || 5)
-              }
-            />
-          </label>
-
-          <label>
-            Max Force [N]
-            <br />
-            <input
-              type="number"
-              value={maxForce}
-              step="10"
-              min="0"
-              onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Max Speed [mm/s]
-            <br />
-            <input
-              type="number"
-              value={maxSpeed}
-              step="1"
-              min="0"
-              onChange={(e) => setMaxSpeed(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Efficiency
-            <br />
-            <input
-              type="number"
-              value={efficiency}
-              step="0.01"
-              min="0"
-              max="1"
-              onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-            />
-          </label>
+          <label htmlFor={`conversionRatio-${id}`}>Lead/Pitch [mm/rev]</label>
+          <input
+            id={`conversionRatio-${id}`}
+            type="number"
+            value={conversionRatio}
+            step="0.1"
+            min="0.1"
+            onChange={(e) =>
+              setConversionRatio(parseFloat(e.target.value) || 5)
+            }
+          />
+          <label htmlFor={`maxForce-${id}`}>Max Force [N]</label>
+          <input
+            id={`maxForce-${id}`}
+            type="number"
+            value={maxForce}
+            step="10"
+            min="0"
+            onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`maxSpeed-${id}`}>Max Speed [mm/s]</label>
+          <input
+            id={`maxSpeed-${id}`}
+            type="number"
+            value={maxSpeed}
+            step="1"
+            min="0"
+            onChange={(e) => setMaxSpeed(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
+          <input
+            id={`efficiency-${id}`}
+            type="number"
+            value={efficiency}
+            step="0.01"
+            min="0"
+            max="1"
+            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">

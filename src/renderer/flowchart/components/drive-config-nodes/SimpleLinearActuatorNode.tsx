@@ -63,42 +63,34 @@ function SimpleLinearActuatorNode({
       <div className="node-title">Simple Linear Actuator</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
-            Displacement [mm]
-            <br />
-            <input
-              type="number"
-              value={position}
-              onChange={(e) => setPosition(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-          <label>
-            Velocity [mm/s]
-            <br />
-            <input
-              type="number"
-              value={velocity}
-              onChange={(e) => setVelocity(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-          <label>
-            Acceleration [mm/s²]
-            <br />
-            <input
-              type="number"
-              value={acceleration}
-              onChange={(e) => setAcceleration(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-          <label>
-            Deceleration [mm/s²]
-            <br />
-            <input
-              type="number"
-              value={deceleration}
-              onChange={(e) => setDeceleration(parseFloat(e.target.value) || 0)}
-            />
-          </label>
+          <label htmlFor={`position-${id}`}>Displacement [mm]</label>
+          <input
+            id={`position-${id}`}
+            type="number"
+            value={position}
+            onChange={(e) => setPosition(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`velocity-${id}`}>Velocity [mm/s]</label>
+          <input
+            id={`velocity-${id}`}
+            type="number"
+            value={velocity}
+            onChange={(e) => setVelocity(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`acceleration-${id}`}>Acceleration [mm/s²]</label>
+          <input
+            id={`acceleration-${id}`}
+            type="number"
+            value={acceleration}
+            onChange={(e) => setAcceleration(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`deceleration-${id}`}>Deceleration [mm/s²]</label>
+          <input
+            id={`deceleration-${id}`}
+            type="number"
+            value={deceleration}
+            onChange={(e) => setDeceleration(parseFloat(e.target.value) || 0)}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">

@@ -76,74 +76,57 @@ function SimpleRotationalActuatorNode({
       <div className="node-title">Simple Rotational Actuator</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
-            Rated Torque [N・m]
-            <br />
-            <input
-              type="number"
-              value={ratedTorque}
-              step="0.1"
-              onChange={(e) => setRatedTorque(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Rated Speed [rpm]
-            <br />
-            <input
-              type="number"
-              value={ratedSpeed}
-              step="10"
-              onChange={(e) => setRatedSpeed(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Max Speed [rpm]
-            <br />
-            <input
-              type="number"
-              value={maxSpeed}
-              step="10"
-              onChange={(e) => setMaxSpeed(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Rotor Inertia [kg・m²]
-            <br />
-            <input
-              type="number"
-              value={rotorInertia}
-              step="0.0001"
-              onChange={(e) => setRotorInertia(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Direction
-            <br />
-            <select
-              value={direction}
-              onChange={(e) => setDirection(parseInt(e.target.value) as 1 | -1)}
-            >
-              <option value={1}>Forward</option>
-              <option value={-1}>Reverse</option>
-            </select>
-          </label>
-
-          <label>
-            Efficiency
-            <br />
-            <input
-              type="number"
-              value={efficiency}
-              step="0.01"
-              min="0"
-              max="1"
-              onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-            />
-          </label>
+          <label htmlFor={`ratedTorque-${id}`}>Rated Torque [N・m]</label>
+          <input
+            id={`ratedTorque-${id}`}
+            type="number"
+            value={ratedTorque}
+            step="0.1"
+            onChange={(e) => setRatedTorque(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`ratedSpeed-${id}`}>Rated Speed [rpm]</label>
+          <input
+            id={`ratedSpeed-${id}`}
+            type="number"
+            value={ratedSpeed}
+            step="10"
+            onChange={(e) => setRatedSpeed(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`maxSpeed-${id}`}>Max Speed [rpm]</label>
+          <input
+            id={`maxSpeed-${id}`}
+            type="number"
+            value={maxSpeed}
+            step="10"
+            onChange={(e) => setMaxSpeed(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`rotorInertia-${id}`}>Rotor Inertia [kg・m²]</label>
+          <input
+            id={`rotorInertia-${id}`}
+            type="number"
+            value={rotorInertia}
+            step="0.0001"
+            onChange={(e) => setRotorInertia(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`direction-${id}`}>Direction</label>
+          <select
+            id={`direction-${id}`}
+            value={direction}
+            onChange={(e) => setDirection(parseInt(e.target.value) as 1 | -1)}
+          >
+            <option value={1}>Forward</option>
+            <option value={-1}>Reverse</option>
+          </select>
+          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
+          <input
+            id={`efficiency-${id}`}
+            type="number"
+            value={efficiency}
+            step="0.01"
+            min="0"
+            max="1"
+            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">

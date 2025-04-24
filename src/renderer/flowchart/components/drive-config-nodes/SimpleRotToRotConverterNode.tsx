@@ -99,54 +99,43 @@ function SimpleRotToRotConverterNode({
       <div className="node-title">Simple R→R Converter</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
-            Gear Ratio
-            <br />
-            <input
-              type="number"
-              value={gearRatio}
-              step="0.1"
-              min="0.1"
-              onChange={(e) => setGearRatio(parseFloat(e.target.value) || 1)}
-            />
-          </label>
-
-          <label>
-            Inertia [kg・m²]
-            <br />
-            <input
-              type="number"
-              value={inertia}
-              step="0.0001"
-              min="0"
-              onChange={(e) => setInertia(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Max Torque [N・m]
-            <br />
-            <input
-              type="number"
-              value={maxTorque}
-              step="0.1"
-              min="0"
-              onChange={(e) => setMaxTorque(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Efficiency
-            <br />
-            <input
-              type="number"
-              value={efficiency}
-              step="0.01"
-              min="0"
-              max="1"
-              onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-            />
-          </label>
+          <label htmlFor={`gearRatio-${id}`}>Gear Ratio</label>
+          <input
+            id={`gearRatio-${id}`}
+            type="number"
+            value={gearRatio}
+            step="0.1"
+            min="0.1"
+            onChange={(e) => setGearRatio(parseFloat(e.target.value) || 1)}
+          />
+          <label htmlFor={`inertia-${id}`}>Inertia [kg・m²]</label>
+          <input
+            id={`inertia-${id}`}
+            type="number"
+            value={inertia}
+            step="0.0001"
+            min="0"
+            onChange={(e) => setInertia(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`maxTorque-${id}`}>Max Torque [N・m]</label>
+          <input
+            id={`maxTorque-${id}`}
+            type="number"
+            value={maxTorque}
+            step="0.1"
+            min="0"
+            onChange={(e) => setMaxTorque(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
+          <input
+            id={`efficiency-${id}`}
+            type="number"
+            value={efficiency}
+            step="0.01"
+            min="0"
+            max="1"
+            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">

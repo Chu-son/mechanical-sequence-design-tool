@@ -91,43 +91,34 @@ function SimpleLinToLinConverterNode({
       <div className="node-title">Simple L→L Converter</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
-            Conversion Ratio (Out/In)
-            <br />
-            <input
-              type="number"
-              value={ratio}
-              step="0.1"
-              min="0.1"
-              onChange={(e) => setRatio(parseFloat(e.target.value) || 1)}
-            />
-          </label>
-
-          <label>
-            Max Force [N]
-            <br />
-            <input
-              type="number"
-              value={maxForce}
-              step="10"
-              min="0"
-              onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Efficiency
-            <br />
-            <input
-              type="number"
-              value={efficiency}
-              step="0.01"
-              min="0"
-              max="1"
-              onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
+          <label htmlFor={`ratio-${id}`}>Conversion Ratio (Out/In)</label>
+          <input
+            id={`ratio-${id}`}
+            type="number"
+            value={ratio}
+            step="0.1"
+            min="0.1"
+            onChange={(e) => setRatio(parseFloat(e.target.value) || 1)}
+          />
+          <label htmlFor={`maxForce-${id}`}>Max Force [N]</label>
+          <input
+            id={`maxForce-${id}`}
+            type="number"
+            value={maxForce}
+            step="10"
+            min="0"
+            onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
+          <input
+            id={`efficiency-${id}`}
+            type="number"
+            value={efficiency}
+            step="0.01"
+            min="0"
+            max="1"
+            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
+          />
           <div className="node-description">
             <small>
               Ratio &gt; 1: 変位増加・力減少

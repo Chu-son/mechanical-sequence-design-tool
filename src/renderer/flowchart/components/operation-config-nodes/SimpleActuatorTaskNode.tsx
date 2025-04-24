@@ -273,50 +273,38 @@ function SimpleActuatorTaskNode({
       <div className="node-title">Simple Actuator Task</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label htmlFor={`position-${id}`}>
-            Displacement [mm]
-            <br />
-            <input
-              id={`position-${id}`}
-              type="text"
-              value={positionInput}
-              onChange={handlePositionInputChange}
-              onBlur={handlePositionBlur}
-            />
-          </label>
-          <label htmlFor={`velocity-${id}`}>
-            Velocity [mm/s]
-            <br />
-            <input
-              id={`velocity-${id}`}
-              type="text"
-              value={velocityInput}
-              onChange={handleVelocityInputChange}
-              onBlur={handleVelocityBlur}
-            />
-          </label>
-          <label htmlFor={`acceleration-${id}`}>
-            Acceleration [mm/s²]
-            <br />
-            <input
-              id={`acceleration-${id}`}
-              type="text"
-              value={accelerationInput}
-              onChange={handleAccelerationInputChange}
-              onBlur={handleAccelerationBlur}
-            />
-          </label>
-          <label htmlFor={`deceleration-${id}`}>
-            Deceleration [mm/s²]
-            <br />
-            <input
-              id={`deceleration-${id}`}
-              type="text"
-              value={decelerationInput}
-              onChange={handleDecelerationInputChange}
-              onBlur={handleDecelerationBlur}
-            />
-          </label>
+          <label htmlFor={`position-${id}`}>Displacement [mm]</label>
+          <input
+            id={`position-${id}`}
+            type="text"
+            value={positionInput}
+            onChange={handlePositionInputChange}
+            onBlur={handlePositionBlur}
+          />
+          <label htmlFor={`velocity-${id}`}>Velocity [mm/s]</label>
+          <input
+            id={`velocity-${id}`}
+            type="text"
+            value={velocityInput}
+            onChange={handleVelocityInputChange}
+            onBlur={handleVelocityBlur}
+          />
+          <label htmlFor={`acceleration-${id}`}>Acceleration [mm/s²]</label>
+          <input
+            id={`acceleration-${id}`}
+            type="text"
+            value={accelerationInput}
+            onChange={handleAccelerationInputChange}
+            onBlur={handleAccelerationBlur}
+          />
+          <label htmlFor={`deceleration-${id}`}>Deceleration [mm/s²]</label>
+          <input
+            id={`deceleration-${id}`}
+            type="text"
+            value={decelerationInput}
+            onChange={handleDecelerationInputChange}
+            onBlur={handleDecelerationBlur}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">

@@ -100,44 +100,38 @@ function SimpleLinToRotConverterNode({
       <div className="node-title">Simple L→R Converter</div>
       <div className="node-content">
         <div className="node-setting-field">
-          <label>
+          <label htmlFor={`conversionRatio-${id}`}>
             Conversion Ratio [rev/mm]
-            <br />
-            <input
-              type="number"
-              value={conversionRatio}
-              step="0.001"
-              min="0.001"
-              onChange={(e) =>
-                setConversionRatio(parseFloat(e.target.value) || 0.01)
-              }
-            />
           </label>
-
-          <label>
-            Max Torque [N・m]
-            <br />
-            <input
-              type="number"
-              value={maxTorque}
-              step="0.1"
-              min="0"
-              onChange={(e) => setMaxTorque(parseFloat(e.target.value) || 0)}
-            />
-          </label>
-
-          <label>
-            Efficiency
-            <br />
-            <input
-              type="number"
-              value={efficiency}
-              step="0.01"
-              min="0"
-              max="1"
-              onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-            />
-          </label>
+          <input
+            id={`conversionRatio-${id}`}
+            type="number"
+            value={conversionRatio}
+            step="0.001"
+            min="0.001"
+            onChange={(e) =>
+              setConversionRatio(parseFloat(e.target.value) || 0.01)
+            }
+          />
+          <label htmlFor={`maxTorque-${id}`}>Max Torque [N・m]</label>
+          <input
+            id={`maxTorque-${id}`}
+            type="number"
+            value={maxTorque}
+            step="0.1"
+            min="0"
+            onChange={(e) => setMaxTorque(parseFloat(e.target.value) || 0)}
+          />
+          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
+          <input
+            id={`efficiency-${id}`}
+            type="number"
+            value={efficiency}
+            step="0.01"
+            min="0"
+            max="1"
+            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
+          />
         </div>
         <hr className="node-divider" />
         <div className="node-readonly-field">
