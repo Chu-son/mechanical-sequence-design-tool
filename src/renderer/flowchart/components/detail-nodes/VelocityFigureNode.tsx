@@ -113,11 +113,6 @@ function VelocityFigureNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   useEffect(() => {
     if (!sourceNodeId || !sourceNodeData) return;
 
-    console.log(
-      `[VelocityFigureNode] ソースノードデータ変更検知:`,
-      sourceNodeData,
-    );
-
     // SimpleActuatorTaskNodeのパラメータを取得
     const newPosition =
       sourceNodeData.position !== undefined ? sourceNodeData.position : 0;
@@ -139,10 +134,6 @@ function VelocityFigureNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
       newAcceleration !== acceleration ||
       newDeceleration !== deceleration
     ) {
-      console.log(
-        `[VelocityFigureNode] パラメータ変更検知 - position: ${newPosition} (${position}), velocity: ${newVelocity} (${velocity}), acceleration: ${newAcceleration} (${acceleration}), deceleration: ${newDeceleration} (${deceleration})`,
-      );
-
       setPosition(newPosition);
       setVelocity(newVelocity);
       setAcceleration(newAcceleration);
@@ -197,14 +188,6 @@ function VelocityFigureNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
 
   return (
     <div className="node" style={{ width: '300px' }}>
-      <NodeToolbar
-        position={Position.Right}
-        align="start"
-        isVisible={true}
-        className="node-toolbar"
-      >
-        <button>Detail</button>
-      </NodeToolbar>
       <Handle type="target" position={Position.Left} id="target" />
       <div className="node-title">Velocity Figure</div>
       <div className="node-content">
