@@ -14,163 +14,118 @@ import {
 } from '@/renderer/flowchart/common/flowchartUtils';
 import { calculateDuration } from '@/renderer/flowchart/common/mechanicalCalculations';
 import { TaskNodeData } from '@/renderer/flowchart/components/operation-config-nodes/common';
-import { renderNodeSideToolbar } from '@/renderer/flowchart/common/renderNodeSideToolbar';
+import RenderNodeSideToolbar from '@/renderer/flowchart/common/renderNodeSideToolbar';
 import '@/renderer/flowchart/styles/common.css';
 
-function SimpleActuatorTaskNode({ id, data }: NodeProps<TaskNodeData>) {
-  const { updateNodeData, addNodes, addEdges, getNode } = useReactFlow();
+function SimpleActuatorTaskNode({
+  id,
+  data,
+}: NodeProps<{ data: TaskNodeData }>) {
+  const { updateNodeData } = useReactFlow();
+  const nodeData = data;
   const connections = useNodeConnections({ handleType: 'target' });
   const nodesData = useNodesData(connections?.[0]?.source) as
     | { data?: { totalDuration?: number } }
     | undefined;
 
-  const [totalDuration, setTotalDuration] = useState(data.totalDuration || 0);
-  const [position, setPosition] = useState(data.position || 0);
-  const [velocity, setVelocity] = useState(data.velocity || 0);
-  const [acceleration, setAcceleration] = useState(data.acceleration || 0);
-  const [deceleration, setDeceleration] = useState(data.deceleration || 0);
-  const [duration, setDuration] = useState(data.duration || 0);
+  // 各パラメータの状態
+  const [position, setPosition] = useState(nodeData.position || 0);
+  const [velocity, setVelocity] = useState(nodeData.velocity || 0);
+  const [acceleration, setAcceleration] = useState(nodeData.acceleration || 0);
+  const [deceleration, setDeceleration] = useState(nodeData.deceleration || 0);
+  const [duration, setDuration] = useState(nodeData.duration || 0);
+  const [totalDuration, setTotalDuration] = useState(
+    nodeData.totalDuration || 0,
+  );
 
   // 入力フォーム用の文字列値
   const [positionInput, setPositionInput] = useState(
-    String(data.position || 0),
+    String(nodeData.position || 0),
   );
   const [velocityInput, setVelocityInput] = useState(
-    String(data.velocity || 0),
+    String(nodeData.velocity || 0),
   );
   const [accelerationInput, setAccelerationInput] = useState(
-    String(data.acceleration || 0),
+    String(nodeData.acceleration || 0),
   );
   const [decelerationInput, setDecelerationInput] = useState(
-    String(data.deceleration || 0),
+    String(nodeData.deceleration || 0),
   );
 
-  useEffect(() => {
-    const newDuration = calculateDuration(
-      position,
-      velocity,
-      acceleration,
-      deceleration,
-    );
-    setDuration(newDuration);
-  }, [id, position, velocity, acceleration, deceleration]);
+  // 入力値バリデーション&状態更新
+  const validateAndUpdateValue = useCallback(
+    (
+      value: string,
+      setValue: (value: number) => void,
+      setInputValue: (value: string) => void,
+      minValue = 0,
+    ) => {
+      const validValue = validateNumericInput(value, minValue);
+      setValue(validValue);
+      setInputValue(validValue.toString());
+    },
+    [],
+  );
 
+  // 入力イベント
+  const handleInputChange = useCallback(
+    (setter: React.Dispatch<React.SetStateAction<string>>) =>
+      (e: React.ChangeEvent<HTMLInputElement>) =>
+        setter(e.target.value),
+    [],
+  );
+  const handleBlur = useCallback(
+    (
+      value: string,
+      setValue: (value: number) => void,
+      setInputValue: (value: string) => void,
+      minValue = 0.1,
+    ) =>
+      () =>
+        validateAndUpdateValue(value, setValue, setInputValue, minValue),
+    [validateAndUpdateValue],
+  );
+
+  // duration計算
+  useEffect(() => {
+    setDuration(
+      calculateDuration(position, velocity, acceleration, deceleration),
+    );
+  }, [position, velocity, acceleration, deceleration]);
+
+  // ノードデータ更新
   useEffect(() => {
     updateNodeData(id, {
-      ...data,
+      ...nodeData,
       position,
       velocity,
       acceleration,
       deceleration,
       duration,
     });
-  }, [
-    id,
-    position,
-    velocity,
-    acceleration,
-    deceleration,
-    duration,
-    data,
-    updateNodeData,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, position, velocity, acceleration, deceleration, duration]);
 
+  // totalDuration計算
   useEffect(() => {
+    let newTotalDuration = duration;
     if (nodesData !== undefined) {
       const previousTotalDuration = nodesData?.data?.totalDuration ?? 0;
-      const newTotalDuration = previousTotalDuration + duration;
-      const roundedTotalDuration = roundToDigits(
-        newTotalDuration,
-        ROUND_DIGITS,
-      );
-      setTotalDuration(roundedTotalDuration);
-      updateNodeData(id, {
-        ...data,
-        duration,
-        totalDuration: roundedTotalDuration,
-        position,
-        velocity,
-        acceleration,
-        deceleration,
-      });
-    } else {
-      setTotalDuration(duration);
-      updateNodeData(id, {
-        ...data,
-        duration,
-        totalDuration: duration,
-        position,
-        velocity,
-        acceleration,
-        deceleration,
-      });
+      newTotalDuration = previousTotalDuration + duration;
     }
-  }, [
-    id,
-    data,
-    updateNodeData,
-    nodesData,
-    duration,
-    position,
-    velocity,
-    acceleration,
-    deceleration,
-  ]);
-
-  const validateAndUpdateValue = (
-    value: string,
-    setValue: (value: number) => void,
-    setInputValue: (value: string) => void,
-    minValue = 0,
-  ) => {
-    const validValue = validateNumericInput(value, minValue);
-    setValue(validValue);
-    setInputValue(validValue.toString());
-  };
-
-  const handlePositionInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setPositionInput(e.target.value);
-  };
-  const handleVelocityInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setVelocityInput(e.target.value);
-  };
-  const handleAccelerationInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setAccelerationInput(e.target.value);
-  };
-  const handleDecelerationInputChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    setDecelerationInput(e.target.value);
-  };
-
-  const handlePositionBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    validateAndUpdateValue(e.target.value, setPosition, setPositionInput, 0.1);
-  };
-  const handleVelocityBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    validateAndUpdateValue(e.target.value, setVelocity, setVelocityInput, 0.1);
-  };
-  const handleAccelerationBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    validateAndUpdateValue(
-      e.target.value,
-      setAcceleration,
-      setAccelerationInput,
-      0.1,
-    );
-  };
-  const handleDecelerationBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    validateAndUpdateValue(
-      e.target.value,
-      setDeceleration,
-      setDecelerationInput,
-      0.1,
-    );
-  };
+    const roundedTotalDuration = roundToDigits(newTotalDuration, ROUND_DIGITS);
+    setTotalDuration(roundedTotalDuration);
+    updateNodeData(id, {
+      ...nodeData,
+      position,
+      velocity,
+      acceleration,
+      deceleration,
+      duration,
+      totalDuration: roundedTotalDuration,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id, duration, nodesData, position, velocity, acceleration, deceleration]);
 
   // velocityFigureノード用のdata生成関数
   const getNodeData = useCallback(
@@ -192,11 +147,10 @@ function SimpleActuatorTaskNode({ id, data }: NodeProps<TaskNodeData>) {
 
   return (
     <div className="node">
-      {renderNodeSideToolbar(
-        [{ label: 'V-Chart', nodeType: 'velocityChart' }],
-        id,
-        getNodeData,
-      )}
+      <RenderNodeSideToolbar
+        options={[{ label: 'V-Chart', nodeType: 'velocityChart' }]}
+        currentNodeId={id}
+      />
       <Handle type="target" position={Position.Top} />
       <div className="node-title">Simple Actuator Task</div>
       <div className="node-content">
@@ -206,32 +160,40 @@ function SimpleActuatorTaskNode({ id, data }: NodeProps<TaskNodeData>) {
             id={`position-${id}`}
             type="text"
             value={positionInput}
-            onChange={handlePositionInputChange}
-            onBlur={handlePositionBlur}
+            onChange={handleInputChange(setPositionInput)}
+            onBlur={handleBlur(positionInput, setPosition, setPositionInput)}
           />
           <label htmlFor={`velocity-${id}`}>Velocity [mm/s]</label>
           <input
             id={`velocity-${id}`}
             type="text"
             value={velocityInput}
-            onChange={handleVelocityInputChange}
-            onBlur={handleVelocityBlur}
+            onChange={handleInputChange(setVelocityInput)}
+            onBlur={handleBlur(velocityInput, setVelocity, setVelocityInput)}
           />
           <label htmlFor={`acceleration-${id}`}>Acceleration [mm/s²]</label>
           <input
             id={`acceleration-${id}`}
             type="text"
             value={accelerationInput}
-            onChange={handleAccelerationInputChange}
-            onBlur={handleAccelerationBlur}
+            onChange={handleInputChange(setAccelerationInput)}
+            onBlur={handleBlur(
+              accelerationInput,
+              setAcceleration,
+              setAccelerationInput,
+            )}
           />
           <label htmlFor={`deceleration-${id}`}>Deceleration [mm/s²]</label>
           <input
             id={`deceleration-${id}`}
             type="text"
             value={decelerationInput}
-            onChange={handleDecelerationInputChange}
-            onBlur={handleDecelerationBlur}
+            onChange={handleInputChange(setDecelerationInput)}
+            onBlur={handleBlur(
+              decelerationInput,
+              setDeceleration,
+              setDecelerationInput,
+            )}
           />
         </div>
         <hr className="node-divider" />
