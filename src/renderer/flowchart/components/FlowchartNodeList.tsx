@@ -13,13 +13,6 @@ interface FlowchartNodeListProps {
   configIdentifier?: ConfigIdentifier;
 }
 
-// フローチャートノードリストが有効かどうかを判定するカスタムフック
-export const useFlowchartNodeListEnabled = (): boolean => {
-  const location = useLocation();
-  // フローチャート関連のパスかどうかを判定
-  return location.pathname.includes('/flowchart');
-};
-
 function FlowchartNodeList({
   configIdentifier: propConfigIdentifier,
 }: FlowchartNodeListProps) {

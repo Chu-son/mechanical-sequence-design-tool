@@ -1,11 +1,7 @@
-import { SidebarItem } from '@/renderer/components/Sidebar/types';
 import ProjectContent from '@/renderer/components/Sidebar/ProjectContent';
-import FlowchartNodeList, {
-  useFlowchartNodeListEnabled,
-} from '@/renderer/flowchart/components/FlowchartNodeList';
-import { useLocation } from 'react-router-dom';
+import FlowchartNodeList from '@/renderer/flowchart/components/FlowchartNodeList';
+import { SidebarItem } from '@/renderer/components/Sidebar/types';
 
-// サイドバーの初期アイテム
 export const getInitialItems = (): SidebarItem[] => {
   return [
     {
@@ -15,7 +11,6 @@ export const getInitialItems = (): SidebarItem[] => {
       icon: '📁',
       isOpen: true,
       content: <ProjectContent />,
-      isEnabled: () => true,
     },
     {
       id: 'flowchart-nodes',
@@ -23,7 +18,7 @@ export const getInitialItems = (): SidebarItem[] => {
       title: 'フローチャート',
       icon: '🧩',
       content: <FlowchartNodeList />,
-      isEnabled: useFlowchartNodeListEnabled,
+      isEnabled: (location) => location.pathname.includes('/flowchart'),
       shouldAutoOpen: (location) => location.pathname.includes('/flowchart'),
       shouldAutoPin: (location) => location.pathname.includes('/flowchart'),
     },

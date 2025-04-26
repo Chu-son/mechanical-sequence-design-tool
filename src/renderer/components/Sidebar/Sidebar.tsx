@@ -109,7 +109,7 @@ export default function Sidebar() {
         <div className="icons-container">
           {sidebarItems.map((item) => {
             // 各アイコンの有効/無効状態を判定関数から取得
-            const isEnabled = item.isEnabled ? item.isEnabled() : true;
+            const isEnabled = item.isEnabled ? item.isEnabled(location) : true;
 
             return (
               <SidebarIcon
