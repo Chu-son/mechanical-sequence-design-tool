@@ -21,6 +21,14 @@ export function renderNodeSideToolbar(
 ) {
   const { addNodes, addEdges, getNode, setNodes } = useReactFlow();
 
+  // ノードのhidden状態を取得する関数
+  const isNodeVisible = (nodeType: string) => {
+    const detailNodeId = `${nodeType}-${currentNodeId}`;
+    const node = getNode(detailNodeId);
+    // hiddenがtrueなら非表示、falseまたはundefinedなら表示中
+    return node && !node.hidden;
+  };
+
   // VelocityFigureNodeの表示/非表示切替用
   const handleDetailNodeButtonClick = (nodeType: string) => {
     // 既に同じノードが存在するかチェック
@@ -79,17 +87,25 @@ export function renderNodeSideToolbar(
       isVisible
       className="node-toolbar"
     >
-      {options.map(({ label, nodeType }) => (
-        <button
-          key={nodeType}
-          type="button"
-          onClick={() => {
-            handleDetailNodeButtonClick(nodeType);
-          }}
-        >
-          {label}
-        </button>
-      ))}
+      {options.map(({ label, nodeType }) => {
+        const active = isNodeVisible(nodeType);
+        return (
+          <button
+            key={nodeType}
+            type="button"
+            className={
+              active
+                ? 'node-toolbar__button node-toolbar__button--active'
+                : 'node-toolbar__button'
+            }
+            onClick={() => {
+              handleDetailNodeButtonClick(nodeType);
+            }}
+          >
+            {label}
+          </button>
+        );
+      })}
     </NodeToolbar>
   );
 }

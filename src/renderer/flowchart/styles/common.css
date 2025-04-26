@@ -46,3 +46,9 @@
 .node-toolbar button:last-child {
   margin-right: 0;
 }
+
+/* 表示中のノードツールバーボタンを暗くする */
+.node-toolbar__button--active {
+  background-color: #727272 !important;
+  border-color: #aaa !important;
+}
