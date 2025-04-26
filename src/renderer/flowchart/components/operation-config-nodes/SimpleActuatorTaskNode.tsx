@@ -193,7 +193,7 @@ function SimpleActuatorTaskNode({ id, data }: NodeProps<TaskNodeData>) {
   return (
     <div className="node">
       {renderNodeSideToolbar(
-        [{ label: 'V-Chart', nodeType: 'velocityFigure' }],
+        [{ label: 'V-Chart', nodeType: 'velocityChart' }],
         id,
         getNodeData,
       )}

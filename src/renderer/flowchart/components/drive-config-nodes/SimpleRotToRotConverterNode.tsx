@@ -9,6 +9,7 @@ import {
 } from '@xyflow/react';
 import {
   roundToDigits,
+  ROUND_DIGITS,
   validateNumericInput,
 } from '@/renderer/flowchart/common/flowchartUtils';
 import { SimpleRotToRotConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';

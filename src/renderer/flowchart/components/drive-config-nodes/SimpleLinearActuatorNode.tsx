@@ -2,6 +2,7 @@ import React, { memo, useCallback, useEffect, useState } from 'react';
 import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import {
   roundToDigits,
+  ROUND_DIGITS,
   validateNumericInput,
 } from '@/renderer/flowchart/common/flowchartUtils';
 import { SimpleLinearActuatorNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';

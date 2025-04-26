@@ -2,14 +2,14 @@ import SimpleTaskNode from '@/renderer/flowchart/components/operation-config-nod
 import TaskStartNode from '@/renderer/flowchart/components/operation-config-nodes/TaskStartNode';
 import TaskEndNode from '@/renderer/flowchart/components/operation-config-nodes/TaskEndNode';
 import SimpleActuatorTaskNode from '@/renderer/flowchart/components/operation-config-nodes/SimpleActuatorTaskNode';
-import VelocityFigureNode from '@/renderer/flowchart/components/detail-nodes/VelocityFigureNode';
+import VelocityChartNode from '@/renderer/flowchart/components/detail-nodes/VelocityChartNode';
 
 export {
   SimpleTaskNode,
   TaskStartNode,
   TaskEndNode,
   SimpleActuatorTaskNode,
-  VelocityFigureNode,
+  VelocityChartNode,
 };
 export * from '@/renderer/flowchart/components/operation-config-nodes/common';
 
@@ -18,5 +18,5 @@ export const nodeTypes = {
   task: SimpleTaskNode,
   taskEnd: TaskEndNode,
   actuatorTask: SimpleActuatorTaskNode,
-  velocityFigure: VelocityFigureNode,
+  velocityChart: VelocityChartNode,
 };
