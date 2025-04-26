@@ -1,17 +1,5 @@
 import { Node } from '@xyflow/react';
 
-// 共通化した関数・型は flowchart/common/common.ts からimport
-// 使用しないものはimportしない
-import type {
-  ROUND_DIGITS,
-  roundToDigits,
-  VelocityProfilePoint,
-  VelocityProfileResult,
-  calculateVelocityProfile,
-  calculateDuration,
-  validateNumericInput,
-} from '@/renderer/flowchart/common/common';
-
 /**
  * ドライブノードのデータ型の基本インターフェース
  */
