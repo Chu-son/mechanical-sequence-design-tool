@@ -12,6 +12,7 @@ export default function Sidebar() {
   const [isPinned, setIsPinned] = useState(false);
   const sidebarRef = useRef<HTMLDivElement>(null);
   const { isSidebarVisible } = useGlobalFlag();
+  const location = useLocation();
 
   // 初期アイテムを取得
   const initialItems = getInitialItems();
@@ -25,6 +26,23 @@ export default function Sidebar() {
     handleDragOver,
     handleDrop,
   } = useSidebarDragDrop(initialItems);
+
+  // location.pathnameの変化時にshouldAutoOpen/shouldAutoPinを判定
+  useEffect(() => {
+    // すでにactiveItem/pinが正しい場合は何もしない
+    const autoItem = sidebarItems.find(
+      (item) => item.shouldAutoOpen && item.shouldAutoOpen(location),
+    );
+    if (autoItem) {
+      if (activeItem !== autoItem.id) setActiveItem(autoItem.id);
+      if (
+        !isPinned &&
+        autoItem.shouldAutoPin &&
+        autoItem.shouldAutoPin(location)
+      )
+        setIsPinned(true);
+    }
+  }, [location.pathname, sidebarItems]);
 
   // 外部クリックで非ピン留めパネルを閉じる
   useEffect(() => {

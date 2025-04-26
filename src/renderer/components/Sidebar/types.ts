@@ -1,4 +1,5 @@
 import { ReactNode } from 'react';
+import { Location } from 'react-router-dom';
 
 export type SidebarItemType = 'project' | 'flowchart-nodes';
 
@@ -18,4 +19,8 @@ export interface SidebarItem {
   isOpen?: boolean;
   // 有効/無効状態を判定する関数
   isEnabled?: () => boolean;
+  // サイドバーを自動で開くか判定する関数
+  shouldAutoOpen?: (location: Location) => boolean;
+  // サイドバーを自動でピン留めするか判定する関数
+  shouldAutoPin?: (location: Location) => boolean;
 }
