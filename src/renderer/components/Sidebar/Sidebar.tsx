@@ -17,11 +17,8 @@ export default function Sidebar() {
   // 初期アイテムを取得
   const initialItems = getInitialItems();
 
-  // ドラッグアンドドロップのロジックをカスタムフックに移動
   const {
     items: sidebarItems,
-    setItems: setSidebarItems,
-    draggedItem,
     handleDragStart,
     handleDragOver,
     handleDrop,
@@ -30,19 +27,20 @@ export default function Sidebar() {
   // location.pathnameの変化時にshouldAutoOpen/shouldAutoPinを判定
   useEffect(() => {
     // すでにactiveItem/pinが正しい場合は何もしない
-    const autoItem = sidebarItems.find(
-      (item) => item.shouldAutoOpen && item.shouldAutoOpen(location),
+    const autoSidebarItem = sidebarItems.find(
+      (sidebarItem) =>
+        sidebarItem.shouldAutoOpen && sidebarItem.shouldAutoOpen(location),
     );
-    if (autoItem) {
-      if (activeItem !== autoItem.id) setActiveItem(autoItem.id);
+    if (autoSidebarItem) {
+      if (activeItem !== autoSidebarItem.id) setActiveItem(autoSidebarItem.id);
       if (
         !isPinned &&
-        autoItem.shouldAutoPin &&
-        autoItem.shouldAutoPin(location)
+        autoSidebarItem.shouldAutoPin &&
+        autoSidebarItem.shouldAutoPin(location)
       )
         setIsPinned(true);
     }
-  }, [location.pathname, sidebarItems]);
+  }, [location.pathname]);
 
   // 外部クリックで非ピン留めパネルを閉じる
   useEffect(() => {
@@ -75,6 +73,11 @@ export default function Sidebar() {
     const newState = activeItem === id ? null : id;
     setActiveItem(newState);
 
+    // パネルを閉じる場合はピン留めも解除
+    if (newState === null && isPinned) {
+      setIsPinned(false);
+    }
+
     // サイドバー状態変更イベントを発火
     const event = new CustomEvent('sidebar-change', {
       detail: { isOpen: newState !== null },
@@ -89,8 +92,9 @@ export default function Sidebar() {
 
   // アクティブなアイテムを取得
   const getActiveItem = () => {
-    const item = sidebarItems.find((item) => item.id === activeItem) || null;
-    return item;
+    const found =
+      sidebarItems.find((sidebarItem) => sidebarItem.id === activeItem) || null;
+    return found;
   };
 
   if (!isSidebarVisible) {
