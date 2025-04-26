@@ -1,11 +1,11 @@
 // ノードタイプのインポート
-import SimpleRotationalActuatorNode from './SimpleRotationalActuatorNode';
-import SimpleLinearActuatorNode from './SimpleLinearActuatorNode';
-import SimpleRotToRotConverterNode from './SimpleRotToRotConverterNode';
-import SimpleLinToRotConverterNode from './SimpleLinToRotConverter';
-import SimpleRotToLinConverterNode from './SimpleRotToLinConverter';
-import SimpleLinToLinConverterNode from './SimpleLinToLinConverter';
-import OutputNode from './OutputNode';
+import SimpleRotationalActuatorNode from './nodes/SimpleRotationalActuatorNode';
+import SimpleLinearActuatorNode from './nodes/SimpleLinearActuatorNode';
+import SimpleRotToRotConverterNode from './nodes/SimpleRotToRotConverterNode';
+import SimpleLinToRotConverterNode from './nodes/SimpleLinToRotConverter';
+import SimpleRotToLinConverterNode from './nodes/SimpleRotToLinConverter';
+import SimpleLinToLinConverterNode from './nodes/SimpleLinToLinConverter';
+import OutputNode from './nodes/OutputNode';
 
 // 個別にエクスポート
 export { SimpleRotationalActuatorNode };

@@ -33,7 +33,6 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 };
 
 const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
-import FlowchartSidebar from '@/renderer/flowchart/components/FlowchartSidebar';
 import '@xyflow/react/dist/style.css';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
