@@ -9,12 +9,78 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
+import fs from 'fs';
 import { app, BrowserWindow, shell, ipcMain, Menu } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
 import './database';
+
+// ウィンドウの状態を格納する型定義
+interface WindowState {
+  x?: number;
+  y?: number;
+  width: number;
+  height: number;
+  isMaximized?: boolean;
+}
+
+// ウィンドウ状態を保存するファイルのパス
+const stateFilePath = path.join(app.getPath('userData'), 'window-state.json');
+console.log('Window state file path:', stateFilePath);
+
+// ウィンドウ状態を読み込む関数
+function loadWindowState(): WindowState {
+  try {
+    // ファイルが存在する場合は読み込む
+    if (fs.existsSync(stateFilePath)) {
+      const data = fs.readFileSync(stateFilePath, 'utf8');
+      return JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('ウィンドウ状態の読み込みに失敗しました:', error);
+  }
+
+  // デフォルト値を返す
+  return {
+    width: 1024,
+    height: 728,
+  };
+}
+
+// ウィンドウ状態を保存する関数
+function saveWindowState(window: BrowserWindow): void {
+  if (!window) return;
+
+  try {
+    // 最小化されている場合は保存しない
+    if (window.isMinimized()) return;
+
+    const state: WindowState = {
+      isMaximized: window.isMaximized(),
+    };
+
+    // 最大化されていない場合は位置とサイズを保存
+    if (!state.isMaximized) {
+      const bounds = window.getBounds();
+      state.x = bounds.x;
+      state.y = bounds.y;
+      state.width = bounds.width;
+      state.height = bounds.height;
+    } else {
+      // 最大化されている場合も画面サイズは保存しておく
+      const bounds = window.getBounds();
+      state.width = bounds.width;
+      state.height = bounds.height;
+    }
+
+    // ファイルに保存
+    fs.writeFileSync(stateFilePath, JSON.stringify(state));
+  } catch (error) {
+    console.error('ウィンドウ状態の保存に失敗しました:', error);
+  }
+}
 
 class AppUpdater {
   constructor() {
@@ -79,10 +145,16 @@ const createWindow = async () => {
     return path.join(RESOURCES_PATH, ...paths);
   };
 
+  // 保存されたウィンドウ状態を読み込む
+  const windowState = loadWindowState();
+
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    // 保存された位置とサイズを適用
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
     icon: getAssetPath('icon.png'),
     titleBarStyle: 'hidden',
     // expose window controlls in Windows/Linux
@@ -103,8 +175,45 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
+      // 保存された状態が最大化なら最大化して表示
+      if (windowState.isMaximized) {
+        mainWindow.maximize();
+      }
       mainWindow.show();
     }
+  });
+
+  // ウィンドウが閉じられる前に状態を保存
+  mainWindow.on('close', () => {
+    if (mainWindow) {
+      saveWindowState(mainWindow);
+    }
+  });
+
+  // ウィンドウサイズ変更時に状態を保存（スロットリングを適用）
+  let resizeTimeout: NodeJS.Timeout | null = null;
+  mainWindow.on('resize', () => {
+    if (resizeTimeout) {
+      clearTimeout(resizeTimeout);
+    }
+    resizeTimeout = setTimeout(() => {
+      if (mainWindow) {
+        saveWindowState(mainWindow);
+      }
+    }, 500); // 500ms後に実行（頻繁な保存を避ける）
+  });
+
+  // ウィンドウ移動時に状態を保存（スロットリングを適用）
+  let moveTimeout: NodeJS.Timeout | null = null;
+  mainWindow.on('move', () => {
+    if (moveTimeout) {
+      clearTimeout(moveTimeout);
+    }
+    moveTimeout = setTimeout(() => {
+      if (mainWindow) {
+        saveWindowState(mainWindow);
+      }
+    }, 500); // 500ms後に実行（頻繁な保存を避ける）
   });
 
   mainWindow.on('closed', () => {
