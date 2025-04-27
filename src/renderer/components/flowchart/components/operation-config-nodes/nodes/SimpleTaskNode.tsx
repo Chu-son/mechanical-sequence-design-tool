@@ -83,9 +83,7 @@ function SimpleTaskNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
               });
             }}
           />
-          <label htmlFor={`duration-${id}`}>
-            Duration [sec] ({ROUND_DIGITS} digits)
-          </label>
+          <label htmlFor={`duration-${id}`}>Duration [sec]</label>
           <input
             id={`duration-${id}`}
             type="text"

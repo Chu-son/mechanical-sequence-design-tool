@@ -29,6 +29,7 @@ function SimpleActuatorTaskNode({
     | undefined;
 
   // 各パラメータの状態
+  const [description, setDescription] = useState(nodeData.description || '');
   const [position, setPosition] = useState(nodeData.position || 0);
   const [velocity, setVelocity] = useState(nodeData.velocity || 0);
   const [acceleration, setAcceleration] = useState(nodeData.acceleration || 0);
@@ -127,24 +128,6 @@ function SimpleActuatorTaskNode({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id, duration, nodesData, position, velocity, acceleration, deceleration]);
 
-  // velocityFigureノード用のdata生成関数
-  const getNodeData = useCallback(
-    (nodeType: string, currentNodeId: string) => {
-      if (nodeType === 'velocityFigure') {
-        return {
-          position,
-          velocity,
-          acceleration,
-          deceleration,
-          duration,
-          sourceNodeId: currentNodeId,
-        };
-      }
-      return { sourceNodeId: currentNodeId };
-    },
-    [position, velocity, acceleration, deceleration, duration],
-  );
-
   return (
     <div className="node">
       <RenderNodeSideToolbar
@@ -155,6 +138,17 @@ function SimpleActuatorTaskNode({
       <div className="node-title">Simple Actuator Task</div>
       <div className="node-content">
         <div className="node-setting-field">
+          <label htmlFor={`description-${id}`}>Description</label>
+          <input
+            id={`description-${id}`}
+            type="text"
+            value={description}
+            onChange={(e) => {
+              const newDescription = e.target.value;
+              setDescription(newDescription);
+              updateNodeData(id, { ...nodeData, description: newDescription });
+            }}
+          />
           <label htmlFor={`position-${id}`}>Displacement [mm]</label>
           <input
             id={`position-${id}`}
