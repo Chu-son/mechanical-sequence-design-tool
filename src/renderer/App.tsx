@@ -2,14 +2,14 @@ import { MemoryRouter as Router, Routes, Route } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import Sidebar from '@/renderer/components/Sidebar';
 import { GlobalFlagProvider } from '@/renderer/context/GlobalFlagContext';
-import { DnDProvider } from '@/renderer/flowchart/utils/DnDContext';
+import { DnDProvider } from '@/renderer/components/flowchart/utils/DnDContext';
 import TitleBar from '@/renderer/components/TitleBar';
 import Projects from '@/renderer/pages/Projects';
 import Devices from '@/renderer/pages/Devices';
 import ProjectDetail from '@/renderer/pages/ProjectDetail';
 import UnitDetail from '@/renderer/pages/UnitDetail';
 import '@/renderer/styles/App.css';
-import Flowchart from '@/renderer/flowchart/pages/Flowchart';
+import Flowchart from '@/renderer/components/flowchart/pages/Flowchart';
 
 // サイドバーの状態に応じてコンテンツのクラスを設定するためのラッパーコンポーネント
 const AppContent = () => {

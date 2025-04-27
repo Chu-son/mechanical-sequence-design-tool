@@ -9,21 +9,18 @@ import {
 } from '@xyflow/react';
 import {
   roundToDigits,
-  validateNumericInput,
   ROUND_DIGITS,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { SimpleLinToLinConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { LinToLinComponentNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleLinToLinConverterNode({
   id,
   data,
-}: NodeProps<{ data: SimpleLinToLinConverterNodeData }>) {
+}: NodeProps<LinToLinComponentNodeData>) {
   const { updateNodeData } = useReactFlow();
-
-  // 入力ノードとの接続情報を取得
   const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
-  const sourceNode = connections?.[0]?.source; // 接続元のノードID
+  const sourceNode = connections?.[0]?.source;
   const sourceNodeData = useNodesData(sourceNode) as
     | { data?: { calculatedOutput?: any } }
     | undefined;

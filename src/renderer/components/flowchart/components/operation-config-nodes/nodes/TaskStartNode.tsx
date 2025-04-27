@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Handle, Position } from '@xyflow/react';
-import '@/renderer/flowchart/styles/common.css'; // flowchart共通スタイルを適用
+import '@/renderer/components/flowchart/styles/common.css'; // flowchart共通スタイルを適用
 
 const TaskStartNode = ({ id }: { id: string }): JSX.Element => (
   <div className="node">

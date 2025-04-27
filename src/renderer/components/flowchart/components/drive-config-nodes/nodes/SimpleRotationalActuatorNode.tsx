@@ -3,15 +3,14 @@ import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
 import {
   roundToDigits,
   ROUND_DIGITS,
-  validateNumericInput,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { SimpleRotationalActuatorNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { RotationalActuatorNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleRotationalActuatorNode({
   id,
   data,
-}: NodeProps<{ data: RotationalActuatorNodeData }>) {
+}: NodeProps<RotationalActuatorNodeData>) {
   const { updateNodeData } = useReactFlow();
 
   // ノードのデータ状態管理

@@ -11,11 +11,11 @@ import {
   roundToDigits,
   ROUND_DIGITS,
   validateNumericInput,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { calculateDuration } from '@/renderer/flowchart/common/mechanicalCalculations';
-import { TaskNodeData } from '@/renderer/flowchart/components/operation-config-nodes/common';
-import RenderNodeSideToolbar from '@/renderer/flowchart/common/renderNodeSideToolbar';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { calculateDuration } from '@/renderer/components/flowchart/common/mechanicalCalculations';
+import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
+import RenderNodeSideToolbar from '@/renderer/components/flowchart/common/renderNodeSideToolbar';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleActuatorTaskNode({
   id,

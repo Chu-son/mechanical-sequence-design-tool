@@ -10,20 +10,17 @@ import {
 import {
   roundToDigits,
   ROUND_DIGITS,
-  validateNumericInput,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { SimpleRotToRotConverterNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { RotToRotComponentNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleRotToRotConverterNode({
   id,
   data,
-}: NodeProps<{ data: SimpleRotToRotConverterNodeData }>) {
+}: NodeProps<RotToRotComponentNodeData>) {
   const { updateNodeData } = useReactFlow();
-
-  // 入力ノードとの接続情報を取得
   const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
-  const sourceNode = connections?.[0]?.source; // 接続元のノードID
+  const sourceNode = connections?.[0]?.source;
   const sourceNodeData = useNodesData(sourceNode) as
     | { data?: { calculatedOutput?: any } }
     | undefined;

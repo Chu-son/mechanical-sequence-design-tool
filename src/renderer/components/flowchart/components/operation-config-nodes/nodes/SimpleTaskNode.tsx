@@ -11,9 +11,9 @@ import {
   roundToDigits,
   validateNumericInput,
   ROUND_DIGITS,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { TaskNodeData } from '@/renderer/flowchart/components/operation-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleTaskNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   const { updateNodeData } = useReactFlow();

@@ -1,17 +1,23 @@
 import React, { memo, useCallback, useEffect, useState } from 'react';
-import { Handle, Position, useReactFlow, type NodeProps } from '@xyflow/react';
+import {
+  Handle,
+  Position,
+  useReactFlow,
+  useNodeConnections,
+  useNodesData,
+  type NodeProps,
+} from '@xyflow/react';
 import {
   roundToDigits,
   ROUND_DIGITS,
-  validateNumericInput,
-} from '@/renderer/flowchart/common/flowchartUtils';
-import { SimpleLinearActuatorNodeData } from '@/renderer/flowchart/components/drive-config-nodes/common';
-import '@/renderer/flowchart/styles/common.css';
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { LinearActuatorNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleLinearActuatorNode({
   id,
   data,
-}: NodeProps<{ data: TaskNodeData }>) {
+}: NodeProps<LinearActuatorNodeData>) {
   const { updateNodeData } = useReactFlow();
   const connections = useNodeConnections({ handleType: 'target' });
   const nodesData = useNodesData(connections?.[0]?.source) as

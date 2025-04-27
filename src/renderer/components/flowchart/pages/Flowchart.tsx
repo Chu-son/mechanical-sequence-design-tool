@@ -24,9 +24,9 @@ import {
 } from '@xyflow/react';
 import { useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import { useDnD } from '@/renderer/flowchart/utils/DnDContext';
-import { nodeTypes as operationNodeTypes } from '@/renderer/flowchart/components/operation-config-nodes';
-import { nodeTypes as driveNodeTypes } from '@/renderer/flowchart/components/drive-config-nodes';
+import { useDnD } from '@/renderer/components/flowchart/utils/DnDContext';
+import { nodeTypes as operationNodeTypes } from '@/renderer/components/flowchart/components/operation-config-nodes';
+import { nodeTypes as driveNodeTypes } from '@/renderer/components/flowchart/components/drive-config-nodes';
 
 const defaultEdgeOptions: DefaultEdgeOptions = {
   interactionWidth: 75,

@@ -15,9 +15,9 @@ import {
   type NodeProps,
 } from '@xyflow/react';
 import * as d3 from 'd3';
-import { calculateVelocityProfile } from '@/renderer/flowchart/common/mechanicalCalculations';
-import { roundToDigits } from '@/renderer/flowchart/common/flowchartUtils';
-import '@/renderer/flowchart/styles/common.css';
+import { calculateVelocityProfile } from '@/renderer/components/flowchart/common/mechanicalCalculations';
+import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
+import '@/renderer/components/flowchart/styles/common.css';
 import {
   LineChart,
   Line,

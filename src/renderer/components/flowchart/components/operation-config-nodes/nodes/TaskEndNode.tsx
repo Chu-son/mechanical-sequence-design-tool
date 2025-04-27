@@ -6,7 +6,7 @@ import {
   useNodeConnections,
   useNodesData,
 } from '@xyflow/react';
-import '@/renderer/flowchart/styles/common.css'; // flowchart共通スタイルを適用
+import '@/renderer/components/flowchart/styles/common.css'; // flowchart共通スタイルを適用
 
 const TaskEndNode = ({
   id,
