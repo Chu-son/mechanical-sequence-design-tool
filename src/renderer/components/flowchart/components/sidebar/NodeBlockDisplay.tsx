@@ -1,6 +1,6 @@
 import React from 'react';
-import { NodeBlock } from '../types/nodeBlocks';
-import { useDnD } from '../utils/DnDContext';
+import { NodeBlock } from '../../types/nodeBlocks';
+import { useDnD } from '../../utils/DnDContext';
 
 interface NodeBlockDisplayProps {
   blocks: NodeBlock[];

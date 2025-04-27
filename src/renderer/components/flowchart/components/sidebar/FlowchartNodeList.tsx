@@ -4,8 +4,8 @@ import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { DriveConfig, ConfigIdentifier } from '@/renderer/types/databaseTypes';
 
 import NodeBlockDisplay from './NodeBlockDisplay';
-import { driveConfigBlocks } from './drive-config-nodes/DriveConfigBlocks';
-import { getOperationConfigBlocks } from './operation-config-nodes/OperationConfigBlocks';
+import { driveConfigBlocks } from '../drive-config-nodes/DriveConfigBlocks';
+import { getOperationConfigBlocks } from '../operation-config-nodes/OperationConfigBlocks';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

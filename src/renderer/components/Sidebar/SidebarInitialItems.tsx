@@ -1,5 +1,5 @@
 import ProjectContent from '@/renderer/components/Sidebar/ProjectContent';
-import FlowchartNodeList from '@/renderer/flowchart/components/FlowchartNodeList';
+import FlowchartNodeList from '@/renderer/components/flowchart/components/sidebar/FlowchartNodeList';
 import { SidebarItem } from '@/renderer/components/Sidebar/types';
 
 export const getInitialItems = (): SidebarItem[] => {
