@@ -1,23 +1,19 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import {
-  Handle,
-  Position,
   useReactFlow,
   useNodeConnections,
   useNodesData,
   type NodeProps,
 } from '@xyflow/react';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
-import { RotToRotComponentNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
+import simpleRotToRotConverterNodeDefinition from './SimpleRotToRotConverterNodeDefinition';
 import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleRotToRotConverterNode({
   id,
   data,
-}: NodeProps<RotToRotComponentNodeData>) {
+  readonly,
+}: NodeProps<any> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
   const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
   const sourceNode = connections?.[0]?.source;
@@ -25,18 +21,22 @@ function SimpleRotToRotConverterNode({
     | { data?: { calculatedOutput?: any } }
     | undefined;
 
-  // ノードのデータ状態管理
-  const [gearRatio, setGearRatio] = useState(data?.gearRatio || 10); // 減速比（例：10:1）
-  const [inertia, setInertia] = useState(data?.inertia || 0.0005); // 慣性モーメント
-  const [maxTorque, setMaxTorque] = useState(data?.maxTorque || 20); // 最大トルク
-  const [efficiency, setEfficiency] = useState(data?.efficiency || 0.9); // 効率
-
-  // 計算結果を更新する関数
+  // 計算ロジック - 外部データ依存のため、コンポーネントに残す
   const updateCalculation = useCallback(() => {
+    // 初期データのロード
+    if (!data) {
+      const initialData =
+        simpleRotToRotConverterNodeDefinition.getInitialData?.() || {};
+      updateNodeData(id, initialData);
+      return;
+    }
+
     // 接続元のデータが存在しない場合、計算できない
     if (!sourceNodeData?.data?.calculatedOutput?.rotational) {
       return;
     }
+
+    const { gearRatio, inertia, maxTorque, efficiency } = data;
 
     // 入力のデータを取得
     const inputData = sourceNodeData.data.calculatedOutput.rotational;
@@ -66,25 +66,11 @@ function SimpleRotToRotConverterNode({
 
     // ノードデータを更新
     updateNodeData(id, {
+      ...data,
       id,
-      type: 'rotational',
-      inputType: 'rotational',
-      outputType: 'rotational',
-      gearRatio,
-      inertia,
-      maxTorque,
-      efficiency,
       calculatedOutput,
     });
-  }, [
-    id,
-    sourceNodeData,
-    gearRatio,
-    inertia,
-    maxTorque,
-    efficiency,
-    updateNodeData,
-  ]);
+  }, [id, data, sourceNodeData, updateNodeData]);
 
   // 入力データまたはパラメータが変更されたときに計算結果を更新
   useEffect(() => {
@@ -92,87 +78,13 @@ function SimpleRotToRotConverterNode({
   }, [updateCalculation]);
 
   return (
-    <div className="node">
-      <Handle type="target" position={Position.Top} />
-      <div className="node-title">Simple R→R Converter</div>
-      <div className="node-content">
-        <div className="node-setting-field">
-          <label htmlFor={`gearRatio-${id}`}>Gear Ratio</label>
-          <input
-            id={`gearRatio-${id}`}
-            type="number"
-            value={gearRatio}
-            step="0.1"
-            min="0.1"
-            onChange={(e) => setGearRatio(parseFloat(e.target.value) || 1)}
-          />
-          <label htmlFor={`inertia-${id}`}>Inertia [kg・m²]</label>
-          <input
-            id={`inertia-${id}`}
-            type="number"
-            value={inertia}
-            step="0.0001"
-            min="0"
-            onChange={(e) => setInertia(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`maxTorque-${id}`}>Max Torque [N・m]</label>
-          <input
-            id={`maxTorque-${id}`}
-            type="number"
-            value={maxTorque}
-            step="0.1"
-            min="0"
-            onChange={(e) => setMaxTorque(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
-          <input
-            id={`efficiency-${id}`}
-            type="number"
-            value={efficiency}
-            step="0.01"
-            min="0"
-            max="1"
-            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-          />
-        </div>
-        <hr className="node-divider" />
-        <div className="node-readonly-field">
-          <div>Node ID: {id}</div>
-          {data?.calculatedOutput?.rotational && (
-            <>
-              <div>
-                Output Torque:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.rotational.torque,
-                  ROUND_DIGITS,
-                )}{' '}
-                N・m
-              </div>
-              <div>
-                Output Speed:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.rotational.speed,
-                  ROUND_DIGITS,
-                )}{' '}
-                rpm
-              </div>
-              <div>
-                Output Power:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.rotational.power,
-                  ROUND_DIGITS,
-                )}{' '}
-                W
-              </div>
-              {data.calculatedOutput.isOverloaded && (
-                <div className="warning">Warning: Torque exceeds maximum!</div>
-              )}
-            </>
-          )}
-        </div>
-        <Handle type="source" position={Position.Bottom} />
-      </div>
-    </div>
+    <BaseNode
+      id={id}
+      data={data}
+      definition={simpleRotToRotConverterNodeDefinition}
+      updateNodeData={updateNodeData}
+      readonly={readonly}
+    />
   );
 }
 

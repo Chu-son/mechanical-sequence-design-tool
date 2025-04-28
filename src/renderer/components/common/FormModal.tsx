@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import BaseModal from './BaseModal';
+import BaseModal from '@/renderer/components/common/BaseModal';
 import './FormModal.css';
 
 // フィールドの型定義

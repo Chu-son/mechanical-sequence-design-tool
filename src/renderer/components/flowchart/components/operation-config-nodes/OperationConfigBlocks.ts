@@ -1,5 +1,5 @@
-import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
 import { DriveConfig } from '@/renderer/types/databaseTypes';
+import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
 
 /**
  * Common ブロック定義
@@ -31,7 +31,7 @@ const conceptBlock: NodeBlock = {
  */
 const visualizationBlock: NodeBlock = {
   title: 'Visualization',
-  nodes: [{ type: 'velocityFigure', label: 'Velocity Figure' }],
+  nodes: [{ type: 'velocityChart', label: 'Velocity Chart' }],
 };
 
 /**

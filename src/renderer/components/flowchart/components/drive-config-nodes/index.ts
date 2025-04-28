@@ -1,11 +1,11 @@
 // ノードタイプのインポート
-import SimpleRotationalActuatorNode from './nodes/SimpleRotationalActuatorNode';
-import SimpleLinearActuatorNode from './nodes/SimpleLinearActuatorNode';
-import SimpleRotToRotConverterNode from './nodes/SimpleRotToRotConverterNode';
-import SimpleLinToRotConverterNode from './nodes/SimpleLinToRotConverter';
-import SimpleRotToLinConverterNode from './nodes/SimpleRotToLinConverter';
-import SimpleLinToLinConverterNode from './nodes/SimpleLinToLinConverter';
-import OutputNode from './nodes/OutputNode';
+import SimpleRotationalActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotationalActuatorNode';
+import SimpleLinearActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleLinearActuatorNode';
+import SimpleRotToRotConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotToRotConverterNode';
+import SimpleLinToRotConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleLinToRotConverter';
+import SimpleRotToLinConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotToLinConverter';
+import SimpleLinToLinConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleLinToLinConverter';
+import OutputNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/OutputNode';
 
 // 個別にエクスポート
 export { SimpleRotationalActuatorNode };

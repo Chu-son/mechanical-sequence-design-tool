@@ -1,23 +1,19 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import {
-  Handle,
-  Position,
   useReactFlow,
   useNodeConnections,
   useNodesData,
   type NodeProps,
 } from '@xyflow/react';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
-import { RotToLinComponentNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
+import simpleRotToLinConverterNodeDefinition from './SimpleRotToLinConverterNodeDefinition';
 import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleRotToLinConverterNode({
   id,
   data,
-}: NodeProps<RotToLinComponentNodeData>) {
+  readonly,
+}: NodeProps<any> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
   const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
   const sourceNode = connections?.[0]?.source;
@@ -25,20 +21,22 @@ function SimpleRotToLinConverterNode({
     | { data?: { calculatedOutput?: any } }
     | undefined;
 
-  // ノードのデータ状態管理
-  const [conversionRatio, setConversionRatio] = useState(
-    data?.conversionRatio || 5,
-  ); // mm/rev
-  const [maxForce, setMaxForce] = useState(data?.maxForce || 1000); // N
-  const [maxSpeed, setMaxSpeed] = useState(data?.maxSpeed || 100); // mm/s
-  const [efficiency, setEfficiency] = useState(data?.efficiency || 0.85); // 効率
-
-  // 計算結果を更新する関数
+  // 計算ロジック - 外部データ依存のため、コンポーネントに残す
   const updateCalculation = useCallback(() => {
+    // 初期データのロード
+    if (!data) {
+      const initialData =
+        simpleRotToLinConverterNodeDefinition.getInitialData?.() || {};
+      updateNodeData(id, initialData);
+      return;
+    }
+
     // 接続元のデータが存在しない場合、計算できない
     if (!sourceNodeData?.data?.calculatedOutput?.rotational) {
       return;
     }
+
+    const { conversionRatio, maxForce, maxSpeed, efficiency } = data;
 
     // 入力のデータを取得
     const inputData = sourceNodeData.data.calculatedOutput.rotational;
@@ -73,25 +71,11 @@ function SimpleRotToLinConverterNode({
 
     // ノードデータを更新
     updateNodeData(id, {
+      ...data,
       id,
-      type: 'linear',
-      inputType: 'rotational',
-      outputType: 'linear',
-      conversionRatio,
-      maxForce,
-      maxSpeed,
-      efficiency,
       calculatedOutput,
     });
-  }, [
-    id,
-    sourceNodeData,
-    conversionRatio,
-    maxForce,
-    maxSpeed,
-    efficiency,
-    updateNodeData,
-  ]);
+  }, [id, data, sourceNodeData, updateNodeData]);
 
   // 入力データまたはパラメータが変更されたときに計算結果を更新
   useEffect(() => {
@@ -99,91 +83,13 @@ function SimpleRotToLinConverterNode({
   }, [updateCalculation]);
 
   return (
-    <div className="node">
-      <Handle type="target" position={Position.Top} />
-      <div className="node-title">Simple R→L Converter</div>
-      <div className="node-content">
-        <div className="node-setting-field">
-          <label htmlFor={`conversionRatio-${id}`}>Lead/Pitch [mm/rev]</label>
-          <input
-            id={`conversionRatio-${id}`}
-            type="number"
-            value={conversionRatio}
-            step="0.1"
-            min="0.1"
-            onChange={(e) =>
-              setConversionRatio(parseFloat(e.target.value) || 5)
-            }
-          />
-          <label htmlFor={`maxForce-${id}`}>Max Force [N]</label>
-          <input
-            id={`maxForce-${id}`}
-            type="number"
-            value={maxForce}
-            step="10"
-            min="0"
-            onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`maxSpeed-${id}`}>Max Speed [mm/s]</label>
-          <input
-            id={`maxSpeed-${id}`}
-            type="number"
-            value={maxSpeed}
-            step="1"
-            min="0"
-            onChange={(e) => setMaxSpeed(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
-          <input
-            id={`efficiency-${id}`}
-            type="number"
-            value={efficiency}
-            step="0.01"
-            min="0"
-            max="1"
-            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-          />
-        </div>
-        <hr className="node-divider" />
-        <div className="node-readonly-field">
-          <div>Node ID: {id}</div>
-          {data?.calculatedOutput?.linear && (
-            <>
-              <div>
-                Output Force:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.force,
-                  ROUND_DIGITS,
-                )}{' '}
-                N
-              </div>
-              <div>
-                Output Speed:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.velocity,
-                  ROUND_DIGITS,
-                )}{' '}
-                mm/s
-              </div>
-              <div>
-                Output Power:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.power,
-                  ROUND_DIGITS,
-                )}{' '}
-                W
-              </div>
-              {data.calculatedOutput.isOverloaded && (
-                <div className="warning">
-                  Warning: Force or speed exceeds maximum!
-                </div>
-              )}
-            </>
-          )}
-        </div>
-        <Handle type="source" position={Position.Bottom} />
-      </div>
-    </div>
+    <BaseNode
+      id={id}
+      data={data}
+      definition={simpleRotToLinConverterNodeDefinition}
+      updateNodeData={updateNodeData}
+      readonly={readonly}
+    />
   );
 }
 

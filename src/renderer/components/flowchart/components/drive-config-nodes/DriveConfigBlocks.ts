@@ -1,34 +1,13 @@
 import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
 
 /**
- * Common ブロック定義
- * Start と End ノードを含む
- */
-const commonBlock: NodeBlock = {
-  title: 'Common',
-  nodes: [
-    { type: 'rootNode', label: 'Start' },
-    { type: 'outputNode', label: 'End' },
-  ],
-};
-
-/**
- * Concept ブロック定義
- * 接頭語が Simple のノードを含む
- */
-const conceptBlock: NodeBlock = {
-  title: 'Concept',
-  nodes: [{ type: 'simpleLinearActuator', label: 'Simple Linear Actuator' }],
-};
-
-/**
  * Actuatorブロック定義
  * 駆動源となるノード（回転または直動の出力を持つ）
  */
 const actuatorBlock: NodeBlock = {
   title: 'Actuator',
   nodes: [
-    // 抽象的なノード（構想設計用）- 実装済み
+    // 抽象的なノード（構想設計用）
     { type: 'simpleRotationalActuator', label: 'Simple Rotational Actuator' },
     { type: 'simpleLinearActuator', label: 'Simple Linear Actuator' },
 
@@ -49,7 +28,7 @@ const actuatorBlock: NodeBlock = {
 const rotationalToRotationalBlock: NodeBlock = {
   title: 'Rotational to Rotational',
   nodes: [
-    // 抽象的なノード（構想設計用）- 実装済み
+    // 抽象的なノード（構想設計用）
     { type: 'simpleRotToRotConverter', label: 'Simple R→R Converter' },
 
     // 具体的なノード - 未実装
@@ -68,7 +47,7 @@ const rotationalToRotationalBlock: NodeBlock = {
 const rotationalToLinearBlock: NodeBlock = {
   title: 'Rotational to Linear',
   nodes: [
-    // 抽象的なノード（構想設計用）- 実装済み
+    // 抽象的なノード（構想設計用）
     { type: 'simpleRotToLinConverter', label: 'Simple R→L Converter' },
 
     // 具体的なノード - 未実装
@@ -87,7 +66,7 @@ const rotationalToLinearBlock: NodeBlock = {
 const linearToRotationalBlock: NodeBlock = {
   title: 'Linear to Rotational',
   nodes: [
-    // 抽象的なノード（構想設計用）- 実装済み
+    // 抽象的なノード（構想設計用）
     { type: 'simpleLinToRotConverter', label: 'Simple L→R Converter' },
 
     // 具体的なノード - 未実装
@@ -104,7 +83,7 @@ const linearToRotationalBlock: NodeBlock = {
 const linearToLinearBlock: NodeBlock = {
   title: 'Linear to Linear',
   nodes: [
-    // 抽象的なノード（構想設計用）- 実装済み
+    // 抽象的なノード（構想設計用）
     { type: 'simpleLinToLinConverter', label: 'Simple L→L Converter' },
 
     // 具体的なノード - 未実装

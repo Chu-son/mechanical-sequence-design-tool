@@ -1,23 +1,19 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
+import React, { memo, useCallback, useEffect } from 'react';
 import {
-  Handle,
-  Position,
   useReactFlow,
   useNodeConnections,
   useNodesData,
   type NodeProps,
 } from '@xyflow/react';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
-import { LinToLinComponentNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
+import simpleLinToLinConverterNodeDefinition from './SimpleLinToLinConverterNodeDefinition';
 import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleLinToLinConverterNode({
   id,
   data,
-}: NodeProps<LinToLinComponentNodeData>) {
+  readonly,
+}: NodeProps<any> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
   const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
   const sourceNode = connections?.[0]?.source;
@@ -25,17 +21,22 @@ function SimpleLinToLinConverterNode({
     | { data?: { calculatedOutput?: any } }
     | undefined;
 
-  // ノードのデータ状態管理
-  const [ratio, setRatio] = useState(data?.ratio || 2); // 変換比（出力/入力）
-  const [maxForce, setMaxForce] = useState(data?.maxForce || 2000); // N
-  const [efficiency, setEfficiency] = useState(data?.efficiency || 0.9); // 効率
-
-  // 計算結果を更新する関数
+  // 計算ロジック - 外部データ依存のため、コンポーネントに残す
   const updateCalculation = useCallback(() => {
+    // 初期データのロード
+    if (!data) {
+      const initialData =
+        simpleLinToLinConverterNodeDefinition.getInitialData?.() || {};
+      updateNodeData(id, initialData);
+      return;
+    }
+
     // 接続元のデータが存在しない場合、計算できない
     if (!sourceNodeData?.data?.calculatedOutput?.linear) {
       return;
     }
+
+    const { ratio, maxForce, efficiency } = data;
 
     // 入力のデータを取得
     const inputData = sourceNodeData.data.calculatedOutput.linear;
@@ -66,16 +67,11 @@ function SimpleLinToLinConverterNode({
 
     // ノードデータを更新
     updateNodeData(id, {
+      ...data,
       id,
-      type: 'linear',
-      inputType: 'linear',
-      outputType: 'linear',
-      ratio,
-      maxForce,
-      efficiency,
       calculatedOutput,
     });
-  }, [id, sourceNodeData, ratio, maxForce, efficiency, updateNodeData]);
+  }, [id, data, sourceNodeData, updateNodeData]);
 
   // 入力データまたはパラメータが変更されたときに計算結果を更新
   useEffect(() => {
@@ -83,85 +79,13 @@ function SimpleLinToLinConverterNode({
   }, [updateCalculation]);
 
   return (
-    <div className="node">
-      <Handle type="target" position={Position.Top} />
-      <div className="node-title">Simple L→L Converter</div>
-      <div className="node-content">
-        <div className="node-setting-field">
-          <label htmlFor={`ratio-${id}`}>Conversion Ratio (Out/In)</label>
-          <input
-            id={`ratio-${id}`}
-            type="number"
-            value={ratio}
-            step="0.1"
-            min="0.1"
-            onChange={(e) => setRatio(parseFloat(e.target.value) || 1)}
-          />
-          <label htmlFor={`maxForce-${id}`}>Max Force [N]</label>
-          <input
-            id={`maxForce-${id}`}
-            type="number"
-            value={maxForce}
-            step="10"
-            min="0"
-            onChange={(e) => setMaxForce(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`efficiency-${id}`}>Efficiency</label>
-          <input
-            id={`efficiency-${id}`}
-            type="number"
-            value={efficiency}
-            step="0.01"
-            min="0"
-            max="1"
-            onChange={(e) => setEfficiency(parseFloat(e.target.value) || 0)}
-          />
-          <div className="node-description">
-            <small>
-              Ratio &gt; 1: 変位増加・力減少
-              <br />
-              Ratio &lt; 1: 変位減少・力増加
-            </small>
-          </div>
-        </div>
-        <hr className="node-divider" />
-        <div className="node-readonly-field">
-          <div>Node ID: {id}</div>
-          {data?.calculatedOutput?.linear && (
-            <>
-              <div>
-                Output Force:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.force,
-                  ROUND_DIGITS,
-                )}{' '}
-                N
-              </div>
-              <div>
-                Output Speed:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.velocity,
-                  ROUND_DIGITS,
-                )}{' '}
-                mm/s
-              </div>
-              <div>
-                Output Power:{' '}
-                {roundToDigits(
-                  data.calculatedOutput.linear.power,
-                  ROUND_DIGITS,
-                )}{' '}
-                W
-              </div>
-              {data.calculatedOutput.isOverloaded && (
-                <div className="warning">Warning: Force exceeds maximum!</div>
-              )}
-            </>
-          )}
-        </div>
-        <Handle type="source" position={Position.Bottom} />
-      </div>
-    </div>
+    <BaseNode
+      id={id}
+      data={data}
+      definition={simpleLinToLinConverterNodeDefinition}
+      updateNodeData={updateNodeData}
+      readonly={readonly}
+    />
   );
 }
 

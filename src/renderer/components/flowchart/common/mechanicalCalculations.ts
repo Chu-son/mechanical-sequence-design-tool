@@ -1,5 +1,4 @@
-// メカニカルな計算を行うユーティリティ関数
-import { roundToDigits } from './flowchartUtils';
+import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 
 /**
  * 速度プロファイルの点データ型

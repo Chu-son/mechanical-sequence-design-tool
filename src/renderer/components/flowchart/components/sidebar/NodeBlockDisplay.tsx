@@ -1,6 +1,5 @@
-import React from 'react';
-import { NodeBlock } from '../../types/nodeBlocks';
-import { useDnD } from '../../utils/DnDContext';
+import { NodeBlock } from '@/renderer/components/flowchart/types/nodeBlocks';
+import { useDnD } from '@/renderer/components/flowchart/utils/DnDContext';
 
 interface NodeBlockDisplayProps {
   blocks: NodeBlock[];

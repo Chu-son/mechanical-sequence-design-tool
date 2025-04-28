@@ -1,12 +1,7 @@
 import React, { memo, useEffect } from 'react';
-import {
-  Handle,
-  Position,
-  useReactFlow,
-  useNodeConnections,
-  useNodesData,
-} from '@xyflow/react';
-import '@/renderer/components/flowchart/styles/common.css'; // flowchart共通スタイルを適用
+import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
+import taskEndNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/TaskEndNodeDefinition';
+import '@/renderer/components/flowchart/styles/common.css';
 
 const TaskEndNode = ({
   id,
@@ -15,42 +10,14 @@ const TaskEndNode = ({
   id: string;
   data: { totalDuration: number };
 }): JSX.Element => {
-  const { getNode, getEdges } = useReactFlow();
-  const connections = useNodeConnections({ handleType: 'target' });
-  const nodesData = useNodesData(connections?.[0]?.source) as
-    | { data?: { totalDuration?: number } }
-    | undefined;
-
-  const calculateTotalDuration = () => {
-    const edges = getEdges();
-    let previousTotalDuration = 0;
-
-    const incomingEdges = edges.filter((edge) => edge.target === id);
-    if (incomingEdges.length > 0) {
-      const previousNodeId = incomingEdges[0].source;
-      const previousNode = getNode(previousNodeId);
-      previousTotalDuration = previousNode?.data?.totalDuration || 0;
-    }
-
-    return previousTotalDuration;
-  };
-
-  const totalDuration = calculateTotalDuration() ?? 0;
-
-  useEffect(() => {
-    const roundedTotalDuration = calculateTotalDuration() ?? 0;
-    data.totalDuration = roundedTotalDuration;
-  }, [data, nodesData]);
-
+  // 合計持続時間はprops経由で渡す
   return (
-    <div className="node">
-      <Handle type="target" position={Position.Top} />
-      <div className="node-title">Task End</div>
-      <hr className="node-divider" />
-      <div className="node-readonly-field">
-        <div>Total Duration [sec]: {totalDuration}</div>
-      </div>
-    </div>
+    <BaseNode
+      id={id}
+      data={data}
+      definition={taskEndNodeDefinition}
+      updateNodeData={() => {}}
+    />
   );
 };
 

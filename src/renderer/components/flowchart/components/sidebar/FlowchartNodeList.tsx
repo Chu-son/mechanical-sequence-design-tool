@@ -3,9 +3,9 @@ import { useLocation } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { DriveConfig, ConfigIdentifier } from '@/renderer/types/databaseTypes';
 
-import NodeBlockDisplay from './NodeBlockDisplay';
-import { driveConfigBlocks } from '../drive-config-nodes/DriveConfigBlocks';
-import { getOperationConfigBlocks } from '../operation-config-nodes/OperationConfigBlocks';
+import NodeBlockDisplay from '@/renderer/components/flowchart/components/sidebar/NodeBlockDisplay';
+import { driveConfigBlocks } from '@/renderer/components/flowchart/components/drive-config-nodes/DriveConfigBlocks';
+import { getOperationConfigBlocks } from '@/renderer/components/flowchart/components/operation-config-nodes/OperationConfigBlocks';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

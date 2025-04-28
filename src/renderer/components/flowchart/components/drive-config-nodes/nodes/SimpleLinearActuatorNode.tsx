@@ -1,112 +1,18 @@
-import React, { memo, useCallback, useEffect, useState } from 'react';
-import {
-  Handle,
-  Position,
-  useReactFlow,
-  useNodeConnections,
-  useNodesData,
-  type NodeProps,
-} from '@xyflow/react';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
-import { LinearActuatorNodeData } from '@/renderer/components/flowchart/components/drive-config-nodes/common';
+import React, { memo } from 'react';
+import { useReactFlow, type NodeProps } from '@xyflow/react';
+import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
+import simpleLinearActuatorNodeDefinition from './SimpleLinearActuatorNodeDefinition';
 import '@/renderer/components/flowchart/styles/common.css';
 
-function SimpleLinearActuatorNode({
-  id,
-  data,
-}: NodeProps<LinearActuatorNodeData>) {
+function SimpleLinearActuatorNode({ id, data }: NodeProps<any>) {
   const { updateNodeData } = useReactFlow();
-  const connections = useNodeConnections({ handleType: 'target' });
-  const nodesData = useNodesData(connections?.[0]?.source) as
-    | { data?: { totalDuration?: number } }
-    | undefined;
-
-  const [totalDuration, setTotalDuration] = useState(data.totalDuration || 0);
-  const [taskNode, setTaskNode] = useState(data);
-  const [position, setPosition] = useState(0);
-  const [velocity, setVelocity] = useState(0);
-  const [acceleration, setAcceleration] = useState(0);
-  const [deceleration, setDeceleration] = useState(0);
-
-  const calculateDuration = useCallback(() => {
-    if (velocity > 0 && acceleration > 0) {
-      const duration =
-        (2 * position) /
-        (velocity + Math.sqrt(velocity ** 2 + 2 * acceleration * position));
-      return roundToDigits(duration, ROUND_DIGITS);
-    }
-    return 0;
-  }, [position, velocity, acceleration]);
-
-  useEffect(() => {
-    if (nodesData !== undefined) {
-      const previousTotalDuration = nodesData?.data?.totalDuration ?? 0;
-
-      const newDuration = calculateDuration();
-      const newTotalDuration = previousTotalDuration + newDuration;
-      const roundedTotalDuration = roundToDigits(
-        newTotalDuration,
-        ROUND_DIGITS,
-      );
-
-      setTotalDuration(roundedTotalDuration);
-      updateNodeData(id, {
-        ...taskNode,
-        duration: newDuration,
-        totalDuration: roundedTotalDuration,
-      });
-    } else {
-      setTotalDuration(0);
-      updateNodeData(id, { ...taskNode, totalDuration: 0 });
-    }
-  }, [id, taskNode, updateNodeData, nodesData, calculateDuration]);
-
   return (
-    <div className="node">
-      <Handle type="target" position={Position.Top} />
-      <div className="node-title">Simple Linear Actuator</div>
-      <div className="node-content">
-        <div className="node-setting-field">
-          <label htmlFor={`position-${id}`}>Displacement [mm]</label>
-          <input
-            id={`position-${id}`}
-            type="number"
-            value={position}
-            onChange={(e) => setPosition(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`velocity-${id}`}>Velocity [mm/s]</label>
-          <input
-            id={`velocity-${id}`}
-            type="number"
-            value={velocity}
-            onChange={(e) => setVelocity(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`acceleration-${id}`}>Acceleration [mm/s²]</label>
-          <input
-            id={`acceleration-${id}`}
-            type="number"
-            value={acceleration}
-            onChange={(e) => setAcceleration(parseFloat(e.target.value) || 0)}
-          />
-          <label htmlFor={`deceleration-${id}`}>Deceleration [mm/s²]</label>
-          <input
-            id={`deceleration-${id}`}
-            type="number"
-            value={deceleration}
-            onChange={(e) => setDeceleration(parseFloat(e.target.value) || 0)}
-          />
-        </div>
-        <hr className="node-divider" />
-        <div className="node-readonly-field">
-          <div>Node ID: {id}</div>
-          <div>Total Duration [sec]: {totalDuration}</div>
-        </div>
-        <Handle type="source" position={Position.Bottom} />
-      </div>
-    </div>
+    <BaseNode
+      id={id}
+      data={data}
+      definition={simpleLinearActuatorNodeDefinition}
+      updateNodeData={updateNodeData}
+    />
   );
 }
 

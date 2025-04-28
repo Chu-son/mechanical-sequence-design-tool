@@ -58,9 +58,9 @@ function RenderNodeSideToolbar({
         {
           id: `edge-${currentNodeId}-${detailNodeId}`,
           source: currentNodeId,
-          sourceHandle: 'right',
+          sourceHandle: 'detail-source',
           target: detailNodeId,
-          targetHandle: 'target',
+          targetHandle: 'detail-target',
         },
       ]);
     }
