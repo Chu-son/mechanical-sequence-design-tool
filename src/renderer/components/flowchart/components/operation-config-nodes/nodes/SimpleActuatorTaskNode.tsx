@@ -11,6 +11,7 @@ import BaseNode from '@/renderer/components/flowchart/components/base-nodes/Base
 import simpleActuatorTaskNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/SimpleActuatorTaskNodeDefinition';
 import RenderNodeSideToolbar from '@/renderer/components/flowchart/common/renderNodeSideToolbar';
 import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
+import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/components/flowchart/styles/common.css';
 
 const renderCustomHandles = (id: string) => (
@@ -31,18 +32,16 @@ function SimpleActuatorTaskNode({
   data,
 }: NodeProps<{ data: TaskNodeData }>) {
   const { updateNodeData } = useReactFlow();
+  useNodeInitialData({
+    id,
+    data,
+    definition: simpleActuatorTaskNodeDefinition,
+    updateNodeData,
+  });
   const connections = useNodeConnections({ handleType: 'target' });
   const previousNodeData = useNodesData(connections?.[0]?.source) as
     | { data?: { totalDuration?: number } }
     | undefined;
-
-  useEffect(() => {
-    if (!data) {
-      const initialData =
-        simpleActuatorTaskNodeDefinition.getInitialData?.() || {};
-      updateNodeData(id, { data: initialData });
-    }
-  }, [id, data, updateNodeData]);
 
   useEffect(() => {
     if (!data) return;

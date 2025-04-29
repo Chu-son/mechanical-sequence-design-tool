@@ -1,7 +1,8 @@
-import React, { memo, useEffect } from 'react';
+import React, { memo } from 'react';
 import { useReactFlow, type NodeProps } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import simpleRotationalActuatorNodeDefinition from './SimpleRotationalActuatorNodeDefinition';
+import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/components/flowchart/styles/common.css';
 
 function SimpleRotationalActuatorNode({
@@ -10,15 +11,12 @@ function SimpleRotationalActuatorNode({
   readonly,
 }: NodeProps<any> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
-
-  // 初期データの設定
-  useEffect(() => {
-    if (!data || Object.keys(data).length === 0) {
-      const initialData =
-        simpleRotationalActuatorNodeDefinition.getInitialData?.() || {};
-      updateNodeData(id, initialData);
-    }
-  }, [id, data, updateNodeData]);
+  useNodeInitialData({
+    id,
+    data,
+    definition: simpleRotationalActuatorNodeDefinition,
+    updateNodeData,
+  });
 
   return (
     <BaseNode

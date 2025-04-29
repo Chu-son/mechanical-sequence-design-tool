@@ -140,13 +140,18 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     const { ratedTorque, ratedSpeed, rotorInertia, direction, efficiency } =
       data;
 
+    console.log('SimpleRotationalActuatorNodeDefinition compute input', {
+      ratedTorque,
+      ratedSpeed,
+      rotorInertia,
+      direction,
+      efficiency,
+    });
+
     // 回転アクチュエータの出力計算
     const torque = ratedTorque * efficiency;
     const speed = ratedSpeed;
-    // トルクとスピードから出力パワーを計算 (W = T * ω)
-    // rpmからrad/sへの変換: ω = rpm * 2π / 60
-    const power = (torque * speed * Math.PI) / 30; // W = N・m * rad/s
-
+    const power = (torque * speed * Math.PI) / 30;
     const calculatedOutput = {
       rotational: {
         torque,
@@ -160,13 +165,19 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       isOverloaded: false,
     };
 
-    // ノードデータを更新
-    update({
-      ...data,
-      id: nodeId,
-      type: 'rotational',
+    console.log('SimpleRotationalActuatorNodeDefinition compute output', {
       calculatedOutput,
     });
+
+    if (
+      !data.calculatedOutput ||
+      JSON.stringify(data.calculatedOutput) !== JSON.stringify(calculatedOutput)
+    ) {
+      update({
+        ...data,
+        calculatedOutput,
+      });
+    }
   },
 };
 

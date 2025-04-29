@@ -14,6 +14,7 @@ const taskStartNodeDefinition: NodeDefinition = {
     main: { showTitle: false, showDivider: false },
   },
   fields: [],
+  getInitialData: () => ({ initialized: true }),
 };
 
 export default taskStartNodeDefinition;

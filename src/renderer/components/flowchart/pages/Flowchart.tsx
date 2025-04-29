@@ -316,7 +316,6 @@ function DnDFlow() {
         id: getId(),
         type,
         position,
-        data: { label: `${type} node` },
       };
 
       setNodes((nds) => nds.concat(newNode));

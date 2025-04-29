@@ -4,9 +4,7 @@ import { Node } from '@xyflow/react';
  * ドライブノードのデータ型の基本インターフェース
  */
 export interface DriveNodeData {
-  id: string;
-  type: 'rotational' | 'linear'; // 出力の種類（回転/直動）
-
+  // id, typeはReact Flowノードのトップレベルで管理するため削除
   // 計算結果（次のノードへの入力として渡す）
   calculatedOutput: DriveCalculationResult;
 }
@@ -52,7 +50,6 @@ export interface ActuatorNodeData extends DriveNodeData {
  * 回転アクチュエータ用データ型
  */
 export interface RotationalActuatorNodeData extends ActuatorNodeData {
-  type: 'rotational';
   ratedTorque: number; // 定格トルク [N・m]
   ratedSpeed: number; // 定格速度 [rpm]
   maxSpeed: number; // 最大速度 [rpm]
@@ -63,7 +60,6 @@ export interface RotationalActuatorNodeData extends ActuatorNodeData {
  * 直動アクチュエータ用データ型
  */
 export interface LinearActuatorNodeData extends ActuatorNodeData {
-  type: 'linear';
   stroke: number; // ストローク長さ [mm]
   ratedForce: number; // 定格推力 [N]
   ratedSpeed: number; // 定格速度 [mm/s]
@@ -84,8 +80,6 @@ export interface DriveComponentNodeData extends DriveNodeData {
  * 回転→回転変換コンポーネント用データ型
  */
 export interface RotToRotComponentNodeData extends DriveComponentNodeData {
-  inputType: 'rotational';
-  outputType: 'rotational';
   gearRatio: number; // 減速比/増速比
   inertia: number; // 慣性モーメント [kg・m²]
   maxTorque: number; // 最大トルク [N・m]
@@ -95,8 +89,6 @@ export interface RotToRotComponentNodeData extends DriveComponentNodeData {
  * 回転→直動変換コンポーネント用データ型
  */
 export interface RotToLinComponentNodeData extends DriveComponentNodeData {
-  inputType: 'rotational';
-  outputType: 'linear';
   leadPitch?: number; // リード/ピッチ [mm]
   conversionRatio: number; // 変換比 (mm/rev)
   maxForce: number; // 最大推力 [N]
@@ -107,8 +99,6 @@ export interface RotToLinComponentNodeData extends DriveComponentNodeData {
  * 直動→回転変換コンポーネント用データ型
  */
 export interface LinToRotComponentNodeData extends DriveComponentNodeData {
-  inputType: 'linear';
-  outputType: 'rotational';
   conversionRatio: number; // 変換比 (rev/mm)
   maxTorque: number; // 最大トルク [N・m]
 }
@@ -117,8 +107,6 @@ export interface LinToRotComponentNodeData extends DriveComponentNodeData {
  * 直動→直動変換コンポーネント用データ型
  */
 export interface LinToLinComponentNodeData extends DriveComponentNodeData {
-  inputType: 'linear';
-  outputType: 'linear';
   ratio: number; // 変換比 (出力変位/入力変位)
   maxForce: number; // 最大推力 [N]
 }

@@ -2,14 +2,13 @@
  * ノードUIを宣言的に定義するための基本コンポーネント
  */
 import React, { useEffect, useCallback } from 'react';
-import { Handle, Position, useReactFlow } from '@xyflow/react';
+import { Handle, Position } from '@xyflow/react';
 import {
   BaseNodeProps,
   NodeFieldDefinition,
   InputFieldDefinition,
   ReadonlyFieldDefinition,
   ChartFieldDefinition,
-  CustomFieldDefinition,
   DividerFieldDefinition,
 } from './types';
 import '@/renderer/components/flowchart/styles/common.css';
@@ -172,20 +171,28 @@ const renderDivider = (field: DividerFieldDefinition, id: string) => {
   );
 };
 
-const shouldFieldBeHidden = (field, data) => {
+const shouldFieldBeHidden = (field: NodeFieldDefinition, data: any) => {
   if (typeof field.hidden === 'function') return field.hidden(data);
   if (typeof field.hidden === 'boolean') return field.hidden;
   if (typeof field.condition === 'function') return !field.condition(data);
   return false;
 };
 
-const getFieldReadonly = (field, data, nodeReadonly) => {
-  if (typeof field.readonly === 'function')
-    return field.readonly(data) || nodeReadonly;
-  if (typeof field.readonly === 'boolean')
-    return field.readonly || nodeReadonly;
+// getFieldReadonlyの型ガード
+function getFieldReadonly(
+  field: NodeFieldDefinition,
+  data: any,
+  nodeReadonly: boolean,
+): boolean {
+  // 'readonly'プロパティを持つ型かどうかを判定
+  if ('readonly' in field) {
+    const f = field as { readonly?: boolean | ((data: any) => boolean) };
+    if (typeof f.readonly === 'function')
+      return f.readonly(data) || nodeReadonly;
+    if (typeof f.readonly === 'boolean') return f.readonly || nodeReadonly;
+  }
   return nodeReadonly;
-};
+}
 
 const renderField = (
   field: NodeFieldDefinition,
@@ -224,9 +231,9 @@ const renderField = (
   }
 };
 
-const groupFields = (fields, data) => {
-  const groups = {};
-  fields.forEach((f) => {
+const groupFields = (fields: NodeFieldDefinition[], data: any) => {
+  const groups: { [key: string]: NodeFieldDefinition[] } = {};
+  fields.forEach((f: NodeFieldDefinition) => {
     if (shouldFieldBeHidden(f, data)) return;
     const group = f.group || '_default';
     if (!groups[group]) groups[group] = [];
@@ -249,7 +256,10 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
   updateNodeData,
   readonly = false,
 }) => {
-  const reactFlow = useReactFlow();
+  // 初期化前は何も描画しない
+  if (!data || Object.keys(data).length === 0) {
+    return <div className="node-loading">Loading...</div>;
+  }
 
   // ノードデータの更新関数
   const handleUpdateData = useCallback(
@@ -284,7 +294,7 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
       {/* ノードコンテンツ */}
       <div className="node-content">
         {/* グループごとにレンダリング */}
-        {Object.entries(grouped).map(([group, fields], groupIndex, groups) => {
+        {Object.entries(grouped).map(([group, fields], groupIndex) => {
           const groupTitle = definition.groupTitles?.[group];
           const groupOptions = definition.groupDisplayOptions?.[group] || {};
           const showTitle = groupOptions.showTitle && groupTitle;
@@ -302,9 +312,20 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
               {showTitle && <h4 className="node-group-title">{groupTitle}</h4>}
 
               {/* フィールドのレンダリング */}
-              {fields.map((field) =>
-                renderField(field, data, handleUpdateData, id, readonly),
-              )}
+              {fields.map((field: NodeFieldDefinition, fieldIndex: number) => {
+                const rendered = renderField(
+                  field,
+                  data,
+                  handleUpdateData,
+                  id,
+                  readonly,
+                );
+                return rendered
+                  ? React.cloneElement(rendered as React.ReactElement, {
+                      key: `${group}-${field.key ?? fieldIndex}`,
+                    })
+                  : null;
+              })}
             </div>
           );
         })}

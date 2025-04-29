@@ -25,6 +25,9 @@ const taskEndNodeDefinition: NodeDefinition = {
       formatValue: (value) => value?.toString() ?? '',
     },
   ],
+  getInitialData: () => ({
+    totalDuration: 0,
+  }),
 };
 
 export default taskEndNodeDefinition;

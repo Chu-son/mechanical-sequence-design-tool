@@ -9,6 +9,7 @@ import {
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import velocityChartNodeDefinition from './VelocityChartNodeDefinition';
 import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
+import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/components/flowchart/styles/common.css';
 
 /**
@@ -20,6 +21,12 @@ const renderCustomHandles = (id: string, data: any) => {
 
 function VelocityFigureNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   const { updateNodeData } = useReactFlow();
+  useNodeInitialData({
+    id,
+    data,
+    definition: velocityChartNodeDefinition,
+    updateNodeData,
+  });
 
   // ReactFlowストアからエッジを取得
   const edges = useStore((state) => state.edges);
@@ -32,15 +39,6 @@ function VelocityFigureNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
     );
     return sourceNode?.data;
   });
-
-  // 初期値の設定
-  useEffect(() => {
-    if (!data) {
-      // 初期データがない場合は定義から初期データを取得
-      const initialData = velocityChartNodeDefinition.getInitialData?.() || {};
-      updateNodeData(id, { data: initialData });
-    }
-  }, [id, data, updateNodeData]);
 
   // エッジの変化を監視して接続元ノードを特定
   useEffect(() => {
