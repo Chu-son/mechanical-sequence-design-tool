@@ -32,13 +32,26 @@ export default function Sidebar() {
         sidebarItem.shouldAutoOpen && sidebarItem.shouldAutoOpen(location),
     );
     if (autoSidebarItem) {
-      if (activeItem !== autoSidebarItem.id) setActiveItem(autoSidebarItem.id);
+      let changed = false;
+      if (activeItem !== autoSidebarItem.id) {
+        setActiveItem(autoSidebarItem.id);
+        changed = true;
+      }
       if (
         !isPinned &&
         autoSidebarItem.shouldAutoPin &&
         autoSidebarItem.shouldAutoPin(location)
-      )
+      ) {
         setIsPinned(true);
+        changed = true;
+      }
+      // 自動展開時にもsidebar-changeイベントを必ず発火
+      if (changed) {
+        const event = new CustomEvent('sidebar-change', {
+          detail: { isOpen: true },
+        });
+        window.dispatchEvent(event);
+      }
     }
   }, [location.pathname]);
 
