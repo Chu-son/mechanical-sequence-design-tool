@@ -7,11 +7,8 @@ import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
 const actuatorBlock: NodeBlock = {
   title: 'Actuator',
   nodes: [
-    // 抽象的なノード（構想設計用）
     { type: 'simpleRotationalActuator', label: 'Simple Rotational Actuator' },
     { type: 'simpleLinearActuator', label: 'Simple Linear Actuator' },
-
-    // 具体的なノード - 未実装
     /* TODO: 以下のノードは未実装
     { type: 'motorActuator', label: 'Motor' },
     { type: 'steppingMotorActuator', label: 'Stepping Motor' },
@@ -28,10 +25,7 @@ const actuatorBlock: NodeBlock = {
 const rotationalToRotationalBlock: NodeBlock = {
   title: 'Rotational to Rotational',
   nodes: [
-    // 抽象的なノード（構想設計用）
     { type: 'simpleRotToRotConverter', label: 'Simple R→R Converter' },
-
-    // 具体的なノード - 未実装
     /* TODO: 以下のノードは未実装
     { type: 'gearbox', label: 'Gearbox' },
     { type: 'pulleySystem', label: 'Pulley System' },
@@ -47,10 +41,7 @@ const rotationalToRotationalBlock: NodeBlock = {
 const rotationalToLinearBlock: NodeBlock = {
   title: 'Rotational to Linear',
   nodes: [
-    // 抽象的なノード（構想設計用）
     { type: 'simpleRotToLinConverter', label: 'Simple R→L Converter' },
-
-    // 具体的なノード - 未実装
     /* TODO: 以下のノードは未実装
     { type: 'ballScrew', label: 'Ball Screw' },
     { type: 'leadScrew', label: 'Lead Screw' },
@@ -66,10 +57,7 @@ const rotationalToLinearBlock: NodeBlock = {
 const linearToRotationalBlock: NodeBlock = {
   title: 'Linear to Rotational',
   nodes: [
-    // 抽象的なノード（構想設計用）
-    { type: 'simpleLinToRotConverter', label: 'Simple L→R Converter' },
-
-    // 具体的なノード - 未実装
+    // simpleLinToRotConverterノードを削除
     /* TODO: 以下のノードは未実装
     { type: 'crankMechanism', label: 'Crank Mechanism' },
     { type: 'rackPinionReverse', label: 'Rack & Pinion (Reverse)' },
@@ -83,10 +71,7 @@ const linearToRotationalBlock: NodeBlock = {
 const linearToLinearBlock: NodeBlock = {
   title: 'Linear to Linear',
   nodes: [
-    // 抽象的なノード（構想設計用）
-    { type: 'simpleLinToLinConverter', label: 'Simple L→L Converter' },
-
-    // 具体的なノード - 未実装
+    // simpleLinToLinConverterノードを削除
     /* TODO: 以下のノードは未実装
     { type: 'leverMechanism', label: 'Lever Mechanism' },
     { type: 'linkageMechanism', label: 'Linkage Mechanism' },
