@@ -6,9 +6,7 @@ import {
 
 const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
   type: 'simpleRotToRotConverter',
-  name: 'Simple Rot To Rot Converter',
-  description: 'Converts rotation from one form to another',
-  category: 'conversion',
+  title: 'Simple Rot To Rot Converter',
   groupTitles: {
     parameters: 'Parameters',
     warning: 'Warning',
@@ -19,26 +17,24 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
     warning: { showTitle: false, showDivider: true },
     settings: { showTitle: true, showDivider: true },
   },
-  inputs: [
-    {
-      key: 'input1',
-      label: 'Input 1',
-      type: 'number',
+  handles: {
+    target: true,
+    source: true,
+  },
+  getInitialData: () => ({
+    conversionFactor: 1,
+    outputPrecision: ROUND_DIGITS,
+    calculatedOutput: {
+      output1: 0,
+      isOverloaded: false,
     },
-  ],
-  outputs: [
-    {
-      key: 'output1',
-      label: 'Output 1',
-      type: 'number',
-    },
-  ],
+  }),
   fields: [
     {
       key: 'conversionFactor',
       label: 'Conversion Factor',
       type: 'number',
-      default: 1,
+      defaultValue: 1,
       group: 'parameters',
       getValue: (data) => data?.conversionFactor ?? 1,
       setValue: (value, data) => ({
@@ -61,18 +57,36 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
       key: 'outputPrecision',
       label: 'Output Precision',
       type: 'number',
-      default: ROUND_DIGITS,
+      defaultValue: ROUND_DIGITS,
       group: 'settings',
-      formatter: (value) => roundToDigits(value, ROUND_DIGITS),
       getValue: (data) => data?.outputPrecision ?? ROUND_DIGITS,
       setValue: (value, data) => ({
         ...data,
         outputPrecision: parseFloat(value) || ROUND_DIGITS,
       }),
     },
+    {
+      key: 'output1',
+      label: 'Output 1',
+      type: 'readonly',
+      group: 'settings',
+      getValue: (data) => data?.calculatedOutput?.output1 ?? 0,
+      formatValue: (value, data) =>
+        roundToDigits(value, data?.outputPrecision ?? ROUND_DIGITS).toString(),
+    },
   ],
-  calculate: (data) => {
-    // calculation logic
+  compute: (data, nodeId, update) => {
+    const { conversionFactor = 1, outputPrecision = ROUND_DIGITS } = data;
+    const input1 = data.input1 ?? 0;
+    const output1 = roundToDigits(input1 * conversionFactor, outputPrecision);
+    const isOverloaded = false; // 必要に応じて条件を追加
+    const calculatedOutput = { output1, isOverloaded };
+    if (
+      !data.calculatedOutput ||
+      JSON.stringify(data.calculatedOutput) !== JSON.stringify(calculatedOutput)
+    ) {
+      update({ ...data, calculatedOutput });
+    }
   },
 };
 

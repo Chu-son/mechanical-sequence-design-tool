@@ -6,9 +6,7 @@ import {
 
 const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
   type: 'simpleRotToLinConverter',
-  name: 'Simple Rotational to Linear Converter',
-  description: 'Converts rotational motion to linear motion.',
-  category: 'mechanical',
+  title: 'Simple Rotational to Linear Converter',
   groupTitles: {
     parameters: 'Parameters',
     warning: 'Warning',
@@ -19,34 +17,45 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
     warning: { showTitle: false, showDivider: true },
     notes: { showTitle: true, showDivider: true },
   },
-  inputs: [
+  handles: {
+    target: true,
+    source: true,
+  },
+  getInitialData: () => ({
+    rotationalInput: 0,
+    conversionFactor: 1,
+    linearOutput: 0,
+    calculatedOutput: {
+      linearOutput: 0,
+      isOverloaded: false,
+    },
+    description: '',
+    additionalInfo: '',
+  }),
+  fields: [
     {
       key: 'rotationalInput',
       label: 'Rotational Input [RPM]',
       type: 'number',
       unit: 'RPM',
+      group: 'parameters',
+      getValue: (data) => data?.rotationalInput ?? 0,
+      setValue: (value, data) => ({
+        ...data,
+        rotationalInput: parseFloat(value) || 0,
+      }),
     },
     {
       key: 'conversionFactor',
-      label: 'Conversion Factor [N/A]',
+      label: 'Conversion Factor',
       type: 'number',
-      unit: 'N/A',
+      group: 'parameters',
+      getValue: (data) => data?.conversionFactor ?? 1,
+      setValue: (value, data) => ({
+        ...data,
+        conversionFactor: parseFloat(value) || 1,
+      }),
     },
-  ],
-  outputs: [
-    {
-      key: 'linearOutput',
-      label: 'Linear Output [m/s]',
-      type: 'number',
-      unit: 'm/s',
-    },
-    {
-      key: 'calculatedOutput',
-      label: 'Calculated Output',
-      type: 'json',
-    },
-  ],
-  fields: [
     {
       key: 'description',
       label: 'Description',
@@ -69,24 +78,38 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
       condition: (data) => !!data?.calculatedOutput?.isOverloaded,
     },
     {
+      key: 'linearOutput',
+      label: 'Linear Output [m/s]',
+      type: 'readonly',
+      unit: 'm/s',
+      group: 'notes',
+      getValue: (data) => data?.calculatedOutput?.linearOutput ?? 0,
+      formatValue: (value, data) =>
+        roundToDigits(value, data?.outputPrecision ?? ROUND_DIGITS).toString(),
+    },
+    {
       key: 'additionalInfo',
       label: 'Additional Info',
-      type: 'textarea',
+      type: 'text',
       group: 'notes',
       getValue: (data) => data?.additionalInfo ?? '',
       setValue: (value, data) => ({ ...data, additionalInfo: value }),
     },
   ],
-  calculate: (inputs) => {
-    const { rotationalInput, conversionFactor } = inputs;
+  compute: (data, nodeId, update) => {
+    const { rotationalInput = 0, conversionFactor = 1 } = data;
     const linearOutput = roundToDigits(
       (rotationalInput * conversionFactor) / 60,
       ROUND_DIGITS,
     );
-    return {
-      linearOutput,
-      isOverloaded: linearOutput > 100, // example overload condition
-    };
+    const isOverloaded = linearOutput > 100; // 仮の例
+    const calculatedOutput = { linearOutput, isOverloaded };
+    if (
+      !data.calculatedOutput ||
+      JSON.stringify(data.calculatedOutput) !== JSON.stringify(calculatedOutput)
+    ) {
+      update({ ...data, calculatedOutput });
+    }
   },
 };
 

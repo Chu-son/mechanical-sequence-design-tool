@@ -67,7 +67,7 @@ export interface ReadonlyFieldDefinition extends BaseFieldDefinition {
   type: 'readonly';
   unit?: string;
   getValue: (data: any) => any;
-  formatValue?: (value: any) => string;
+  formatValue?: (value: any, data?: any) => string;
   hidden?: boolean | ((data: any) => boolean);
   customRender?: (data: any) => ReactNode;
   group?: string;
