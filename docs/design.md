@@ -4,63 +4,38 @@
 
 本プロジェクトは、機械装置の動作設計を支援するElectron+React+TypeScriptベースのデスクトップアプリケーションです。プロジェクト・ユニット・駆動軸構成・動作シーケンスを階層的に管理し、フローチャートによる視覚的な設計・編集を可能にします。
 
+- 想定ユーザー: 機械設計者、設備設計エンジニア
+- 主なユースケース: 機械装置の駆動系構成検討、動作シーケンス設計、部品選定、仕様検証
+- 主要機能: 階層管理、フローチャート編集、部品DB連携、計算・伝播、設計データの永続化
+
 ---
 
 ## 2. システム全体構成
 
 ### 2.1 ディレクトリ構成（ツリー形式・コメント付き）
 
-```
-root/
-├── assets/                # アイコン・リソース類
-│   ├── icon.png           # アプリ用アイコン
-│   └── icons/             # 各種サイズのアイコン画像
-├── data/                  # 永続データ（JSON）
-│   └── projects.json      # プロジェクト・ユニット・構成データ
-├── docs/                  # ドキュメント
-│   └── design.md          # 設計ドキュメント
-├── src/                   # ソースコード
-│   ├── __tests__/         # テストコード
-│   ├── main/              # Electronメインプロセス
-│   │   ├── main.ts        # エントリポイント
-│   │   ├── database.ts    # DBアクセス（メイン）
-│   │   └── preload.ts     # Rendererとのブリッジ
-│   └── renderer/          # フロントエンド（React/TypeScript）
-│       ├── App.tsx        # ルートコンポーネント
-│       ├── components/    # UI部品
-│       │   ├── common/    # 共通モーダル・リスト等
-│       │   ├── flowchart/ # フローチャート関連
-│       │   │   ├── components/
-│       │   │   │   ├── base-nodes/         # ノード共通ロジック
-│       │   │   │   ├── detail-nodes/       # 詳細ノード
-│       │   │   │   ├── drive-config-nodes/ # 駆動軸構成ノード
-│       │   │   │   ├── operation-config-nodes/ # 動作シーケンスノード
-│       │   │   │   └── sidebar/            # フローチャート用サイドバー
-│       │   └── Sidebar/ # サイドバーUI
-│       ├── config/       # モーダル等の設定
-│       ├── context/      # グローバル状態
-│       ├── hooks/        # カスタムフック
-│       ├── pages/        # 各画面
-│       ├── styles/       # CSS
-│       ├── types/        # 型定義
-│       └── utils/        # ユーティリティ・DBアクセス
-├── package.json           # パッケージ管理
-├── README.md              # プロジェクト説明
-└── ...
-```
+- assets/: アイコン・リソース類
+- data/: 永続データ（JSON）
+- docs/: ドキュメント
+- src/: ソースコード（main: Electronメイン/ renderer: Reactフロント）
+- release/: ビルド成果物
 
-#### 構成の意図
+#### 主要ファイル・ディレクトリの役割
 
-- `src/main/` … Electronメインプロセス。アプリ起動・DBアクセス・メニュー・IPC通信等。
-- `src/renderer/` … React/TypeScriptによるフロントエンド。UI・状態管理・ロジック。
-- `components/flowchart/` … フローチャート関連のUI・ロジック・ノード定義。
-- `data/` … JSONによる永続データ（プロジェクト・ユニット等）。
-- `__tests__/` … ユニットテスト。
-- `config/` … モーダル等の設定情報。
+- src/main/: Electronメインプロセス（DBアクセス、IPC、メニュー等）
+- src/renderer/: React/TypeScriptフロントエンド
+  - components/flowchart/: フローチャートUI・ノード定義
+  - components/Sidebar/: サイドバーUI
+  - config/: モーダル等の設定
+  - context/: グローバル状態
+  - hooks/: カスタムフック
+  - pages/: 各画面
+  - types/: 型定義
+  - utils/: DBアクセス・ユーティリティ
 
 ---
 
-### 2.2 アーキテクチャ図（Mermaid）
+### 2.2 アーキテクチャ図
 
 ```mermaid
 flowchart TD
@@ -85,29 +60,125 @@ flowchart TD
   end
 ```
 
-## 3. データベース設計
+---
 
-### 3.1 データ構造
+## 3. データベース設計（詳細）
 
-- `data/projects.json` に全データをJSONで保存
-- 主なエンティティ:
-  - **Project**
-    - id, name, description, createdAt, updatedAt, units: Unit[]
-  - **Unit**
-    - id, name, description, parentId, createdAt, updatedAt, driveConfigs: DriveConfig[], operationConfigs: OperationConfig[]
-  - **DriveConfig / OperationConfig**
-    - id, label, description, createdAt, updatedAt, flow_data: FlowData
-  - **FlowData**
-    - nodes: Node[]
-    - edges: { source: string; target: string }[]
-    - viewport: { x: number; y: number; zoom: number }
-- 型定義は `src/renderer/types/databaseTypes.ts` 参照
+### 3.1 データベース設計方針
 
-### 3.2 データベースアクセス
+- データベース層はインターフェイスによる抽象化を徹底し、ストレージ方式（JSONファイル/SQLite/サーバDB等）の違いを吸収し、柔軟な拡張・切替を可能とする。
+- すべてのデータアクセスは `DatabaseInterface` を通じて行い、UIやロジック層はストレージ方式に依存しない。
+- データベースの具体的な実装（JsonDatabase, SQLiteDatabase, ServerDatabase等）はFactoryパターンで生成し、必要に応じてキャッシュ層（CachedDatabase）を挟む。
 
-- `src/renderer/utils/database.ts` にてDatabaseInterfaceを実装
-- CRUD操作は全てインターフェース経由で行い、Electron経由でJSONファイルを更新
-- ユニット・構成・シーケンス・フローチャート単位でデータを分離
+### 3.2 DatabaseFactoryと切替設計
+
+DatabaseFactoryクラスは、アプリケーション設定(config.databaseType等)に応じて適切なDatabaseInterface実装を生成する。サポートするストレージ方式は以下の通り。
+
+- 'json': JsonDatabase（ローカルJSONファイルを用いる実装）
+- 'sqlite': SQLiteDatabase（ローカルSQLite DBを用いる実装）
+- 'server': ServerDatabase（API/クラウドDB等を用いる実装）
+
+DatabaseFactoryは静的メソッドcreateDatabase()を持ち、config.databaseTypeの値に応じて下記のようにインスタンスを生成する。生成したDatabaseInterface実装は必ずCachedDatabaseでラップして返す。新たなストレージ方式を追加する場合は、DatabaseInterface実装を追加し、switch文にcaseを追加する。
+
+設計仕様:
+
+- DatabaseFactoryはsrc/renderer/utils/DatabaseFactory.tsに実装する。
+- DatabaseFactoryは下記のような構造とする。
+
+```typescript
+import { DatabaseInterface } from '@/renderer/types/databaseTypes';
+import { JsonDatabase } from '@/renderer/utils/database';
+import { SQLiteDatabase } from '@/renderer/utils/sqliteDatabase';
+import { ServerDatabase } from '@/renderer/utils/serverDatabase';
+import { config } from '@/renderer/config';
+import CachedDatabase from '@/renderer/utils/CachedDatabase';
+
+class DatabaseFactory {
+  static createDatabase(): DatabaseInterface {
+    let database: DatabaseInterface;
+    switch (config.databaseType) {
+      case 'json':
+        database = new JsonDatabase('projects.json');
+        break;
+      case 'sqlite':
+        database = new SQLiteDatabase('projects.db');
+        break;
+      case 'server':
+        database = new ServerDatabase(config.serverEndpoint);
+        break;
+      default:
+        throw new Error('Unsupported database type');
+    }
+    return new CachedDatabase(database);
+  }
+}
+export default DatabaseFactory;
+```
+
+- JsonDatabaseはローカルのJSONファイルを読み書きする実装とする。
+- SQLiteDatabaseはローカルのSQLiteファイルDBを操作する実装とする。
+- ServerDatabaseはREST APIやGraphQL等のサーバDBを操作する実装とする。
+- すべてのDatabaseInterface実装は、プロジェクト・ユニット・構成・シーケンス等のCRUD、トランザクション、ID発番等のメソッドを持つ。
+- CachedDatabaseは、DatabaseInterfaceをラップし、読み込み結果のキャッシュや多重アクセス時の整合性を担保する。
+- 設定値（config.databaseType, config.serverEndpoint等）はアプリケーションの設定ファイルで管理する。
+
+---
+
+## 3.3 DatabaseInterfaceの設計
+
+DatabaseInterfaceは、プロジェクト・ユニット・駆動軸構成・動作シーケンス・フローチャートデータなど、全てのエンティティに対するCRUD操作、検索、ID発番、トランザクション制御を型安全に提供するインターフェイスとする。
+
+```typescript
+export interface DatabaseInterface {
+  // プロジェクト管理
+  getProjects(): Promise<Project[]>;
+  getProjectById(projectId: string): Promise<Project | undefined>;
+  addProject(project: Project): Promise<void>;
+  updateProject(project: Project): Promise<void>;
+  deleteProject(projectId: string): Promise<void>;
+
+  // ユニット管理
+  getUnits(projectId: string): Promise<Unit[]>;
+  getUnitById(projectId: string, unitId: string): Promise<Unit | undefined>;
+  addUnit(projectId: string, unit: Unit): Promise<void>;
+  updateUnit(projectId: string, unit: Unit): Promise<void>;
+  deleteUnit(projectId: string, unitId: string): Promise<void>;
+
+  // 駆動軸構成管理
+  getDriveConfigs(unitId: string): Promise<DriveConfig[]>;
+  getDriveConfigById(
+    unitId: string,
+    configId: string,
+  ): Promise<DriveConfig | undefined>;
+  addDriveConfig(unitId: string, config: DriveConfig): Promise<void>;
+  updateDriveConfig(unitId: string, config: DriveConfig): Promise<void>;
+  deleteDriveConfig(unitId: string, configId: string): Promise<void>;
+
+  // 動作シーケンス管理
+  getOperationConfigs(unitId: string): Promise<OperationConfig[]>;
+  getOperationConfigById(
+    unitId: string,
+    configId: string,
+  ): Promise<OperationConfig | undefined>;
+  addOperationConfig(unitId: string, config: OperationConfig): Promise<void>;
+  updateOperationConfig(unitId: string, config: OperationConfig): Promise<void>;
+  deleteOperationConfig(unitId: string, configId: string): Promise<void>;
+
+  // フローチャートデータ管理
+  getFlowData(configId: string): Promise<FlowData>;
+  updateFlowData(configId: string, flowData: FlowData): Promise<void>;
+
+  // ID発番
+  generateId(prefix: string): string;
+
+  // トランザクション制御
+  beginTransaction(): Promise<void>;
+  commitTransaction(): Promise<void>;
+  rollbackTransaction(): Promise<void>;
+}
+```
+
+---
 
 ## 4. NodeDefinitionの詳細
 
@@ -115,344 +186,168 @@ flowchart TD
 
 - 各ノードの型・UI・ロジック・初期値・計算処理を定義する
 - ファイル例: `components/flowchart/components/detail-nodes/HogeNodeDefinition.tsx`
+- 主要プロパティ:
+  - type: ノードタイプ名（例: 'velocityChart'）
+  - title: ノードタイトル（UI表示用）
+  - fields: 入力・表示フィールド配列（InputFieldDefinition型）
+  - handles: 入出力ハンドルの有無
+  - getInitialData: 初期データ生成関数
+  - compute: データ更新時の計算処理
 
-### 4.2 NodeDefinitionの主な構成
+### 4.2 NodeDefinitionの主な構成・型定義
 
-- `type`: ノードタイプ名（例: 'velocityChart'）
-- `title`: ノードタイトル（UI表示用）
-- `fields`: ノードの入力・表示フィールド配列
-  - 各フィールドは `InputFieldDefinition` などで型定義
-  - 例: テキスト・数値・セレクト・カスタム・区切り線
-- `groupTitles`/`groupDisplayOptions`: フィールドグループのタイトルや表示制御
-- `handles`: 入出力ハンドルの有無（target/source）
-- `getInitialData`: 初期データ生成関数
-- `compute`: データ更新時の計算処理（例: 合計時間の自動計算）
+```typescript
+export interface NodeDefinition {
+  type: string;
+  title: string;
+  fields: InputFieldDefinition[];
+  handles?: { target?: boolean; source?: boolean };
+  groupTitles?: { [groupKey: string]: string };
+  groupDisplayOptions?: { [groupKey: string]: { showTitle?: boolean } };
+  getInitialData: () => any;
+  compute?: (data: any, id: string, update: (d: any) => void) => void;
+  renderCustomUI?: (id: string, data: any) => React.ReactNode;
+}
 
-#### フィールド定義例
-
-```ts
-fields: [
-  {
-    key: 'velocity',
-    label: '速度',
-    type: 'number',
-    unit: 'mm/s',
-    getValue: (data) => data.velocity,
-    setValue: (value, data) => ({ ...data, velocity: value }),
-    min: 0,
-    max: 1000,
-    step: 1,
-    required: true,
-  },
-  // ...他フィールド
-];
-```
-
-#### NodeDefinition雛形
-
-```ts
-const hogeNodeDefinition: NodeDefinition = {
-  type: 'hoge',
-  title: 'Hogeノード',
-  fields: [
-    /* ...フィールド定義... */
-  ],
-  getInitialData: () => ({
-    /* ...初期値... */
-  }),
-  compute: (data, id, update) => {
-    /* ...計算処理... */
-  },
-};
-```
-
-### 4.3 ノード追加手順
-
-1. `detail-nodes/` などに `HogeNode.tsx`（UI）と `HogeNodeDefinition.tsx`（定義）を作成
-2. `HogeNodeDefinition.tsx` でNodeDefinitionを記述
-3. `HogeNode.tsx` で `BaseNode` にdefinitionを構築
-4. ノードタイプ一覧に追加（`index.ts`等）
-5. サイドバーやノードリストに追加
-
-## 4.4 NodeDefinitionとNodeの記述方法（詳細）
-
-### NodeDefinitionの記述方法
-
-NodeDefinitionは各ノードの「型」「UI」「フィールド」「初期値」「計算ロジック」などを宣言的に定義するオブジェクトです。
-
-#### 1. ファイル配置
-
-- `src/renderer/components/flowchart/components/detail-nodes/` などに `HogeNodeDefinition.tsx` を作成
-
-#### 2. 基本構造
-
-```ts
-import { NodeDefinition } from '../base-nodes/types';
-
-const hogeNodeDefinition: NodeDefinition = {
-  type: 'hoge', // ノードタイプ名（ユニーク）
-  title: 'Hogeノード', // UI上のタイトル
-  fields: [
-    {
-      key: 'param1',
-      label: 'パラメータ1',
-      type: 'number',
-      getValue: (data) => data.param1,
-      setValue: (value, data) => ({ ...data, param1: value }),
-      min: 0,
-      max: 100,
-      step: 1,
-      required: true,
-    },
-    // ...他フィールド
-  ],
-  groupTitles: { parameters: 'パラメータ' }, // グループ表示（任意）
-  groupDisplayOptions: { parameters: { showTitle: true } },
-  handles: { target: true, source: true }, // 入出力ハンドル
-  getInitialData: () => ({ param1: 0 }), // 初期値
-  compute: (data, id, update) => {
-    // データ変更時の自動計算ロジック（任意）
-    if (data.param1 < 0) update({ ...data, param1: 0 });
-  },
-};
-
-export default hogeNodeDefinition;
-```
-
-#### 3. フィールド型の主な種類
-
-- `type: 'number' | 'text' | 'select' | 'custom' | 'readonly' | 'divider' | 'chart'`
-- `getValue`, `setValue` で双方向バインド
-- `validation` でバリデーション関数も指定可能
-
-#### 4. 計算ロジック
-
-- `compute` 関数で、他フィールドの値に応じた自動計算や副作用を記述可能
-- 例: 合計値の自動更新、他フィールドの連動
-
----
-
-### Node（UIコンポーネント）の記述方法
-
-NodeはNodeDefinitionを受け取り、BaseNodeを使ってUIを構築するReactコンポーネントです。
-
-#### 1. ファイル配置
-
-- `src/renderer/components/flowchart/components/detail-nodes/` などに `HogeNode.tsx` を作成
-
-#### 2. 基本構造
-
-```tsx
-import React, { memo } from 'react';
-import BaseNode from '../base-nodes/BaseNode';
-import hogeNodeDefinition from './HogeNodeDefinition';
-
-const HogeNode = ({ id, data, updateNodeData }) => (
-  <BaseNode
-    id={id}
-    data={data}
-    definition={hogeNodeDefinition}
-    updateNodeData={updateNodeData}
-  />
-);
-
-export default memo(HogeNode);
-```
-
-#### 3. BaseNodeの役割
-
-- NodeDefinitionに従い、フィールド・グループ・ハンドル・カスタムUIを自動生成
-- `updateNodeData` でノードデータの双方向更新
-- `readonly` や `renderCustomUI` などの拡張も可能
-
-#### 4. ノードタイプの登録
-
-- ノード一覧（例: `index.ts`）でtypeとコンポーネントを紐付けてエディタに登録
-
-```ts
-export const detailNodeTypes = {
-  hoge: HogeNode,
-  // ...他ノード
-};
+export interface InputFieldDefinition {
+  key: string;
+  label: string;
+  type:
+    | 'number'
+    | 'text'
+    | 'select'
+    | 'custom'
+    | 'readonly'
+    | 'divider'
+    | 'chart';
+  unit?: string;
+  getValue: (data: any) => any;
+  setValue: (value: any, data: any) => any;
+  min?: number;
+  max?: number;
+  step?: number;
+  required?: boolean;
+  options?: { label: string; value: any }[];
+  render?: (
+    data: any,
+    update: (v: any) => void,
+    readonly: boolean,
+  ) => React.ReactNode;
+  readonly?: boolean;
+  validation?: (value: any) => string | undefined;
+  group?: string;
+  condition?: (data: any) => boolean;
+  hidden?: boolean;
+}
 ```
 
 ---
-
-## 4.5 NodeDefinition/Nodeの拡張性と応用例
-
-### Handle（入出力ハンドル）の拡張
-
-- `handles` プロパティで target/source の有無や複数ハンドルの制御が可能
-- デフォルトは `handles: { target: true, source: true }`
-- 複数ハンドルやカスタム位置は `BaseNode` の `renderHandles` プロパティで拡張
-
-#### 例: 複数/カスタムハンドル
-
-```ts
-const customNodeDefinition: NodeDefinition = {
-  type: 'customNode',
-  title: 'カスタムノード',
-  fields: [
-    {
-      key: 'param1',
-      label: 'パラメータ1',
-      type: 'number',
-      getValue: (data) => data.param1,
-      setValue: (value, data) => ({ ...data, param1: value }),
-      min: 0,
-      max: 100,
-      step: 1,
-      required: true,
-    },
-    // ...他フィールド
-  ],
-  getInitialData: () => ({ param1: 0 }),
-  compute: (data, id, update) => {
-    if (data.param1 < 0) update({ ...data, param1: 0 });
-  },
-  handles: { target: true, source: true },
-};
-
-// Node側でカスタムハンドルを追加
-<BaseNode
-  id={id}
-  data={data}
-  definition={customNodeDefinition}
-  updateNodeData={updateNodeData}
-  renderHandles={(id, data) => (
-    <>
-      <Handle type="source" position={Position.Left} id="left" />
-      <Handle type="source" position={Position.Right} id="right" />
-    </>
-  )}
-/>
-```
-
-### カスタムUIの拡張
-
-- `fields` の `type: 'custom'` で任意のReact要素をレンダリング可能
-- `customRender`/`render` プロパティで独自UIや複雑な入力・可視化を実装
-- `BaseNode` の `renderCustomUI` でノード全体の下部などにカスタムUIを追加可能
-
-#### 例: カスタムフィールド
-
-```ts
-fields: [
-  {
-    key: 'customChart',
-    type: 'custom',
-    render: (data, update, readonly) => (
-      <MyChartComponent value={data.chartData} onChange={v => update({ ...data, chartData: v })} readOnly={readonly} />
-    ),
-  },
-  // ...他フィールド
-]
-```
-
-#### 例: ノード全体へのカスタムUI
-
-```tsx
-<BaseNode
-  id={id}
-  data={data}
-  definition={hogeNodeDefinition}
-  updateNodeData={updateNodeData}
-  renderCustomUI={(id, data) => (
-    <button onClick={() => alert(`ノードID: ${id}`)}>デバッグ</button>
-  )}
-/>
-```
-
-### その他の拡張ポイント
-
-- `readonly` プロパティでフィールド単位の編集可否制御
-- `groupTitles`/`groupDisplayOptions` でUIグループ化や装飾
-- `validation` で入力値のバリデーション
-- `condition`/`hidden` でフィールドの動的表示制御
-- `chart`型フィールドでグラフや可視化も可能
-
-### 実装・運用上の注意
-
-- 拡張はNodeDefinition/Node/Fieldの各レイヤで柔軟に可能
-- 複雑なUIやロジックはカスタムフィールドや `renderCustomUI` で分離
-- ノード間の依存や連動は `compute` で集約
-- 型定義を活用し、拡張時も型安全性を維持
 
 ## 5. UI/UX設計
 
-### 5.1 画面遷移図（Mermaid）
+### 5.1 画面構成・主要UI部品
 
-```mermaid
-graph TD
-  A[プロジェクト一覧] --> B[プロジェクト詳細]
-  B --> C[ユニット詳細]
-  C --> D[駆動軸構成/動作シーケンス一覧]
-  D --> E[フローチャートエディタ]
-```
+各UI部品は、props・状態・イベント・構造・バリデーション・エラー表示・スタイルを詳細に設計する。
 
-### 5.2 主要UI部品
+### サイドバー
 
-- サイドバー: プロジェクト・ユニット・構成を階層表示
-- モーダル: 新規作成・編集・削除
-- フローチャート: ノード・エッジのD&D、再接続、編集
-- スタイル: `styles/` 配下CSSで統一
+- 階層構造でプロジェクト・ユニット・構成を表示
+- props: projects: Project[], selectedProjectId: string, onSelectProject: (id: string) => void, ...
+- 状態: 開閉状態、選択状態、ドラッグ&ドロップ状態
+- イベント: プロジェクト選択、ユニット追加/削除、構成選択、ドラッグ&ドロップ
+- スタイル: Sidebar.cssで定義
 
-#### サイドバー構造
+### フローチャート
 
-- `Sidebar/Sidebar.tsx` … サイドバー本体
-- `Sidebar/items/` … ユニット・構成・カテゴリ等のリスト部品
-- `Sidebar/ProjectContent.tsx` … プロジェクト・ユニット階層の表示ロジック
+- ノード・エッジのD&D、再接続、編集、ズーム、パン
+- props: nodes: Node[], edges: Edge[], onNodeChange: (nodes: Node[]) => void, onEdgeChange: (edges: Edge[]) => void, ...
+- 状態: 選択ノード、編集中ノード、ズーム倍率、パン位置
+- イベント: ノード追加/削除/編集、エッジ追加/削除/再接続、ノード移動
+- スタイル: flow-theme.css, common.css
 
-#### モーダル構造
+### モーダル
 
-- `common/BaseModal.tsx` … 汎用モーダル
-- `common/FormModal.tsx` … 入力フォーム付きモーダル
-- `config/modalConfigs.ts` … モーダルのフィールド・バリデーション定義
+- 新規作成・編集・削除用のBaseModal, FormModal
+- props: isOpen: boolean, onClose: () => void, fields: InputFieldDefinition[], onSubmit: (data: any) => void, ...
+- バリデーション: 各フィールドのrequired, min, max, validation関数で制御
+- エラー表示: フィールド単位でエラー文言を表示
+- スタイル: BaseModal.css, FormModal.css
 
-#### フローチャート構造
+- 画面遷移例:
+  - プロジェクト一覧 → プロジェクト詳細 → ユニット詳細 → 構成/シーケンス一覧 → フローチャートエディタ
 
-- `flowchart/pages/Flowchart.tsx` … フローチャート画面本体
-- `flowchart/components/` … ノード・サイドバー・ツールバー等
-- `flowchart/components/base-nodes/` … ノード共通ロジック
-- `flowchart/components/detail-nodes/` … 詳細ノード
-- `flowchart/components/drive-config-nodes/` … 駆動軸構成用ノード
-- `flowchart/components/operation-config-nodes/` … 動作シーケンス用ノード
-- `flowchart/styles/` … フローチャート用CSS
+### 5.2 UI状態・バリデーション例
 
-#### スタイルガイド
-
-- `styles/App.css` … 全体レイアウト
-- `styles/Common.css` … 汎用スタイル
-- `flowchart/styles/common.css` … ノード・フローチャート共通
-- `flowchart/styles/flow-theme.css` … テーマ・色・ノード装飾
+- 各フォームはバリデーション（必須・型・範囲）を実装
+- 例: モーダルでの入力値チェック、エラー表示
 
 ---
 
-### 6. 機能詳細設計
+## 6. 機能詳細設計
 
 ### 6.1 プロジェクト・ユニット管理
 
 - 一覧・新規作成・編集・削除
 - サブユニット（階層構造）対応
 - サイドバーでの階層表示
+- 操作フロー例:
+  1. プロジェクト新規作成
+  2. ユニット追加
+  3. 構成・シーケンス追加
+  4. フローチャート編集
 
 ### 6.2 駆動軸構成・動作シーケンス管理
 
-- 各ユニットに複数の構成・シーケンスを紐付け
-- フローチャートデータ（ノード・エッジ）を個別に保持
+- 各ユニットは複数の駆動軸構成（DriveConfig）・動作シーケンス（OperationConfig）を持つ。
+- DriveConfig/OperationConfigはCRUD操作で管理し、各操作はDatabaseInterface経由で行う。
+- 型定義:
+
+```typescript
+export interface DriveConfig {
+  id: string;
+  label: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  flowData: FlowData;
+}
+export interface OperationConfig {
+  id: string;
+  label: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  flowData: FlowData;
+}
+```
+
+- CRUD操作:
+  - addDriveConfig(unitId: string, config: DriveConfig): Promise<void>
+  - updateDriveConfig(unitId: string, config: DriveConfig): Promise<void>
+  - deleteDriveConfig(unitId: string, configId: string): Promise<void>
+  - addOperationConfig(unitId: string, config: OperationConfig): Promise<void>
+  - updateOperationConfig(unitId: string, config: OperationConfig): Promise<void>
+  - deleteOperationConfig(unitId: string, configId: string): Promise<void>
+- 各操作はUIイベント（追加・編集・削除ボタン等）から呼び出され、DB更新後は状態を再取得してUIを更新する。
 
 ### 6.3 フローチャート編集
 
-- ノード追加/削除/編集、エッジ追加/削除/再接続
-- ノードは「Node.tsx」と「NodeDefinition.tsx」の2ファイルで構成
-- ノードの雛形例・追加手順は前述
+- ノード追加: サイドバーやツールバーからノードタイプを選択し、フローチャート上に配置する。ノードIDはgenerateIdで発番。
+- ノード編集: ノードクリックで詳細パネルまたはモーダルを開き、NodeDefinitionに従い編集。編集内容は即時反映または保存時にDBへ反映。
+- ノード削除: ノード選択後、削除ボタンで削除。関連エッジも自動削除。
+- エッジ追加/削除/再接続: ノード間をドラッグで接続、エッジ選択で削除、再接続もD&Dで実装。
+- ノード間のデータ伝播・計算は各NodeDefinitionのcompute関数で一元管理し、依存関係がある場合は再計算をトリガーする。
+- フローチャートの状態（ノード・エッジ・ビュー）はFlowData型で管理し、DBに永続化する。
 
 ### 6.4 モーダル・フォーム
 
-- 共通モーダル (`BaseModal.tsx`, `FormModal.tsx`)
-- モーダル設定は `config/modalConfigs.ts` で一元管理
+- モーダルはBaseModal, FormModalで実装し、propsでisOpen, onClose, fields, onSubmit等を受け取る。
+- 各フィールドはInputFieldDefinitionで定義し、required, min, max, validation関数でバリデーションを実装。
+- バリデーションエラーはフィールド単位でエラー文言を表示し、onSubmit時に全フィールド検証を行う。
+- 入力値はuseStateで管理し、変更時に即時バリデーションを実行。
+- スタイル・レイアウトはFormModal.css, BaseModal.cssで統一。
 
-### 6.5 駆動軸構成ノード（drive-config-nodes）の設計詳細
+### 6.5 駆動軸構成ノードの設計詳細
 
 #### データ構造と設計方針
 
@@ -561,7 +456,7 @@ export interface LinearOutput {
 }
 
 export interface DriveNodeData {
-  // ...入力値...
+  // ノードごとの入力値を全て明記
   outputSpec?: RotationalOutput | LinearOutput;
 }
 ```
@@ -574,7 +469,7 @@ export interface DriveNodeData {
 
 ## 7. データフロー・状態管理
 
-### 7.1 データフロー図（Mermaid）
+### 7.1 データフロー図・状態遷移
 
 ```mermaid
 sequenceDiagram
@@ -590,11 +485,44 @@ sequenceDiagram
   Renderer-->>User: UI更新
 ```
 
-### 7.2 状態管理
+### 7.2 状態管理の詳細設計
 
 - ReactのuseState/useContextでグローバル状態管理
+- 主要なグローバル状態の型例:
+
+```ts
+interface GlobalState {
+  selectedProjectId?: string;
+  selectedUnitId?: string;
+  sidebarOpen: boolean;
+  // ...
+}
+```
+
 - フローチャートのノード・エッジはuseStateで管理
 - データ永続化はDBインターフェース経由
+
+- グローバル状態はuseContextで管理し、型定義はGlobalStateで厳密に定義。
+- ローカル状態はuseStateで管理。
+- 状態遷移はUIイベント（選択・追加・編集・削除等）ごとに明確に定義。
+- 型定義:
+
+```typescript
+export interface GlobalState {
+  selectedProjectId?: string;
+  selectedUnitId?: string;
+  selectedConfigId?: string;
+  sidebarOpen: boolean;
+  modalState: {
+    isOpen: boolean;
+    modalType?: string;
+    modalProps?: any;
+  };
+}
+```
+
+- 状態変更は必ずsetStateまたはdispatch経由で行い、直接変更は禁止。
+- 状態の初期化・リセット・永続化も明記。
 
 ---
 
@@ -602,11 +530,34 @@ sequenceDiagram
 
 - ユニットテストは `__tests__/` 配下
 - 主要なCRUD・フローチャート操作・ノード追加/削除/編集のテストを実施
-- テスト例:
+- テストケース例:
   - プロジェクト作成・削除
   - ユニット階層構造
   - ノード追加・編集・削除
   - フローチャート保存・復元
+- テストデータ例:
+
+```ts
+const testProject: Project = {
+  id: 'project-001',
+  name: 'テストプロジェクト',
+  description: 'テスト用プロジェクト',
+  createdAt: '2025-05-03T00:00:00Z',
+  updatedAt: '2025-05-03T00:00:00Z',
+  units: [],
+};
+```
+
+- テスト対象は全ての主要機能（CRUD、フローチャート編集、ノード追加/削除/編集、バリデーション、状態遷移、DBアクセス等）とする。
+- テスト観点ごとにテストケースを網羅し、テストデータは型定義に準拠。
+- テスト手順:
+  1. 初期状態の検証
+  2. CRUD操作の検証（追加・編集・削除・取得）
+  3. UIイベント（ノード追加/削除/編集、エッジ操作、バリデーション）の検証
+  4. 状態遷移・永続化の検証
+  5. エラーケース・例外処理の検証
+- テストコードは**tests**配下に配置し、テストごとに独立したテストデータを用意する。
+- すべてのテストは自動化し、CI/CDで定期的に実行する。
 
 ---
 
@@ -617,12 +568,9 @@ sequenceDiagram
 - データベース層はインターフェース経由で疎結合
 - UI部品は再利用性を重視
 - スタイル・設定・ロジックの分離
+- 拡張手順例:
+  1. 型定義追加
+  2. NodeDefinition/Node追加
+  3. サイドバー・リストに登録
 
 ---
-
-## 10. 今後の課題・TODO
-
-- タクトタイム計算機能の拡充
-- Undo/Redoの実装
-- テストケースの拡充
-- ドキュメントの充実
