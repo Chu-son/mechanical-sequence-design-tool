@@ -290,9 +290,27 @@ export const detailNodeTypes = {
 
 ```ts
 const customNodeDefinition: NodeDefinition = {
-  ...existing code...
+  type: 'customNode',
+  title: 'カスタムノード',
+  fields: [
+    {
+      key: 'param1',
+      label: 'パラメータ1',
+      type: 'number',
+      getValue: (data) => data.param1,
+      setValue: (value, data) => ({ ...data, param1: value }),
+      min: 0,
+      max: 100,
+      step: 1,
+      required: true,
+    },
+    // ...他フィールド
+  ],
+  getInitialData: () => ({ param1: 0 }),
+  compute: (data, id, update) => {
+    if (data.param1 < 0) update({ ...data, param1: 0 });
+  },
   handles: { target: true, source: true },
-  // ...existing code...
 };
 
 // Node側でカスタムハンドルを追加
@@ -320,7 +338,6 @@ const customNodeDefinition: NodeDefinition = {
 
 ```ts
 fields: [
-  ...existing code...
   {
     key: 'customChart',
     type: 'custom',
@@ -328,6 +345,7 @@ fields: [
       <MyChartComponent value={data.chartData} onChange={v => update({ ...data, chartData: v })} readOnly={readonly} />
     ),
   },
+  // ...他フィールド
 ]
 ```
 
@@ -335,7 +353,10 @@ fields: [
 
 ```tsx
 <BaseNode
-  ...existing code...
+  id={id}
+  data={data}
+  definition={hogeNodeDefinition}
+  updateNodeData={updateNodeData}
   renderCustomUI={(id, data) => (
     <button onClick={() => alert(`ノードID: ${id}`)}>デバッグ</button>
   )}
@@ -407,7 +428,7 @@ graph TD
 
 ---
 
-## 6. 機能詳細設計
+### 6. 機能詳細設計
 
 ### 6.1 プロジェクト・ユニット管理
 
@@ -430,6 +451,124 @@ graph TD
 
 - 共通モーダル (`BaseModal.tsx`, `FormModal.tsx`)
 - モーダル設定は `config/modalConfigs.ts` で一元管理
+
+### 6.5 駆動軸構成ノード（drive-config-nodes）の設計詳細
+
+#### データ構造と設計方針
+
+- すべての駆動軸構成ノードは `DriveNodeData` を継承し、`outputSpec` プロパティを持つ。
+- `outputSpec` は「回転系出力（rotational）」または「直動系出力（linear）」、または両方を持つことができる。
+- 各ノードは「入力値（ユーザーが指定するパラメータ）」と「出力値（計算・伝播されるスペック）」を明確に分離する。
+- 型定義・データ構造は `src/renderer/types/databaseTypes.ts` で一元管理。
+
+##### 回転系出力（rotational）で保持・計算する値
+
+- 定格トルク（Rated Torque）
+- 定格回転速度（Rated Speed）
+- 定格出力（Rated Power）
+- 最大トルク（Max Torque）
+- 最大回転速度（Max Speed）
+- 最大出力（Max Power）
+- 許容トルク（Allowable Torque）
+- 全体の減速比（Total Gear Ratio）
+- 全体の慣性モーメント（Total Inertia）
+
+##### 直動系出力（linear）で保持・計算する値
+
+- 定格推力（Rated Force）
+- 定格速度（Rated Speed）
+- 定格出力（Rated Power）
+- 最大推力（Max Force）
+- 最大速度（Max Speed）
+- 最大出力（Max Power）
+- ストローク（Stroke）
+- 最大加速度（Max Acceleration）
+
+##### 共通で保持する値
+
+- 効率（Efficiency）
+
+---
+
+#### ノード種別ごとの入力・出力仕様
+
+| ノード種別         | 主な入力値                                                             | 主な出力値               |
+| :----------------- | :--------------------------------------------------------------------- | :----------------------- |
+| 回転アクチュエータ | 型式、メーカー、定格トルク、定格速度、最大速度、ローター慣性モーメント | 回転系出力（rotational） |
+| 直動アクチュエータ | 型式、メーカー、ストローク長さ、定格推力、定格速度、最大速度、加速度   | 直動系出力（linear）     |
+| 回転→回転変換      | 型式、メーカー、効率、減速比/増速比、慣性モーメント、最大トルク        | 回転系出力（rotational） |
+| 回転→直動変換      | 型式、メーカー、効率、リード/ピッチ、変換比、最大推力、最大速度        | 直動系出力（linear）     |
+| 直動→回転変換      | 型式、メーカー、効率、変換比、最大トルク                               | 回転系出力（rotational） |
+| 直動→直動変換      | 型式、メーカー、効率、変換比、最大推力                                 | 直動系出力（linear）     |
+| 出力ノード         | なし（入力値なし、前段の出力値を表示）                                 | 回転系または直動系出力   |
+
+---
+
+#### 運用フロー・ノード種別の使い分け
+
+- 構想段階では仕様のみを入力するノードも利用可能。
+- 詳細設計段階では「駆動部品登録ページ」で部品（型式・メーカー・スペック）を登録し、フローチャートで型式選択してノード追加。
+- 出力ノードは入力値を持たず、前段の出力値（最終スペック）を表示するだけ。
+
+---
+
+#### 計算ロジック・データ伝播のポイント
+
+- 各ノードは、入力値と前段ノードの出力値（outputSpec）をもとに、自身の `outputSpec` を計算する。
+- 変換ノード（例：減速機、ボールねじ等）は、入力値（効率・変換比など）と前段の出力値を組み合わせて新たな出力値を算出。
+- 効率や減速比などは、ノードチェーン全体で累積的に計算される。
+- 計算式や伝播ロジックは `compute` 関数に集約し、型安全性を担保。
+- 例：減速機ノードでは、前段のトルク・回転数・慣性モーメントを減速比・効率で変換し、次段へ伝播。
+
+---
+
+#### 拡張性・保守性への配慮
+
+- ノード追加時は「入力値」「出力値（outputSpec）」「計算ロジック（compute）」を定義するだけで拡張可能。
+- 型定義・共通ロジックを活用し、ノード間のデータ受け渡し・計算式の一貫性を維持。
+- 新たな物理量や出力値が必要な場合も、型定義・NodeDefinitionの拡張で柔軟に対応。
+- UI上は、出力値（outputSpec）をreadonlyフィールドやカスタムUIで明示的に表示。
+
+---
+
+#### 実装例（抜粋）
+
+```ts
+// 型定義例（databaseTypes.ts）
+export interface RotationalOutput {
+  ratedTorque: number;
+  ratedSpeed: number;
+  ratedPower: number;
+  maxTorque: number;
+  maxSpeed: number;
+  maxPower: number;
+  allowableTorque?: number;
+  totalGearRatio?: number;
+  totalInertia?: number;
+  efficiency?: number;
+}
+
+export interface LinearOutput {
+  ratedForce: number;
+  ratedSpeed: number;
+  ratedPower: number;
+  maxForce: number;
+  maxSpeed: number;
+  maxPower: number;
+  stroke?: number;
+  maxAcceleration?: number;
+  efficiency?: number;
+}
+
+export interface DriveNodeData {
+  // ...入力値...
+  outputSpec?: RotationalOutput | LinearOutput;
+}
+```
+
+---
+
+この設計により、駆動軸構成ノードは物理量の伝播・変換・集約を柔軟かつ型安全に実現できる。ノード追加や仕様拡張も最小限の変更で対応可能。
 
 ---
 
