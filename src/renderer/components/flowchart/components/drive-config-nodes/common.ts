@@ -1,41 +1,42 @@
 import { Node } from '@xyflow/react';
 
 /**
- * ドライブノードのデータ型の基本インターフェース
+ * 回転系出力（rotational）型定義
  */
-export interface DriveNodeData {
-  // id, typeはReact Flowノードのトップレベルで管理するため削除
-  // 計算結果（次のノードへの入力として渡す）
-  calculatedOutput: DriveCalculationResult;
+export interface RotationalOutput {
+  ratedTorque: number; // 定格トルク [N・m]
+  ratedSpeed: number; // 定格回転速度 [rpm]
+  ratedPower: number; // 定格出力 [W]
+  maxTorque: number; // 最大トルク [N・m]
+  maxSpeed: number; // 最大回転速度 [rpm]
+  maxPower: number; // 最大出力 [W]
+  allowableTorque?: number; // 許容トルク [N・m]
+  totalGearRatio?: number; // 全体の減速比
+  totalInertia?: number; // 全体の慣性モーメント [kg・m²]
+  efficiency?: number; // 効率 [0-1]
 }
 
 /**
- * 計算結果の型定義
+ * 直動系出力（linear）型定義
  */
-export interface DriveCalculationResult {
-  // 回転出力の場合
-  rotational?: {
-    torque: number; // トルク [N・m]
-    speed: number; // 回転速度 [rpm]
-    power: number; // 出力 [W]
-    inertia: number; // 慣性モーメント [kg・m²]
-    direction: 1 | -1; // 回転方向 (1:正転, -1:逆転)
-  };
+export interface LinearOutput {
+  ratedForce: number; // 定格推力 [N]
+  ratedSpeed: number; // 定格速度 [mm/s]
+  ratedPower: number; // 定格出力 [W]
+  maxForce: number; // 最大推力 [N]
+  maxSpeed: number; // 最大速度 [mm/s]
+  maxPower: number; // 最大出力 [W]
+  stroke?: number; // ストローク [mm]
+  maxAcceleration?: number; // 最大加速度 [mm/s²]
+  efficiency?: number; // 効率 [0-1]
+}
 
-  // 直動出力の場合
-  linear?: {
-    force: number; // 推力/引力 [N]
-    velocity: number; // 速度 [mm/s]
-    acceleration: number; // 加速度 [mm/s²]
-    power: number; // 出力 [W]
-    mass: number; // 質量 [kg]
-    direction: 1 | -1; // 方向 (1:正方向, -1:逆方向)
-  };
-
-  // 共通のパフォーマンス特性
-  efficiency: number; // 効率 [0-1]
-  maxLoad: number; // 最大負荷
-  isOverloaded: boolean; // 過負荷フラグ
+/**
+ * 駆動ノード共通データ型
+ */
+export interface DriveNodeData {
+  outputSpec?: RotationalOutput | LinearOutput;
+  // ...ノードごとの入力値は各ノード型で拡張
 }
 
 /**

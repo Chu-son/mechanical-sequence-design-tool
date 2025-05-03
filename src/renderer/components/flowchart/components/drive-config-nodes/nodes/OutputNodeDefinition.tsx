@@ -1,112 +1,136 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
 
 const outputNodeDefinition: NodeDefinition = {
   type: 'outputNode',
   title: 'Output',
   handles: { target: true, source: false },
   groupTitles: {
-    rotational: 'Rotational Output',
-    linear: 'Linear Output',
-    common: 'Common',
+    output: 'Output',
   },
   groupDisplayOptions: {
-    rotational: { showTitle: true, showDivider: false },
-    linear: { showTitle: true, showDivider: false },
-    common: { showTitle: false, showDivider: true },
+    output: { showTitle: true, showDivider: false },
   },
   fields: [
-    // 回転出力パラメータ
+    // 回転系出力
     {
-      key: 'rotational-params',
-      label: '回転出力パラメーター',
-      type: 'custom',
-      group: 'rotational',
-      hidden: (data) => data.type !== 'rotational',
-      render: (data) => {
-        const d = data.calculatedOutput?.rotational;
-        if (!d) return null;
-        return (
-          <div>
-            <div>トルク: {roundToDigits(d.torque, ROUND_DIGITS)} N・m</div>
-            <div>回転速度: {roundToDigits(d.speed, ROUND_DIGITS)} rpm</div>
-            <div>出力: {roundToDigits(d.power, ROUND_DIGITS)} W</div>
-            <div>
-              慣性モーメント: {roundToDigits(d.inertia, ROUND_DIGITS)} kg・m²
-            </div>
-            <div>回転方向: {d.direction > 0 ? '正転' : '逆転'}</div>
-          </div>
-        );
-      },
+      key: 'ratedTorqueOut',
+      label: 'Rated Torque',
+      type: 'readonly',
+      unit: 'N・m',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedTorque,
     },
-    // 直動出力パラメータ
     {
-      key: 'linear-params',
-      label: '直動出力パラメーター',
-      type: 'custom',
-      group: 'linear',
-      hidden: (data) => data.type !== 'linear',
-      render: (data) => {
-        const d = data.calculatedOutput?.linear;
-        if (!d) return null;
-        return (
-          <div>
-            <div>推力: {roundToDigits(d.force, ROUND_DIGITS)} N</div>
-            <div>速度: {roundToDigits(d.velocity, ROUND_DIGITS)} mm/s</div>
-            {d.acceleration > 0 && (
-              <div>
-                加速度: {roundToDigits(d.acceleration, ROUND_DIGITS)} mm/s²
-              </div>
-            )}
-            <div>出力: {roundToDigits(d.power, ROUND_DIGITS)} W</div>
-            {d.mass > 0 && (
-              <div>負荷質量: {roundToDigits(d.mass, ROUND_DIGITS)} kg</div>
-            )}
-            <div>方向: {d.direction > 0 ? '正方向' : '逆方向'}</div>
-          </div>
-        );
-      },
+      key: 'ratedSpeedOut',
+      label: 'Rated Speed',
+      type: 'readonly',
+      unit: 'rpm',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedSpeed,
     },
-    // 共通: 入力システム効率
     {
-      key: 'efficiency',
-      label: '入力システム効率',
-      type: 'custom',
-      group: 'common',
-      hidden: (data) => data.calculatedOutput?.sourceEfficiency === undefined,
-      render: (data) => (
-        <div>
-          入力システム効率:{' '}
-          {roundToDigits(
-            (data.calculatedOutput?.sourceEfficiency ?? 0) * 100,
-            ROUND_DIGITS,
-          )}
-          %
-        </div>
-      ),
+      key: 'ratedPowerOut',
+      label: 'Rated Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedPower,
     },
-    // 警告
     {
-      key: 'overload-warning',
-      label: '警告',
-      type: 'custom',
-      group: 'common',
-      hidden: (data) => !data.calculatedOutput?.isOverloaded,
-      render: () => (
-        <div className="error">⚠️ 警告: システムが過負荷状態です！</div>
-      ),
+      key: 'maxTorqueOut',
+      label: 'Max Torque',
+      type: 'readonly',
+      unit: 'N・m',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxTorque,
     },
-    // 未接続時の案内
     {
-      key: 'no-input',
-      label: '未接続',
-      type: 'custom',
-      group: 'common',
-      hidden: (data) => data.type === 'rotational' || data.type === 'linear',
-      render: () => <div className="info">入力ノードが接続されていません</div>,
+      key: 'maxSpeedOut',
+      label: 'Max Speed',
+      type: 'readonly',
+      unit: 'rpm',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxSpeed,
+    },
+    {
+      key: 'maxPowerOut',
+      label: 'Max Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxPower,
+    },
+    {
+      key: 'efficiencyOut',
+      label: 'Efficiency',
+      type: 'readonly',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.efficiency,
+    },
+    // 直動系出力
+    {
+      key: 'ratedForceOut',
+      label: 'Rated Force',
+      type: 'readonly',
+      unit: 'N',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedForce,
+    },
+    {
+      key: 'ratedSpeedLinearOut',
+      label: 'Rated Speed',
+      type: 'readonly',
+      unit: 'mm/s',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedSpeed,
+    },
+    {
+      key: 'ratedPowerLinearOut',
+      label: 'Rated Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedPower,
+    },
+    {
+      key: 'maxForceOut',
+      label: 'Max Force',
+      type: 'readonly',
+      unit: 'N',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxForce,
+    },
+    {
+      key: 'maxSpeedLinearOut',
+      label: 'Max Speed',
+      type: 'readonly',
+      unit: 'mm/s',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxSpeed,
+    },
+    {
+      key: 'maxPowerLinearOut',
+      label: 'Max Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxPower,
+    },
+    {
+      key: 'strokeOut',
+      label: 'Stroke',
+      type: 'readonly',
+      unit: 'mm',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.stroke,
+    },
+    {
+      key: 'maxAccelerationOut',
+      label: 'Max Acceleration',
+      type: 'readonly',
+      unit: 'mm/s²',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxAcceleration,
     },
   ],
   compute: undefined,

@@ -206,7 +206,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'sec',
       group: 'results',
-      getValue: (data) => data.duration || 0,
+      getValue: (data) => data.duration,
       formatValue: (value) => roundToDigits(value, ROUND_DIGITS).toString(),
     },
 
@@ -217,7 +217,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'sec',
       group: 'output',
-      getValue: (data) => data.totalDuration || 0,
+      getValue: (data) => data.totalDuration,
       formatValue: (value) => roundToDigits(value, ROUND_DIGITS).toString(),
     },
   ],

@@ -28,7 +28,7 @@ const simpleTaskNodeDefinition: NodeDefinition = {
       label: 'Description',
       type: 'text',
       group: 'parameters',
-      getValue: (data) => data.description || '',
+      getValue: (data) => data.description,
       setValue: (value, data) => ({ ...data, description: value }),
     },
     {
@@ -36,7 +36,7 @@ const simpleTaskNodeDefinition: NodeDefinition = {
       label: 'Duration [sec]',
       type: 'number',
       group: 'parameters',
-      getValue: (data) => data.duration || 0,
+      getValue: (data) => data.duration,
       setValue: (value, data) => {
         const validated = validateNumericInput(value);
         return { ...data, duration: validated };
@@ -51,7 +51,7 @@ const simpleTaskNodeDefinition: NodeDefinition = {
       label: 'Total Duration [sec]',
       type: 'readonly',
       group: 'results',
-      getValue: (data) => data.totalDuration || 0,
+      getValue: (data) => data.totalDuration,
       formatValue: (v) => roundToDigits(v, ROUND_DIGITS).toString(),
     },
   ],

@@ -1,114 +1,211 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
-import {
-  roundToDigits,
-  ROUND_DIGITS,
-} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
+import { LinearOutput } from '../common';
 
 const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
-  type: 'simpleRotToLinConverter',
+  type: 'rotToLinConverter',
   title: 'Simple Rotational to Linear Converter',
   groupTitles: {
     parameters: 'Parameters',
-    warning: 'Warning',
-    notes: 'Notes',
+    output: 'Output',
   },
   groupDisplayOptions: {
     parameters: { showTitle: true, showDivider: false },
-    warning: { showTitle: false, showDivider: true },
-    notes: { showTitle: true, showDivider: true },
+    output: { showTitle: true, showDivider: true },
   },
   handles: {
     target: true,
     source: true,
   },
   getInitialData: () => ({
-    rotationalInput: 0,
-    conversionFactor: 1,
-    linearOutput: 0,
-    calculatedOutput: {
-      linearOutput: 0,
-      isOverloaded: false,
-    },
-    description: '',
-    additionalInfo: '',
+    model: '',
+    manufacturer: '',
+    leadPitch: 0,
+    conversionRatio: 1,
+    maxForce: 0,
+    maxSpeed: 0,
+    efficiency: 0.9,
+    outputSpec: {
+      ratedForce: 0,
+      ratedSpeed: 0,
+      ratedPower: 0,
+      maxForce: 0,
+      maxSpeed: 0,
+      maxPower: 0,
+      stroke: 0,
+      maxAcceleration: 0,
+      efficiency: 0.9,
+    } as LinearOutput,
   }),
   fields: [
     {
-      key: 'rotationalInput',
-      label: 'Rotational Input [RPM]',
-      type: 'number',
-      unit: 'RPM',
-      group: 'parameters',
-      getValue: (data) => data?.rotationalInput ?? 0,
-      setValue: (value, data) => ({
-        ...data,
-        rotationalInput: parseFloat(value) || 0,
-      }),
-    },
-    {
-      key: 'conversionFactor',
-      label: 'Conversion Factor',
-      type: 'number',
-      group: 'parameters',
-      getValue: (data) => data?.conversionFactor ?? 1,
-      setValue: (value, data) => ({
-        ...data,
-        conversionFactor: parseFloat(value) || 1,
-      }),
-    },
-    {
-      key: 'description',
-      label: 'Description',
+      key: 'model',
+      label: 'Model',
       type: 'text',
       group: 'parameters',
-      getValue: (data) => data?.description ?? '',
-      setValue: (value, data) => ({ ...data, description: value }),
+      getValue: (data) => data.model,
+      setValue: (value, data) => ({ ...data, model: value }),
     },
     {
-      key: 'overloadWarning',
-      label: '',
-      type: 'custom',
-      group: 'warning',
-      render: (data) =>
-        data?.calculatedOutput?.isOverloaded ? (
-          <div className="warning">
-            Warning: Force or speed exceeds maximum!
-          </div>
-        ) : null,
-      condition: (data) => !!data?.calculatedOutput?.isOverloaded,
+      key: 'manufacturer',
+      label: 'Manufacturer',
+      type: 'text',
+      group: 'parameters',
+      getValue: (data) => data.manufacturer,
+      setValue: (value, data) => ({ ...data, manufacturer: value }),
     },
     {
-      key: 'linearOutput',
-      label: 'Linear Output [m/s]',
+      key: 'leadPitch',
+      label: 'Lead/Pitch',
+      unit: 'mm',
+      type: 'number',
+      step: 0.01,
+      group: 'parameters',
+      getValue: (data) => data.leadPitch,
+      setValue: (value, data) => ({
+        ...data,
+        leadPitch: parseFloat(value),
+      }),
+    },
+    {
+      key: 'conversionRatio',
+      label: 'Conversion Ratio',
+      type: 'number',
+      step: 0.01,
+      group: 'parameters',
+      getValue: (data) => data.conversionRatio,
+      setValue: (value, data) => ({
+        ...data,
+        conversionRatio: parseFloat(value),
+      }),
+    },
+    {
+      key: 'maxForce',
+      label: 'Max Force',
+      unit: 'N',
+      type: 'number',
+      step: 0.1,
+      group: 'parameters',
+      getValue: (data) => data.maxForce,
+      setValue: (value, data) => ({
+        ...data,
+        maxForce: parseFloat(value),
+      }),
+    },
+    {
+      key: 'maxSpeed',
+      label: 'Max Speed',
+      unit: 'mm/s',
+      type: 'number',
+      step: 1,
+      group: 'parameters',
+      getValue: (data) => data.maxSpeed,
+      setValue: (value, data) => ({
+        ...data,
+        maxSpeed: parseFloat(value),
+      }),
+    },
+    {
+      key: 'efficiency',
+      label: 'Efficiency',
+      type: 'number',
+      step: 0.01,
+      group: 'parameters',
+      getValue: (data) => data.efficiency,
+      setValue: (value, data) => ({
+        ...data,
+        efficiency: parseFloat(value),
+      }),
+    },
+    // 出力値（readonly）
+    {
+      key: 'ratedForceOut',
+      label: 'Rated Force',
       type: 'readonly',
-      unit: 'm/s',
-      group: 'notes',
-      getValue: (data) => data?.calculatedOutput?.linearOutput ?? 0,
-      formatValue: (value, data) =>
-        roundToDigits(value, data?.outputPrecision ?? ROUND_DIGITS).toString(),
+      unit: 'N',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedForce ?? '',
     },
     {
-      key: 'additionalInfo',
-      label: 'Additional Info',
-      type: 'text',
-      group: 'notes',
-      getValue: (data) => data?.additionalInfo ?? '',
-      setValue: (value, data) => ({ ...data, additionalInfo: value }),
+      key: 'ratedSpeedOut',
+      label: 'Rated Speed',
+      type: 'readonly',
+      unit: 'mm/s',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedSpeed ?? '',
+    },
+    {
+      key: 'ratedPowerOut',
+      label: 'Rated Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.ratedPower ?? '',
+    },
+    {
+      key: 'maxForceOut',
+      label: 'Max Force',
+      type: 'readonly',
+      unit: 'N',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxForce ?? '',
+    },
+    {
+      key: 'maxSpeedOut',
+      label: 'Max Speed',
+      type: 'readonly',
+      unit: 'mm/s',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxSpeed ?? '',
+    },
+    {
+      key: 'maxPowerOut',
+      label: 'Max Power',
+      type: 'readonly',
+      unit: 'W',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.maxPower ?? '',
+    },
+    {
+      key: 'efficiencyOut',
+      label: 'Efficiency',
+      type: 'readonly',
+      group: 'output',
+      getValue: (data) => data.outputSpec?.efficiency ?? '',
     },
   ],
-  compute: (data, nodeId, update) => {
-    const { rotationalInput = 0, conversionFactor = 1 } = data;
-    const linearOutput = roundToDigits(
-      (rotationalInput * conversionFactor) / 60,
-      ROUND_DIGITS,
-    );
-    const isOverloaded = linearOutput > 100; // 仮の例
-    const calculatedOutput = { linearOutput, isOverloaded };
-    if (
-      !data.calculatedOutput ||
-      JSON.stringify(data.calculatedOutput) !== JSON.stringify(calculatedOutput)
-    ) {
-      update({ ...data, calculatedOutput });
+  compute: (data: any, nodeId: string, update: (newData: any) => void) => {
+    // 前段ノードの出力値（回転）を受け取り、直動系に変換
+    const conversionRatio = parseFloat(data.conversionRatio) || 1;
+    const efficiency = parseFloat(data.efficiency) || 0.9;
+    const maxForce = parseFloat(data.maxForce) || 0;
+    const maxSpeed = parseFloat(data.maxSpeed) || 0;
+    let prev: any = data.prevOutputSpec;
+    if (!prev)
+      prev = { ratedTorque: 0, ratedSpeed: 0, ratedPower: 0, efficiency: 1 };
+    // 例: 回転→直動変換（ボールねじ等）
+    // 速度変換: ratedSpeed[rpm] * conversionRatio[mm/rev] = [mm/min] → [mm/s]
+    const ratedSpeed = ((prev.ratedSpeed || 0) * conversionRatio) / 60;
+    // 推力変換: ratedTorque[Nm] * 2π / conversionRatio[mm/rev] = [N]
+    const ratedForce =
+      ((prev.ratedTorque || 0) * 2 * Math.PI) / (conversionRatio || 1);
+    const ratedPower = (ratedForce * ratedSpeed) / 1000;
+    const outputSpec: LinearOutput = {
+      ratedForce: roundToDigits(ratedForce, 2),
+      ratedSpeed: roundToDigits(ratedSpeed, 2),
+      ratedPower: roundToDigits(ratedPower, 2),
+      maxForce: maxForce || roundToDigits(ratedForce, 2),
+      maxSpeed: maxSpeed || roundToDigits(ratedSpeed, 2),
+      maxPower: roundToDigits(
+        (ratedForce * (maxSpeed || ratedSpeed)) / 1000,
+        2,
+      ),
+      stroke: 0,
+      maxAcceleration: 0,
+      efficiency: prev.efficiency ? prev.efficiency * efficiency : efficiency,
+    };
+    if (JSON.stringify(data.outputSpec) !== JSON.stringify(outputSpec)) {
+      update({ ...data, outputSpec });
     }
   },
 };

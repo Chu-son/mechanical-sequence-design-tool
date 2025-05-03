@@ -164,7 +164,7 @@ const velocityChartNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'mm',
       group: 'parameters',
-      getValue: (data) => data.position || 0,
+      getValue: (data) => data.position,
     },
     {
       key: 'velocity',
@@ -172,7 +172,7 @@ const velocityChartNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'mm/s',
       group: 'parameters',
-      getValue: (data) => data.velocity || 0,
+      getValue: (data) => data.velocity,
     },
     {
       key: 'acceleration',
@@ -180,7 +180,7 @@ const velocityChartNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'mm/s²',
       group: 'parameters',
-      getValue: (data) => data.acceleration || 0,
+      getValue: (data) => data.acceleration,
     },
     {
       key: 'deceleration',
@@ -188,7 +188,7 @@ const velocityChartNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 'mm/s²',
       group: 'parameters',
-      getValue: (data) => data.deceleration || 0,
+      getValue: (data) => data.deceleration,
     },
     {
       key: 'totalTime',
@@ -196,7 +196,7 @@ const velocityChartNodeDefinition: NodeDefinition = {
       type: 'readonly',
       unit: 's',
       group: 'results',
-      getValue: (data) => data.totalTime || 0,
+      getValue: (data) => data.totalTime,
     },
   ],
 
