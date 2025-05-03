@@ -1,12 +1,5 @@
-import React, { memo, useEffect } from 'react';
-import {
-  useReactFlow,
-  useNodeConnections,
-  useNodesData,
-  type NodeProps,
-  Handle,
-  Position,
-} from '@xyflow/react';
+import React, { memo } from 'react';
+import { useReactFlow, type NodeProps, Handle, Position } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import simpleActuatorTaskNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/SimpleActuatorTaskNodeDefinition';
 import RenderNodeSideToolbar from '@/renderer/components/flowchart/common/renderNodeSideToolbar';
@@ -38,21 +31,6 @@ function SimpleActuatorTaskNode({
     definition: simpleActuatorTaskNodeDefinition,
     updateNodeData,
   });
-  const connections = useNodeConnections({ handleType: 'target' });
-  const previousNodeData = useNodesData(connections?.[0]?.source) as
-    | { data?: { totalDuration?: number } }
-    | undefined;
-
-  useEffect(() => {
-    if (!data) return;
-    const previousTotalDuration = previousNodeData?.data?.totalDuration || 0;
-    if (data.previousTotalDuration !== previousTotalDuration) {
-      updateNodeData(id, {
-        ...data,
-        previousTotalDuration,
-      });
-    }
-  }, [id, data, previousNodeData, updateNodeData]);
 
   return (
     <BaseNode

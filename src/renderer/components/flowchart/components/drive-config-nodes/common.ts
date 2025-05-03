@@ -1,5 +1,3 @@
-import { Node } from '@xyflow/react';
-
 /**
  * 回転系出力（rotational）型定義
  */
@@ -33,8 +31,16 @@ export interface LinearOutput {
 
 /**
  * 駆動ノード共通データ型
+ * 設計ドキュメント「6.5 駆動軸構成ノードの設計詳細」に準拠
+ * - すべての駆動軸構成ノードはこの型を継承し、outputSpecプロパティを持つ
+ * - outputSpecは回転系(RotationalOutput)または直動系(LinearOutput)のいずれか、または両方
+ * - 入力値（ユーザー指定）と出力値（outputSpec）を明確に分離
  */
 export interface DriveNodeData {
+  /**
+   * 出力スペック（回転系または直動系）
+   * 設計ドキュメントの「outputSpec」
+   */
   outputSpec?: RotationalOutput | LinearOutput;
   // ...ノードごとの入力値は各ノード型で拡張
 }

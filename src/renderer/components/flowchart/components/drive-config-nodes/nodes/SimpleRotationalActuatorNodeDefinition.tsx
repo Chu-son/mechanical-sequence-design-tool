@@ -13,6 +13,11 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     parameters: { showTitle: true, showDivider: false },
     output: { showTitle: true, showDivider: true },
   },
+  /**
+   * 初期データ生成
+   * - 入力値（ユーザー指定）と出力値（outputSpec）を明確に分離
+   * - outputSpecはRotationalOutput型
+   */
   getInitialData: () => ({
     ratedTorque: 0,
     ratedSpeed: 0,
@@ -20,6 +25,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     rotorInertia: 0,
     model: '',
     manufacturer: '',
+    maxTorque: 0,
     outputSpec: {
       ratedTorque: 0,
       ratedSpeed: 0,
@@ -30,13 +36,18 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       allowableTorque: 0,
       totalGearRatio: 1,
       totalInertia: 0,
-      efficiency: 0.95,
+      efficiency: 1,
     } as RotationalOutput,
   }),
   handles: {
     target: false,
     source: true,
   },
+  /**
+   * fields: 入力値（parameters）と出力値（output）を分離して定義
+   * - 入力値: 型式、メーカー、定格トルク、定格速度、最大トルク、最大速度、ローター慣性モーメント
+   * - 出力値: outputSpecの各プロパティをreadonlyで表示
+   */
   fields: [
     {
       key: 'model',
@@ -79,6 +90,16 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
         ...data,
         ratedSpeed: parseFloat(value),
       }),
+    },
+    {
+      key: 'maxTorque',
+      label: 'Max Torque',
+      unit: 'N・m',
+      type: 'number',
+      step: 0.1,
+      group: 'parameters',
+      getValue: (data) => data.maxTorque,
+      setValue: (value, data) => ({ ...data, maxTorque: parseFloat(value) }),
     },
     {
       key: 'maxSpeed',
@@ -163,29 +184,37 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       getValue: (data) => data.outputSpec?.efficiency ?? '',
     },
   ],
+  /**
+   * compute: 入力値からoutputSpecを計算
+   * - 設計ドキュメント「計算ロジック・データ伝播のポイント」に準拠
+   */
   compute: (data, nodeId, update) => {
     // 入力値から出力値を計算
-    const ratedTorque = parseFloat(data.ratedTorque) || 0;
-    const ratedSpeed = parseFloat(data.ratedSpeed) || 0;
-    const maxSpeed = parseFloat(data.maxSpeed) || 0;
-    const rotorInertia = parseFloat(data.rotorInertia) || 0;
-    const efficiency = 0.95;
+    const ratedTorque = parseFloat(data.ratedTorque);
+    const ratedSpeed = parseFloat(data.ratedSpeed);
+    const maxTorque = parseFloat(data.maxTorque);
+    const maxSpeed = parseFloat(data.maxSpeed);
+    const rotorInertia = parseFloat(data.rotorInertia);
+    const efficiency = parseFloat(data.outputSpec.efficiency);
+
     // 定格出力[W] = 定格トルク[Nm] × 定格回転速度[rpm] × 2π / 60
     const ratedPower = (ratedTorque * ratedSpeed * 2 * Math.PI) / 60;
     // 最大出力は最大速度で同様に計算
     const maxPower = (ratedTorque * maxSpeed * 2 * Math.PI) / 60;
+
     const outputSpec: RotationalOutput = {
       ratedTorque,
       ratedSpeed,
       ratedPower: roundToDigits(ratedPower, 2),
-      maxTorque: ratedTorque, // シンプルな場合は同値
+      maxTorque,
       maxSpeed,
       maxPower: roundToDigits(maxPower, 2),
       allowableTorque: ratedTorque,
-      totalGearRatio: 1,
+      totalGearRatio: data.totalGearRatio,
       totalInertia: rotorInertia,
       efficiency,
     };
+
     if (JSON.stringify(data.outputSpec) !== JSON.stringify(outputSpec)) {
       update({ ...data, outputSpec });
     }

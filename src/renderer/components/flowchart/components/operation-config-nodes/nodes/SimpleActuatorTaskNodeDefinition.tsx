@@ -29,6 +29,9 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
     output: { showTitle: true, showDivider: true },
   },
 
+  // 前段ノードから伝播するフィールド
+  propagateFields: { totalDuration: 'previousTotalDuration' },
+
   // 初期データ生成
   getInitialData: () => ({
     description: '',

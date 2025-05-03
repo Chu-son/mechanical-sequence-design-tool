@@ -15,6 +15,8 @@ const taskEndNodeDefinition: NodeDefinition = {
     target: true,
     source: false,
   },
+  // 前段ノードから伝播するフィールド
+  propagateFields: { totalDuration: 'totalDuration' },
   fields: [
     {
       key: 'totalDuration',

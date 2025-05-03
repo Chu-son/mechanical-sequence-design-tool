@@ -17,6 +17,8 @@ const simpleTaskNodeDefinition: NodeDefinition = {
     parameters: { showTitle: true, showDivider: false },
     results: { showTitle: true, showDivider: true },
   },
+  // 前段ノードから伝播するフィールド
+  propagateFields: { totalDuration: 'previousTotalDuration' },
   getInitialData: () => ({
     description: '',
     duration: 0,

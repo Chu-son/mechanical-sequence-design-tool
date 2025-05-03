@@ -2,7 +2,12 @@
  * ノードUIを宣言的に定義するための基本コンポーネント
  */
 import React, { useEffect, useCallback } from 'react';
-import { Handle, Position } from '@xyflow/react';
+import {
+  Handle,
+  Position,
+  useNodeConnections,
+  useNodesData,
+} from '@xyflow/react';
 import {
   BaseNodeProps,
   NodeFieldDefinition,
@@ -268,6 +273,40 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
     },
     [id, updateNodeData],
   );
+
+  // 前段ノードからのデータ伝播を処理（propagateFieldsが定義されている場合）
+  const connections = useNodeConnections({ nodeId: id, handleType: 'target' });
+  const prevNodeId = connections?.[0]?.source;
+  const prevNodeData = useNodesData(prevNodeId);
+
+  // 前段ノードのデータを自ノードに伝播
+  useEffect(() => {
+    if (!definition.propagateFields || !prevNodeData || !prevNodeData.data)
+      return;
+
+    // 伝播対象フィールドの値を比較し、変更があれば更新
+    let needsUpdate = false;
+    const newData = { ...data };
+
+    // 前段ノードのフィールドを指定されたマッピングに従って保存
+    for (const [sourceField, targetField] of Object.entries(
+      definition.propagateFields,
+    )) {
+      // 前段ノードのデータが存在し、現在のノードの値と異なる場合に更新
+      if (
+        prevNodeData.data[sourceField] !== undefined &&
+        JSON.stringify(data[targetField]) !==
+          JSON.stringify(prevNodeData.data[sourceField])
+      ) {
+        newData[targetField] = prevNodeData.data[sourceField];
+        needsUpdate = true;
+      }
+    }
+
+    if (needsUpdate) {
+      updateNodeData(id, newData);
+    }
+  }, [id, data, prevNodeData, definition.propagateFields, updateNodeData]);
 
   // 計算処理を実行
   useEffect(() => {

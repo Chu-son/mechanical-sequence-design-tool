@@ -10,8 +10,15 @@ const outputNodeDefinition: NodeDefinition = {
   groupDisplayOptions: {
     output: { showTitle: true, showDivider: false },
   },
+  // 前段ノードから伝播するフィールド
+  propagateFields: { outputSpec: 'prevOutputSpec' },
+  /**
+   * fields: 入力値なし。前段ノードの出力値（outputSpec）をreadonlyで表示するのみ。
+   * 設計ドキュメント「出力ノード」仕様に準拠
+   */
   fields: [
     // 回転系出力
+    // outputSpecはRotationalOutputまたはLinearOutput型（両対応）
     {
       key: 'ratedTorqueOut',
       label: 'Rated Torque',
@@ -133,7 +140,18 @@ const outputNodeDefinition: NodeDefinition = {
       getValue: (data) => data.outputSpec?.maxAcceleration,
     },
   ],
-  compute: undefined,
+  compute: (data: any, nodeId: string, update: (newData: any) => void) => {
+    // prevOutputSpecが存在する場合、そのままoutputSpecにコピー
+    if (
+      data.prevOutputSpec &&
+      JSON.stringify(data.outputSpec) !== JSON.stringify(data.prevOutputSpec)
+    ) {
+      update({
+        ...data,
+        outputSpec: data.prevOutputSpec,
+      });
+    }
+  },
 };
 
 export default outputNodeDefinition;

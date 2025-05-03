@@ -13,6 +13,11 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     parameters: { showTitle: true, showDivider: false },
     output: { showTitle: true, showDivider: true },
   },
+  /**
+   * 初期データ生成
+   * - 入力値（ユーザー指定）と出力値（outputSpec）を明確に分離
+   * - outputSpecはLinearOutput型
+   */
   getInitialData: () => ({
     model: '',
     manufacturer: '',
@@ -21,6 +26,7 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     ratedSpeed: 0,
     maxSpeed: 0,
     acceleration: 0,
+    maxForce: 0,
     outputSpec: {
       ratedForce: 0,
       ratedSpeed: 0,
@@ -37,6 +43,11 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     target: false,
     source: true,
   },
+  /**
+   * fields: 入力値（parameters）と出力値（output）を分離して定義
+   * - 入力値: 型式、メーカー、ストローク長さ、定格推力、定格速度、最大推力、最大速度、最大加減速度
+   * - 出力値: outputSpecの各プロパティをreadonlyで表示
+   */
   fields: [
     {
       key: 'model',
@@ -103,6 +114,16 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
       group: 'parameters',
       getValue: (data) => data.acceleration,
       setValue: (value, data) => ({ ...data, acceleration: parseFloat(value) }),
+    },
+    {
+      key: 'maxForce',
+      label: 'Max Force',
+      unit: 'N',
+      type: 'number',
+      step: 0.1,
+      group: 'parameters',
+      getValue: (data) => data.maxForce,
+      setValue: (value, data) => ({ ...data, maxForce: parseFloat(value) }),
     },
     // 出力値（readonly）
     {
@@ -177,6 +198,10 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
       getValue: (data) => data.outputSpec?.efficiency ?? '',
     },
   ],
+  /**
+   * compute: 入力値からoutputSpecを計算
+   * - 設計ドキュメント「計算ロジック・データ伝播のポイント」に準拠
+   */
   compute: (data, nodeId, update) => {
     const ratedForce = parseFloat(data.ratedForce) || 0;
     const ratedSpeed = parseFloat(data.ratedSpeed) || 0;

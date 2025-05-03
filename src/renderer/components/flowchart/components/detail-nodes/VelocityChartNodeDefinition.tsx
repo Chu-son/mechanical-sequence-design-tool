@@ -137,6 +137,13 @@ const velocityChartNodeDefinition: NodeDefinition = {
     parameters: { showTitle: true, showDivider: true },
     results: { showTitle: true, showDivider: true },
   },
+  // 前段ノードから伝播するフィールド
+  propagateFields: {
+    position: 'position',
+    velocity: 'velocity',
+    acceleration: 'acceleration',
+    deceleration: 'deceleration',
+  },
   // 初期データ設定
   getInitialData: () => ({
     position: 0,

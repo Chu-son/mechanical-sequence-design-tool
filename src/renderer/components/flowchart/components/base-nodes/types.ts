@@ -145,6 +145,10 @@ export interface NodeDefinition {
     target?: boolean;
     source?: boolean;
   };
+  // 前段ノードから伝播するフィールド名と保存先のマッピング
+  // { 前段ノードのフィールド名: 自ノードでの保存先フィールド名 } という形式
+  // 例: { 'outputSpec': 'prevOutputSpec' } で前段ノードのoutputSpecを自ノードのprevOutputSpecとして格納
+  propagateFields?: Record<string, string>;
   // 初期データ生成関数
   getInitialData?: () => any;
   // データ更新後の計算処理
