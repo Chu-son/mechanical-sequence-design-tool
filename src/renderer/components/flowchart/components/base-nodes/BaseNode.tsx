@@ -17,6 +17,10 @@ import {
   DividerFieldDefinition,
 } from './types';
 import '@/renderer/components/flowchart/styles/common.css';
+import {
+  roundToDigits,
+  ROUND_DIGITS,
+} from '@/renderer/components/flowchart/common/flowchartUtils';
 
 /**
  * 入力フィールドをレンダリングする関数
@@ -41,8 +45,16 @@ const renderInputField = (
     required,
     getValue,
     setValue,
+    displayDigits,
   } = field;
-  const value = getValue(data);
+  let value = getValue(data);
+
+  // 数値型の場合、表示時に丸める処理を追加
+  if (type === 'number' && typeof value === 'number') {
+    // displayDigitsが指定されていればその値で、なければROUND_DIGITSで丸める
+    value = roundToDigits(value, displayDigits ?? ROUND_DIGITS);
+  }
+
   const fieldId = `${id}-${key}`;
 
   // ラベルと単位を組み合わせて表示用のラベルを作成
@@ -120,8 +132,15 @@ const renderReadonlyField = (
   data: any,
   id: string,
 ) => {
-  const { key, label, getValue, formatValue, unit } = field;
-  const value = getValue(data);
+  const { key, label, getValue, formatValue, unit, displayDigits } = field;
+  let value = getValue(data);
+
+  // 数値の場合、表示時に丸める処理を追加
+  if (typeof value === 'number') {
+    // displayDigitsが指定されていればその値で、なければROUND_DIGITSで丸める
+    value = roundToDigits(value, displayDigits ?? ROUND_DIGITS);
+  }
+
   const displayValue = formatValue ? formatValue(value) : value;
 
   // ラベルと単位を組み合わせて表示用のラベルを作成

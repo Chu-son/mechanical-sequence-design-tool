@@ -48,6 +48,7 @@ export interface InputFieldDefinition extends BaseFieldDefinition {
   min?: number;
   max?: number;
   step?: number;
+  displayDigits?: number; // 数値表示時の丸め桁数（省略時はROUND_DIGITS）
   getValue: (data: any) => any;
   setValue: (value: any, data: any) => any;
   validation?: (value: any, data: any) => string | null;
@@ -66,6 +67,7 @@ export interface InputFieldDefinition extends BaseFieldDefinition {
 export interface ReadonlyFieldDefinition extends BaseFieldDefinition {
   type: 'readonly';
   unit?: string;
+  displayDigits?: number; // 数値表示時の丸め桁数（省略時はROUND_DIGITS）
   getValue: (data: any) => any;
   formatValue?: (value: any, data?: any) => string;
   hidden?: boolean | ((data: any) => boolean);
