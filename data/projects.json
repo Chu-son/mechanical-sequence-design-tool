@@ -4,7 +4,7 @@
     "name": "【サンプル】プロジェクト",
     "description": "これはサンプルデータです。実際のプロジェクトに置き換えてご利用ください。",
     "createdAt": "2025-01-15T10:00:00.000Z",
-    "updatedAt": "2025-04-17T14:59:29.033Z",
+    "updatedAt": "2025-05-04T14:43:07.164Z",
     "units": [
       {
         "id": 1,
@@ -24,120 +24,209 @@
               "nodes": [
                 {
                   "id": "1",
+                  "type": "outputNode",
+                  "position": {
+                    "x": 0,
+                    "y": 2316
+                  },
+                  "data": {
+                    "dummy": "",
+                    "prevOutputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 20.48,
+                      "ratedSpeed": 12.5,
+                      "ratedPower": 26.81,
+                      "maxTorque": 30.720000000000006,
+                      "maxSpeed": 25,
+                      "maxPower": 53.62,
+                      "allowableTorque": 20,
+                      "totalGearRatio": 8,
+                      "totalInertia": 3,
+                      "efficiency": 0.6400000000000001
+                    },
+                    "outputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 20.48,
+                      "ratedSpeed": 12.5,
+                      "ratedPower": 26.81,
+                      "maxTorque": 30.720000000000006,
+                      "maxSpeed": 25,
+                      "maxPower": 53.62,
+                      "allowableTorque": 20,
+                      "totalGearRatio": 8,
+                      "totalInertia": 3,
+                      "efficiency": 0.6400000000000001
+                    }
+                  },
+                  "measured": {
+                    "width": 342,
+                    "height": 354
+                  },
+                  "selected": false,
+                  "dragging": false
+                },
+                {
+                  "id": "2",
                   "type": "simpleRotationalActuator",
                   "position": {
                     "x": 0,
                     "y": 0
                   },
                   "data": {
-                    "label": "simpleRotationalActuator node",
-                    "id": "1",
-                    "type": "rotational",
-                    "ratedTorque": 1,
-                    "ratedSpeed": 3000,
-                    "maxSpeed": 5000,
-                    "rotorInertia": 0.0001,
-                    "calculatedOutput": {
-                      "rotational": {
-                        "torque": 0.95,
-                        "speed": 3000,
-                        "power": 298.4513020910303,
-                        "inertia": 0.0001,
-                        "direction": 1
-                      },
-                      "efficiency": 0.95,
-                      "maxLoad": 1,
-                      "isOverloaded": false
+                    "ratedTorque": 4,
+                    "ratedSpeed": 100,
+                    "maxSpeed": 200,
+                    "rotorInertia": 1,
+                    "model": "",
+                    "manufacturer": "",
+                    "maxTorque": 6,
+                    "outputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 4,
+                      "ratedSpeed": 100,
+                      "ratedPower": 41.89,
+                      "maxTorque": 6,
+                      "maxSpeed": 200,
+                      "maxPower": 83.78,
+                      "allowableTorque": 4,
+                      "totalGearRatio": 1,
+                      "totalInertia": 1,
+                      "efficiency": 1
                     }
                   },
                   "measured": {
                     "width": 342,
-                    "height": 421
-                  }
-                },
-                {
-                  "id": "2",
-                  "type": "simpleRotToRotConverter",
-                  "position": {
-                    "x": 7.5,
-                    "y": 471
-                  },
-                  "data": {
-                    "label": "simpleRotToRotConverter node",
-                    "id": "2",
-                    "type": "rotational",
-                    "inputType": "rotational",
-                    "outputType": "rotational",
-                    "gearRatio": 10,
-                    "inertia": 0.0005,
-                    "maxTorque": 20,
-                    "efficiency": 0.9,
-                    "calculatedOutput": {
-                      "rotational": {
-                        "torque": 8.55,
-                        "speed": 300,
-                        "power": 268.6061718819273,
-                        "inertia": 0.000501,
-                        "direction": 1
-                      },
-                      "efficiency": 0.9,
-                      "maxLoad": 20,
-                      "isOverloaded": false
-                    }
-                  },
-                  "measured": {
-                    "width": 327,
-                    "height": 397
+                    "height": 754
                   },
                   "selected": false
                 },
                 {
                   "id": "3",
-                  "type": "outputNode",
+                  "type": "simpleRotToRotConverter",
                   "position": {
-                    "x": 65,
-                    "y": 918
+                    "x": 0,
+                    "y": 804
                   },
                   "data": {
-                    "label": "outputNode node",
-                    "id": "3",
-                    "type": "rotational",
-                    "calculatedOutput": {
-                      "rotational": {
-                        "torque": 8.55,
-                        "speed": 300,
-                        "power": 268.6061718819273,
-                        "inertia": 0.000501,
-                        "direction": 1
-                      },
-                      "isOverloaded": false,
-                      "sourceEfficiency": 0.9
+                    "model": "",
+                    "manufacturer": "",
+                    "gearRatio": 4,
+                    "inertia": 1,
+                    "allowableTorque": 10,
+                    "efficiency": 0.8,
+                    "inputType": "rotational",
+                    "outputType": "rotational",
+                    "outputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 12.8,
+                      "ratedSpeed": 25,
+                      "ratedPower": 33.51,
+                      "maxTorque": 19.200000000000003,
+                      "maxSpeed": 50,
+                      "maxPower": 67.02,
+                      "allowableTorque": 10,
+                      "totalGearRatio": 4,
+                      "totalInertia": 2,
+                      "efficiency": 0.8
+                    },
+                    "prevOutputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 4,
+                      "ratedSpeed": 100,
+                      "ratedPower": 41.89,
+                      "maxTorque": 6,
+                      "maxSpeed": 200,
+                      "maxPower": 83.78,
+                      "allowableTorque": 4,
+                      "totalGearRatio": 1,
+                      "totalInertia": 1,
+                      "efficiency": 1
                     }
                   },
                   "measured": {
-                    "width": 212,
-                    "height": 311
-                  }
+                    "width": 342,
+                    "height": 706
+                  },
+                  "selected": false,
+                  "dragging": false
+                },
+                {
+                  "id": "4",
+                  "type": "simpleRotToRotConverter",
+                  "position": {
+                    "x": 0,
+                    "y": 1560
+                  },
+                  "data": {
+                    "model": "",
+                    "manufacturer": "",
+                    "gearRatio": 2,
+                    "inertia": 1,
+                    "allowableTorque": 20,
+                    "efficiency": 0.8,
+                    "inputType": "rotational",
+                    "outputType": "rotational",
+                    "outputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 20.48,
+                      "ratedSpeed": 12.5,
+                      "ratedPower": 26.81,
+                      "maxTorque": 30.720000000000006,
+                      "maxSpeed": 25,
+                      "maxPower": 53.62,
+                      "allowableTorque": 20,
+                      "totalGearRatio": 8,
+                      "totalInertia": 3,
+                      "efficiency": 0.6400000000000001
+                    },
+                    "prevOutputSpec": {
+                      "type": "rotational",
+                      "ratedTorque": 12.8,
+                      "ratedSpeed": 25,
+                      "ratedPower": 33.51,
+                      "maxTorque": 19.200000000000003,
+                      "maxSpeed": 50,
+                      "maxPower": 67.02,
+                      "allowableTorque": 10,
+                      "totalGearRatio": 4,
+                      "totalInertia": 2,
+                      "efficiency": 0.8
+                    }
+                  },
+                  "measured": {
+                    "width": 342,
+                    "height": 706
+                  },
+                  "selected": false,
+                  "dragging": false
                 }
               ],
               "edges": [
                 {
                   "interactionWidth": 75,
-                  "source": "1",
-                  "target": "2",
-                  "id": "xy-edge__1-2"
+                  "source": "2",
+                  "sourceHandle": "bottom",
+                  "target": "3",
+                  "targetHandle": "top",
+                  "id": "xy-edge__2bottom-1top",
+                  "style": {}
                 },
                 {
-                  "interactionWidth": 75,
-                  "source": "2",
-                  "target": "3",
-                  "id": "xy-edge__2-3"
+                  "id": "3->1",
+                  "source": "3",
+                  "target": "4",
+                  "style": {}
+                },
+                {
+                  "id": "4->1",
+                  "source": "4",
+                  "target": "1"
                 }
               ],
               "viewport": {
-                "x": 171.0354134383221,
-                "y": -362.86705369954063,
-                "zoom": 0.8235910172675734
+                "x": 279.5,
+                "y": 7.5,
+                "zoom": 0.5
               }
             }
           }
@@ -152,54 +241,81 @@
             "flow_data": {
               "nodes": [
                 {
-                  "id": "1",
-                  "type": "taskStart",
+                  "id": "velocityChart-2",
+                  "type": "velocityChart",
                   "position": {
-                    "x": 225,
+                    "x": 588,
                     "y": 0
                   },
                   "data": {
-                    "label": "開始"
+                    "sourceNodeId": "2",
+                    "totalTime": 9,
+                    "position": 40,
+                    "velocity": 5,
+                    "acceleration": 5,
+                    "deceleration": 5,
+                    "debugInfo": "Source: 2, Position: 40, Velocity: 5, Acceleration: 5, Deceleration: 5"
                   },
                   "measured": {
-                    "width": 140,
+                    "width": 342,
+                    "height": 535
+                  },
+                  "hidden": true
+                },
+                {
+                  "id": "1",
+                  "type": "taskStart",
+                  "position": {
+                    "x": 196,
+                    "y": 224
+                  },
+                  "data": {
+                    "initialized": true
+                  },
+                  "measured": {
+                    "width": 342,
                     "height": 87
                   }
                 },
                 {
                   "id": "2",
-                  "type": "actuatorTask",
+                  "type": "task",
                   "position": {
-                    "x": 125.5,
-                    "y": 440
+                    "x": 196,
+                    "y": 585
                   },
                   "data": {
-                    "label": "アクチュエータタスク",
-                    "duration": 0,
-                    "totalDuration": 3
+                    "description": "",
+                    "duration": 4.4,
+                    "totalDuration": 4.4
                   },
                   "measured": {
-                    "width": 339,
-                    "height": 349
+                    "width": 342,
+                    "height": 322
                   },
                   "selected": false,
                   "dragging": false
                 },
                 {
                   "id": "3",
-                  "type": "task",
+                  "type": "actuatorTask",
                   "position": {
-                    "x": 0,
-                    "y": 137
+                    "x": 196,
+                    "y": 957
                   },
                   "data": {
-                    "label": "タスク",
-                    "totalDuration": 3,
-                    "duration": 3
+                    "description": "",
+                    "position": 3,
+                    "velocity": 3,
+                    "acceleration": 3,
+                    "deceleration": 3,
+                    "duration": 2,
+                    "totalDuration": 6.4,
+                    "previousTotalDuration": 4.4
                   },
                   "measured": {
-                    "width": 590,
-                    "height": 253
+                    "width": 342,
+                    "height": 554
                   },
                   "selected": false
                 },
@@ -207,40 +323,79 @@
                   "id": "4",
                   "type": "taskEnd",
                   "position": {
-                    "x": 213.5,
-                    "y": 839
+                    "x": 0,
+                    "y": 1743.5
                   },
                   "data": {
-                    "label": "終了",
-                    "totalDuration": 3
+                    "totalDuration": 6.4
                   },
                   "measured": {
-                    "width": 163,
-                    "height": 128
-                  }
+                    "width": 342,
+                    "height": 170
+                  },
+                  "selected": false,
+                  "dragging": false
+                },
+                {
+                  "id": "velocityChart-3",
+                  "type": "velocityChart",
+                  "position": {
+                    "x": 392,
+                    "y": 1561
+                  },
+                  "data": {
+                    "sourceNodeId": "3",
+                    "totalTime": 2,
+                    "position": 3,
+                    "velocity": 3,
+                    "acceleration": 3,
+                    "deceleration": 3,
+                    "debugInfo": "Source: 3, Position: 3, Velocity: 3, Acceleration: 3, Deceleration: 3"
+                  },
+                  "measured": {
+                    "width": 342,
+                    "height": 535
+                  },
+                  "hidden": true
                 }
               ],
               "edges": [
                 {
+                  "interactionWidth": 75,
                   "source": "1",
-                  "target": "3",
-                  "id": "xy-edge__1-3"
-                },
-                {
-                  "source": "3",
+                  "sourceHandle": "bottom",
                   "target": "2",
-                  "id": "xy-edge__3-2"
+                  "targetHandle": "top",
+                  "id": "xy-edge__1bottom-2top"
                 },
                 {
+                  "interactionWidth": 75,
                   "source": "2",
+                  "sourceHandle": "bottom",
+                  "target": "3",
+                  "targetHandle": "top",
+                  "id": "xy-edge__2bottom-3top"
+                },
+                {
+                  "interactionWidth": 75,
+                  "source": "3",
+                  "sourceHandle": "bottom",
                   "target": "4",
-                  "id": "xy-edge__2-4"
+                  "targetHandle": "top",
+                  "id": "xy-edge__3bottom-4top"
+                },
+                {
+                  "id": "edge-3-velocityChart-3",
+                  "source": "3",
+                  "sourceHandle": "detail-source",
+                  "target": "velocityChart-3",
+                  "targetHandle": "detail-target"
                 }
               ],
               "viewport": {
-                "x": 123.94024745610164,
-                "y": -140.17346164442142,
-                "zoom": 1.0458839391981178
+                "x": 221.7031666173424,
+                "y": 105.67475584492456,
+                "zoom": 0.5327019828351583
               }
             }
           }
