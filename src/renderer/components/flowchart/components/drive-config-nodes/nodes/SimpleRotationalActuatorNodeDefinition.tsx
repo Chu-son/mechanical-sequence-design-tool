@@ -1,6 +1,6 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { RotationalOutput } from '../common';
+import { RotationalOutput, getDefaultRotationalOutput } from '../common';
 
 const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
   type: 'rotationalActuator',
@@ -26,18 +26,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     model: '',
     manufacturer: '',
     maxTorque: 0,
-    outputSpec: {
-      ratedTorque: 0,
-      ratedSpeed: 0,
-      ratedPower: 0,
-      maxTorque: 0,
-      maxSpeed: 0,
-      maxPower: 0,
-      allowableTorque: 0,
-      totalGearRatio: 1,
-      totalInertia: 0,
-      efficiency: 1,
-    } as RotationalOutput,
+    outputSpec: getDefaultRotationalOutput(),
   }),
   handles: {
     target: false,
@@ -195,7 +184,10 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     const maxTorque = parseFloat(data.maxTorque);
     const maxSpeed = parseFloat(data.maxSpeed);
     const rotorInertia = parseFloat(data.rotorInertia);
-    const efficiency = parseFloat(data.outputSpec.efficiency);
+
+    // outputSpecが存在しない場合は初期化
+    const currentOutputSpec = data.outputSpec || getDefaultRotationalOutput();
+    const efficiency = parseFloat(currentOutputSpec.efficiency);
 
     // 定格出力[W] = 定格トルク[Nm] × 定格回転速度[rpm] × 2π / 60
     const ratedPower = (ratedTorque * ratedSpeed * 2 * Math.PI) / 60;
@@ -210,7 +202,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       maxSpeed,
       maxPower: roundToDigits(maxPower, 2),
       allowableTorque: ratedTorque,
-      totalGearRatio: data.totalGearRatio,
+      totalGearRatio: currentOutputSpec.totalGearRatio,
       totalInertia: rotorInertia,
       efficiency,
     };

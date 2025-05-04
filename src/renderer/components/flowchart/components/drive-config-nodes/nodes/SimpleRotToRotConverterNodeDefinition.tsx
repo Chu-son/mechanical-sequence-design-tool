@@ -1,6 +1,6 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { RotationalOutput } from '../common';
+import { RotationalOutput, getDefaultRotationalOutput } from '../common';
 
 const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
   type: 'rotToRotConverter',
@@ -33,18 +33,7 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
     efficiency: 1,
     inputType: 'rotational', // 設計ドキュメント準拠
     outputType: 'rotational', // 設計ドキュメント準拠
-    outputSpec: {
-      ratedTorque: 0,
-      ratedSpeed: 0,
-      ratedPower: 0,
-      maxTorque: 0,
-      maxSpeed: 0,
-      maxPower: 0,
-      allowableTorque: 0,
-      totalGearRatio: 1,
-      totalInertia: 0,
-      efficiency: 1,
-    } as RotationalOutput,
+    outputSpec: getDefaultRotationalOutput(),
   }),
   /**
    * fields: 入力値（parameters）と出力値（output）を分離して定義
@@ -207,18 +196,7 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
         nodeId,
         'has no previous output spec. Using default values.',
       );
-      prev = {
-        ratedTorque: 0,
-        ratedSpeed: 0,
-        ratedPower: 0,
-        maxTorque: 0,
-        maxSpeed: 0,
-        maxPower: 0,
-        allowableTorque: 0,
-        totalGearRatio: 1,
-        totalInertia: 0,
-        efficiency: 1,
-      };
+      prev = getDefaultRotationalOutput();
     }
 
     // 減速機の変換式

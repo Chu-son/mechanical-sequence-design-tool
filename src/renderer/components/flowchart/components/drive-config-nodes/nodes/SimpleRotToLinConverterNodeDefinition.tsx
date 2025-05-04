@@ -1,6 +1,10 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { LinearOutput } from '../common';
+import {
+  LinearOutput,
+  getDefaultLinearOutput,
+  getDefaultRotationalOutput,
+} from '../common';
 
 const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
   type: 'rotToLinConverter',
@@ -34,17 +38,7 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
     efficiency: 0.9,
     inputType: 'rotational', // 設計ドキュメント準拠
     outputType: 'linear', // 設計ドキュメント準拠
-    outputSpec: {
-      ratedForce: 0,
-      ratedSpeed: 0,
-      ratedPower: 0,
-      maxForce: 0,
-      maxSpeed: 0,
-      maxPower: 0,
-      stroke: 0,
-      maxAcceleration: 0,
-      efficiency: 0.9,
-    } as LinearOutput,
+    outputSpec: getDefaultLinearOutput(),
   }),
   /**
    * fields: 入力値（parameters）と出力値（output）を分離して定義
@@ -207,7 +201,7 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
         nodeId,
         'has no previous output spec. Using default values.',
       );
-      prev = { ratedTorque: 0, ratedSpeed: 0, ratedPower: 0, efficiency: 1 };
+      prev = getDefaultRotationalOutput();
     }
 
     // 例: 回転→直動変換（ボールねじ等）

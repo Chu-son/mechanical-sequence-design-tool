@@ -1,6 +1,6 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { LinearOutput } from '../common';
+import { LinearOutput, getDefaultLinearOutput } from '../common';
 
 const simpleLinearActuatorNodeDefinition: NodeDefinition = {
   type: 'linearActuator',
@@ -27,17 +27,7 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     maxSpeed: 0,
     acceleration: 0,
     maxForce: 0,
-    outputSpec: {
-      ratedForce: 0,
-      ratedSpeed: 0,
-      ratedPower: 0,
-      maxForce: 0,
-      maxSpeed: 0,
-      maxPower: 0,
-      stroke: 0,
-      maxAcceleration: 0,
-      efficiency: 0.9,
-    } as LinearOutput,
+    outputSpec: getDefaultLinearOutput(),
   }),
   handles: {
     target: false,
@@ -208,7 +198,11 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     const maxSpeed = parseFloat(data.maxSpeed) || 0;
     const acceleration = parseFloat(data.acceleration) || 0;
     const stroke = parseFloat(data.stroke) || 0;
-    const efficiency = 0.9;
+
+    // outputSpecが存在しない場合は初期化
+    const currentOutputSpec = data.outputSpec || getDefaultLinearOutput();
+    const efficiency = currentOutputSpec.efficiency ?? 0.9;
+
     // 定格出力[W] = 定格推力[N] × 定格速度[mm/s] / 1000
     const ratedPower = (ratedForce * ratedSpeed) / 1000;
     const maxPower = (ratedForce * maxSpeed) / 1000;

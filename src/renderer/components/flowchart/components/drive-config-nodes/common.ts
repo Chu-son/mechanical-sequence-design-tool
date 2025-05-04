@@ -128,3 +128,40 @@ export interface OutputNodeData extends DriveNodeData {
   load?: number; // 負荷 [kg]
   inertia?: number; // 慣性モーメント [kg・m²] (回転出力の場合)
 }
+
+/**
+ * デフォルトの回転系出力設定を取得する共通関数
+ * @returns 初期状態のRotationalOutput
+ */
+export function getDefaultRotationalOutput(): RotationalOutput {
+  return {
+    ratedTorque: 0,
+    ratedSpeed: 0,
+    ratedPower: 0,
+    maxTorque: 0,
+    maxSpeed: 0,
+    maxPower: 0,
+    allowableTorque: 0,
+    totalGearRatio: 1,
+    totalInertia: 0,
+    efficiency: 1,
+  };
+}
+
+/**
+ * デフォルトの直動系出力設定を取得する共通関数
+ * @returns 初期状態のLinearOutput
+ */
+export function getDefaultLinearOutput(): LinearOutput {
+  return {
+    ratedForce: 0,
+    ratedSpeed: 0,
+    ratedPower: 0,
+    maxForce: 0,
+    maxSpeed: 0,
+    maxPower: 0,
+    stroke: 0,
+    maxAcceleration: 0,
+    efficiency: 0.9,
+  };
+}
