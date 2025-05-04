@@ -175,6 +175,20 @@ export interface DatabaseInterface {
   beginTransaction(): Promise<void>;
   commitTransaction(): Promise<void>;
   rollbackTransaction(): Promise<void>;
+
+  // 部品管理
+  getParts(type?: string): Promise<DrivePart[]>;
+  getPartById(id: string): Promise<DrivePart | undefined>;
+  addPart(part: DrivePart): Promise<void>;
+  updatePart(part: DrivePart): Promise<void>;
+  deletePart(id: string): Promise<void>;
+
+  // メーカー管理
+  getManufacturers(): Promise<Manufacturer[]>;
+  getManufacturerById(id: string): Promise<Manufacturer | undefined>;
+  addManufacturer(mfr: Manufacturer): Promise<void>;
+  updateManufacturer(mfr: Manufacturer): Promise<void>;
+  deleteManufacturer(id: string): Promise<void>;
 }
 ```
 
@@ -588,5 +602,156 @@ const testProject: Project = {
   1. 型定義追加
   2. NodeDefinition/Node追加
   3. サイドバー・リストに登録
+
+---
+
+## 10. 駆動部品登録ページ 詳細設計
+
+### 10.1 概要
+
+駆動部品（アクチュエータ・変換機構等）の型式・メーカー・スペックをグローバルに一元管理するページを実装します。型式＋メーカーで重複を防止し、メーカーは事前登録制（日本語・英語表記の重複も防止）とします。
+
+- グローバル管理（全プロジェクト共通で利用可能）
+- 一元管理された部品情報をフローチャート設計時に部品選択可能
+- 将来的な検索・フィルタ・インポート/エクスポート・権限・履歴管理の拡張性を確保
+
+### 10.2 画面遷移図
+
+```mermaid
+flowchart TD
+  Top[トップページ] --> PartsList[駆動部品一覧ページ]
+  PartsList -->|新規登録| PartTypeSelect[部品種別選択ページ]
+  PartTypeSelect --> PartForm[部品入力フォーム]
+  PartForm -->|保存| PartsList
+  PartsList -->|編集| PartForm
+  PartsList -->|メーカー管理| ManufacturerList[メーカー一覧ページ]
+  ManufacturerList -->|新規登録| ManufacturerForm[メーカー入力フォーム]
+  ManufacturerForm -->|保存| ManufacturerList
+```
+
+### 10.3 データ構造
+
+#### 10.3.1 メーカー
+
+```typescript
+export interface Manufacturer {
+  id: string;
+  nameJa: string;
+  nameEn: string;
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+#### 10.3.2 駆動部品
+
+```typescript
+export interface DrivePart {
+  id: string;
+  type: string; // ノード種別（例: 'rotationalActuator'）
+  model: string;
+  manufacturerId: string;
+  spec: any; // NodeDefinition.fieldsに準拠した入力値
+  createdAt: string;
+  updatedAt: string;
+}
+```
+
+#### 10.3.3 データベース全体構造
+
+```typescript
+export interface PartsDatabase {
+  parts: DrivePart[];
+  manufacturers: Manufacturer[];
+}
+```
+
+### 10.4 スペック型定義
+
+ノード種別ごとに異なるスペックを型安全に定義します。これらは6.5節で定義した出力仕様と一致しています。
+
+```typescript
+// 回転アクチュエータ用スペック例
+export interface RotationalActuatorSpec {
+  ratedTorque: number;
+  ratedSpeed: number;
+  maxTorque: number;
+  maxSpeed: number;
+  rotorInertia: number;
+  // ...他必要項目
+}
+
+// 直動アクチュエータ用スペック例
+export interface LinearActuatorSpec {
+  stroke: number;
+  ratedForce: number;
+  ratedSpeed: number;
+  maxForce: number;
+  maxSpeed: number;
+  maxAcceleration: number;
+  // ...他必要項目
+}
+```
+
+### 10.5 DatabaseInterface拡張
+
+既存のDatabaseInterfaceを拡張し、以下のメソッドを追加します：
+
+```typescript
+// 部品管理
+getParts(type?: string): Promise<DrivePart[]>
+getPartById(id: string): Promise<DrivePart | undefined>
+addPart(part: DrivePart): Promise<void>
+updatePart(part: DrivePart): Promise<void>
+deletePart(id: string): Promise<void>
+
+// メーカー管理
+getManufacturers(): Promise<Manufacturer[]>
+getManufacturerById(id: string): Promise<Manufacturer | undefined>
+addManufacturer(mfr: Manufacturer): Promise<void>
+updateManufacturer(mfr: Manufacturer): Promise<void>
+deleteManufacturer(id: string): Promise<void>
+```
+
+### 10.6 UI設計
+
+- トップページに「駆動部品登録」リンク
+- 部品一覧画面：種別ごとに階層表示、新規登録ボタン配置
+- 部品種別選択画面：drive-config-nodesのノード種別一覧
+- 部品入力フォーム：メーカープルダウン＋新規追加ボタン、型式入力、スペック入力フィールド
+- メーカー管理画面：一覧表示、新規追加・編集・削除機能
+
+各画面は既存のコンポーネント（FormModal, BaseModal等）を再利用し、一貫性のあるUIを実現します。
+
+### 10.7 フローチャートノード連携
+
+1. 「駆動部品登録ページ」で登録した部品を、フローチャート編集時に部品選択して利用可能
+2. 部品選択するとその部品のスペックが自動的にノードの入力値として設定される
+3. 6.5節の駆動軸構成ノードの入力仕様と連携：
+
+| ノード種別         | 主な入力値（部品選択時に自動設定）                                                   |
+| ------------------ | ------------------------------------------------------------------------------------ |
+| 回転アクチュエータ | 型式、メーカー、定格トルク、定格速度、最大トルク、最大速度、ローター慣性モーメント   |
+| 直動アクチュエータ | 型式、メーカー、ストローク長さ、定格推力、定格速度、最大推力、最大速度、最大加減速度 |
+| 回転→回転変換      | 型式、メーカー、効率、減速比、慣性モーメント、許容トルク                             |
+| 回転→直動変換      | 型式、メーカー、効率、リード/ピッチ、変換比、許容推力                                |
+| 直動→回転変換      | 型式、メーカー、効率、変換比、許容トルク                                             |
+| 直動→直動変換      | 型式、メーカー、効率、変換比、許容推力                                               |
+
+### 10.8 拡張性・保守性
+
+- 型式＋メーカーのユニーク制約により重複登録を防止
+- メーカー選択制（プルダウン）による表記ゆれ防止
+- DatabaseInterfaceによる抽象化で、ストレージ方式に依存しない設計
+- 将来的な検索・フィルタ・インポート/エクスポート・権限・履歴管理の拡張にも対応可能
+- データベース層・UI層とも拡張ポイントを明示
+
+### 10.9 実装ステップ
+
+1. databaseTypes.tsにメーカー・部品関連の型定義を追加
+2. DatabaseInterfaceに部品・メーカー関連メソッドを追加
+3. JsonDatabase等の実装クラスにメソッド実装を追加
+4. 駆動部品登録関連のUI（ページ・モーダル等）を追加
+5. 既存のNodeDefinitionを拡張し、部品選択機能を追加
 
 ---
