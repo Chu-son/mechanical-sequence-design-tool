@@ -5,6 +5,7 @@ import {
   getDefaultLinearOutput,
   getDefaultRotationalOutput,
 } from '../common';
+import { createLinearOutputFields } from '../fields/OutputSpecFields';
 
 const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
   type: 'rotToLinConverter',
@@ -125,62 +126,8 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
         efficiency: parseFloat(value),
       }),
     },
-    // 出力値（readonly）
-    {
-      key: 'ratedForceOut',
-      label: 'Rated Force',
-      type: 'readonly',
-      unit: 'N',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedForce ?? '',
-    },
-    {
-      key: 'ratedSpeedOut',
-      label: 'Rated Speed',
-      type: 'readonly',
-      unit: 'mm/s',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedSpeed ?? '',
-    },
-    {
-      key: 'ratedPowerOut',
-      label: 'Rated Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedPower ?? '',
-    },
-    {
-      key: 'maxForceOut',
-      label: 'Max Force',
-      type: 'readonly',
-      unit: 'N',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxForce ?? '',
-    },
-    {
-      key: 'maxSpeedOut',
-      label: 'Max Speed',
-      type: 'readonly',
-      unit: 'mm/s',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxSpeed ?? '',
-    },
-    {
-      key: 'maxPowerOut',
-      label: 'Max Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxPower ?? '',
-    },
-    {
-      key: 'efficiencyOut',
-      label: 'Efficiency',
-      type: 'readonly',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.efficiency ?? '',
-    },
+    // 出力値（linearOutputFieldsを使用）
+    ...createLinearOutputFields(),
   ],
   /**
    * compute: 前段ノードの出力値と入力値からoutputSpecを計算
@@ -212,6 +159,7 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
       ((prev.ratedTorque || 0) * 2 * Math.PI) / (conversionRatio || 1);
     const ratedPower = (ratedForce * ratedSpeed) / 1000;
     const outputSpec: LinearOutput = {
+      type: 'linear',
       ratedForce: roundToDigits(ratedForce, 2),
       ratedSpeed: roundToDigits(ratedSpeed, 2),
       ratedPower: roundToDigits(ratedPower, 2),

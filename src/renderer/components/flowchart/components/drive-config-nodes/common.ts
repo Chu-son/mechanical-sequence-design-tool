@@ -2,6 +2,7 @@
  * 回転系出力（rotational）型定義
  */
 export interface RotationalOutput {
+  type: 'rotational'; // 明示的に種別を指定
   ratedTorque: number; // 定格トルク [N・m]
   ratedSpeed: number; // 定格回転速度 [rpm]
   ratedPower: number; // 定格出力 [W]
@@ -18,6 +19,7 @@ export interface RotationalOutput {
  * 直動系出力（linear）型定義
  */
 export interface LinearOutput {
+  type: 'linear'; // 明示的に種別を指定
   ratedForce: number; // 定格推力 [N]
   ratedSpeed: number; // 定格速度 [mm/s]
   ratedPower: number; // 定格出力 [W]
@@ -135,6 +137,7 @@ export interface OutputNodeData extends DriveNodeData {
  */
 export function getDefaultRotationalOutput(): RotationalOutput {
   return {
+    type: 'rotational',
     ratedTorque: 0,
     ratedSpeed: 0,
     ratedPower: 0,
@@ -154,6 +157,7 @@ export function getDefaultRotationalOutput(): RotationalOutput {
  */
 export function getDefaultLinearOutput(): LinearOutput {
   return {
+    type: 'linear',
     ratedForce: 0,
     ratedSpeed: 0,
     ratedPower: 0,

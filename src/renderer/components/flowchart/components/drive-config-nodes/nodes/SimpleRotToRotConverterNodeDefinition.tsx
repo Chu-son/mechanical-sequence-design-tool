@@ -1,6 +1,7 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import { RotationalOutput, getDefaultRotationalOutput } from '../common';
+import { createRotationalOutputFields } from '../fields/OutputSpecFields';
 
 const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
   type: 'rotToRotConverter',
@@ -104,77 +105,8 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
         efficiency: parseFloat(value),
       }),
     },
-    // 出力値（readonly）
-    {
-      key: 'ratedTorqueOut',
-      label: 'Rated Torque',
-      type: 'readonly',
-      unit: 'N・m',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedTorque,
-    },
-    {
-      key: 'ratedSpeedOut',
-      label: 'Rated Speed',
-      type: 'readonly',
-      unit: 'rpm',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedSpeed,
-    },
-    {
-      key: 'ratedPowerOut',
-      label: 'Rated Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedPower,
-    },
-    {
-      key: 'maxTorqueOut',
-      label: 'Max Torque',
-      type: 'readonly',
-      unit: 'N・m',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxTorque,
-    },
-    {
-      key: 'maxSpeedOut',
-      label: 'Max Speed',
-      type: 'readonly',
-      unit: 'rpm',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxSpeed,
-    },
-    {
-      key: 'maxPowerOut',
-      label: 'Max Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxPower,
-    },
-    {
-      key: 'efficiencyOut',
-      label: 'Efficiency',
-      type: 'readonly',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.efficiency,
-    },
-    {
-      key: 'totalGearRatioOut',
-      label: 'Total Gear Ratio',
-      type: 'readonly',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.totalGearRatio,
-    },
-    {
-      key: 'totalInertiaOut',
-      label: 'Total Inertia',
-      type: 'readonly',
-      unit: 'kg・m²',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.totalInertia,
-    },
+    // 出力値（rotationalOutputFieldsを使用）
+    ...createRotationalOutputFields(),
   ],
   /**
    * compute: 前段ノードの出力値と入力値からoutputSpecを計算
@@ -212,6 +144,7 @@ const simpleRotToRotConverterNodeDefinition: NodeDefinition = {
     const totalInertia = prev.totalInertia + inertia;
 
     const outputSpec: RotationalOutput = {
+      type: 'rotational',
       ratedTorque: roundToDigits(ratedTorque, 2),
       ratedSpeed: roundToDigits(ratedSpeed, 2),
       ratedPower: roundToDigits(ratedPower, 2),

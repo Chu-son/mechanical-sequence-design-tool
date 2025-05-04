@@ -1,6 +1,7 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import { LinearOutput, getDefaultLinearOutput } from '../common';
+import { createLinearOutputFields } from '../fields/OutputSpecFields';
 
 const simpleLinearActuatorNodeDefinition: NodeDefinition = {
   type: 'linearActuator',
@@ -115,78 +116,8 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
       getValue: (data) => data.maxForce,
       setValue: (value, data) => ({ ...data, maxForce: parseFloat(value) }),
     },
-    // 出力値（readonly）
-    {
-      key: 'ratedForceOut',
-      label: 'Rated Force',
-      type: 'readonly',
-      unit: 'N',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedForce ?? '',
-    },
-    {
-      key: 'ratedSpeedOut',
-      label: 'Rated Speed',
-      type: 'readonly',
-      unit: 'mm/s',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedSpeed ?? '',
-    },
-    {
-      key: 'ratedPowerOut',
-      label: 'Rated Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedPower ?? '',
-    },
-    {
-      key: 'maxForceOut',
-      label: 'Max Force',
-      type: 'readonly',
-      unit: 'N',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxForce ?? '',
-    },
-    {
-      key: 'maxSpeedOut',
-      label: 'Max Speed',
-      type: 'readonly',
-      unit: 'mm/s',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxSpeed ?? '',
-    },
-    {
-      key: 'maxPowerOut',
-      label: 'Max Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxPower ?? '',
-    },
-    {
-      key: 'strokeOut',
-      label: 'Stroke',
-      type: 'readonly',
-      unit: 'mm',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.stroke ?? '',
-    },
-    {
-      key: 'maxAccelerationOut',
-      label: 'Max Acceleration',
-      type: 'readonly',
-      unit: 'mm/s²',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxAcceleration ?? '',
-    },
-    {
-      key: 'efficiencyOut',
-      label: 'Efficiency',
-      type: 'readonly',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.efficiency ?? '',
-    },
+    // 出力値（linearOutputFieldsを使用）
+    ...createLinearOutputFields(),
   ],
   /**
    * compute: 入力値からoutputSpecを計算
@@ -207,6 +138,7 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     const ratedPower = (ratedForce * ratedSpeed) / 1000;
     const maxPower = (ratedForce * maxSpeed) / 1000;
     const outputSpec: LinearOutput = {
+      type: 'linear',
       ratedForce,
       ratedSpeed,
       ratedPower: roundToDigits(ratedPower, 2),

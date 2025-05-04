@@ -1,6 +1,7 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import { RotationalOutput, getDefaultRotationalOutput } from '../common';
+import { createRotationalOutputFields } from '../fields/OutputSpecFields';
 
 const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
   type: 'rotationalActuator',
@@ -116,62 +117,8 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
         rotorInertia: parseFloat(value),
       }),
     },
-    // 出力値（readonly）
-    {
-      key: 'ratedTorqueOut',
-      label: 'Rated Torque',
-      type: 'readonly',
-      unit: 'N・m',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedTorque ?? '',
-    },
-    {
-      key: 'ratedSpeedOut',
-      label: 'Rated Speed',
-      type: 'readonly',
-      unit: 'rpm',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedSpeed ?? '',
-    },
-    {
-      key: 'ratedPowerOut',
-      label: 'Rated Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.ratedPower ?? '',
-    },
-    {
-      key: 'maxTorqueOut',
-      label: 'Max Torque',
-      type: 'readonly',
-      unit: 'N・m',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxTorque ?? '',
-    },
-    {
-      key: 'maxSpeedOut',
-      label: 'Max Speed',
-      type: 'readonly',
-      unit: 'rpm',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxSpeed ?? '',
-    },
-    {
-      key: 'maxPowerOut',
-      label: 'Max Power',
-      type: 'readonly',
-      unit: 'W',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.maxPower ?? '',
-    },
-    {
-      key: 'efficiencyOut',
-      label: 'Efficiency',
-      type: 'readonly',
-      group: 'output',
-      getValue: (data) => data.outputSpec?.efficiency ?? '',
-    },
+    // 出力値（rotationalOutputFieldsを使用）
+    ...createRotationalOutputFields(),
   ],
   /**
    * compute: 入力値からoutputSpecを計算
@@ -195,6 +142,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     const maxPower = (ratedTorque * maxSpeed * 2 * Math.PI) / 60;
 
     const outputSpec: RotationalOutput = {
+      type: 'rotational',
       ratedTorque,
       ratedSpeed,
       ratedPower: roundToDigits(ratedPower, 2),
