@@ -4,6 +4,7 @@ import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { Manufacturer, Part, PartType } from '@/renderer/types/databaseTypes';
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
+import { partTypeFormConfigMap } from '@/renderer/config/modalConfigs';
 
 // 部品種別の表示名マッピング
 const partTypeLabels: Record<DrivePartType, string> = {
