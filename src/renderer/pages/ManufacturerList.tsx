@@ -185,7 +185,6 @@ const ManufacturerList: React.FC = () => {
             id: 'nameJa',
             label: 'メーカー名（日本語）',
             type: 'text',
-            required: true,
           },
           {
             id: 'nameEn',
@@ -206,7 +205,6 @@ const ManufacturerList: React.FC = () => {
             id: 'nameJa',
             label: 'メーカー名（日本語）',
             type: 'text',
-            required: true,
           },
           {
             id: 'nameEn',
