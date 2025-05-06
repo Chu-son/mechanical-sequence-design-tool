@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import '@/renderer/styles/Common.css';
 import { DrivePartType } from '@/renderer/types/databaseTypes';
-import './PartTypeSelect.css';
 
 // 部品種別の表示名マッピング
 const partTypeLabels: Record<DrivePartType, string> = {
@@ -48,7 +48,7 @@ const PartTypeSelect: React.FC = () => {
   };
 
   return (
-    <div className="part-type-select-container">
+    <div className="container">
       <h1>部品種別選択</h1>
       <p className="description">追加する部品の種別を選択してください</p>
 
@@ -69,7 +69,7 @@ const PartTypeSelect: React.FC = () => {
       </div>
 
       <div className="actions">
-        <button className="back-button" onClick={handleBack}>
+        <button className="cancel-button" onClick={handleBack}>
           戻る
         </button>
       </div>

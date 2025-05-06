@@ -1,6 +1,6 @@
 import React, { JSX } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import '@/renderer/components/TitleBar.css';
+import '@/renderer/styles/TitleBar.css';
 
 function TitleBar(): JSX.Element {
   const navigate = useNavigate();

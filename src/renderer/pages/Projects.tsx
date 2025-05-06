@@ -1,10 +1,13 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import '@/renderer/pages/Projects.css';
 import ListComponent from '@/renderer/components/common/ListComponent';
 import FormModal from '@/renderer/components/common/FormModal';
 import { useFormModal } from '@/renderer/hooks/useModal';
 import { projectModalConfig } from '@/renderer/config/modalConfigs';
+import '@/renderer/styles/Common.css';
+import '@/renderer/styles/Modal.css';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

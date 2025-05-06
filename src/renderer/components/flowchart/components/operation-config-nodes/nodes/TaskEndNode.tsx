@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import taskEndNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/TaskEndNodeDefinition';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 import { useReactFlow } from '@xyflow/react';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 

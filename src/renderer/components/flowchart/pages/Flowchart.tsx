@@ -34,6 +34,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 
 const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
 import '@xyflow/react/dist/style.css';
+import '@/renderer/styles/FlowchartTheme.css';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

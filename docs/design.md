@@ -62,6 +62,30 @@ flowchart TD
 
 ---
 
+## 2.3 スタイル（CSS）管理方針
+
+- すべてのCSSファイルは `src/renderer/styles/` ディレクトリに集約し、UI全体のスタイルを一元管理する
+- ディレクトリ例:
+  ```
+  src/renderer/styles/
+    App.css              // アプリ全体のベースレイアウト
+    Common.css           // 汎用レイアウト・ボタン・リスト・フォーム等
+    Modal.css            // モーダル・フォーム共通
+    FlowchartTheme.css   // フローチャート系
+    Sidebar.css          // サイドバー固有
+    TitleBar.css         // タイトルバー固有
+  ```
+- ファイル分割方針:
+  - 汎用的なクラス（.container, .actions, .loading, .error, .form-group など）は Common.css に集約する
+  - モーダル・フォームは Modal.css、フローチャートは FlowchartTheme.css に分離する
+  - Sidebar/TitleBarなどUI固有のスタイルのみ個別ファイルで管理する
+  - 新規UI追加時もまず styles/ 配下を参照し、共通クラスを再利用する
+- 運用ルール:
+  - 重複・細分化を避け、共通化できるものは都度 Common.css へ吸収する
+  - 変数（色・余白等）は :root で一元管理する
+
+---
+
 ## 3. データベース設計（詳細）
 
 ### 3.1 データベース設計方針
@@ -304,6 +328,17 @@ export interface InputFieldDefinition {
 
 - サイドバーは shouldAutoOpen/shouldAutoPin 判定により自動で展開・ピン留めされる。状態変化時は sidebar-change カスタムイベントを発火し、外部からも状態監視が可能。
 - サイドバーのアイコン並び替え・D&Dは useSidebarDragDrop カスタムフックで実装し、Sidebar のロジックから分離・再利用性を高めている。
+
+---
+
+### 5.4 スタイル設計・運用指針
+
+- 各UI部品のスタイルは、共通クラスと個別クラスを明確に分離する
+- 例: サイドバーは Sidebar.css、フローチャートは FlowchartTheme.css、フォームは Modal.css に記述する
+- レイアウト・ボタン・リスト・エラーメッセージ等は Common.css のクラスを全画面で再利用する
+- スタイルの拡張・カスタマイズは styles/ 配下の該当ファイルに追記する
+- 細かく切り分けすぎず、同じ見た目・機能のものは必ず共通クラスを使う
+- 例: 表（リスト）のヘッダーと要素行で同じスタイルを重複定義しない
 
 ---
 
@@ -602,6 +637,14 @@ const testProject: Project = {
   1. 型定義追加
   2. NodeDefinition/Node追加
   3. サイドバー・リストに登録
+
+---
+
+## 9.2 スタイルの拡張性・保守性
+
+- スタイルの共通化・一元管理により、UI追加・変更時の影響範囲を最小化できる
+- 新規UIやテーマ追加時も styles/ 配下の既存ファイルを拡張・再利用することで保守性を高める
+- 共通クラスの拡張・吸収を継続し、冗長な定義や細分化を防ぐ運用を徹底する
 
 ---
 

@@ -17,7 +17,7 @@ import {
   DividerFieldDefinition,
   PartSelectorFieldDefinition,
 } from './types';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 import {
   roundToDigits,
   ROUND_DIGITS,

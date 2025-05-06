@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useGlobalFlag } from '@/renderer/context/GlobalFlagContext';
 import useSidebarDragDrop from '@/renderer/hooks/useSidebarDragDrop';
-import './Sidebar.css';
+import '@/renderer/styles/Sidebar.css';
 import SidebarIcon from '@/renderer/components/Sidebar/SidebarIcon';
 import SidebarPanel from '@/renderer/components/Sidebar/SidebarPanel';
 import { getInitialItems } from '@/renderer/components/Sidebar/SidebarInitialItems';

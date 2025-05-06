@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import BaseModal from '@/renderer/components/common/BaseModal';
-import './FormModal.css';
+import BaseModal from './BaseModal';
+import '@/renderer/styles/Modal.css';
 
 // フィールドの型定義
 export type FieldType = 'text' | 'number' | 'date' | 'select' | 'textarea';

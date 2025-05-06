@@ -1,4 +1,4 @@
-/* modal overlay styles */
+/* modal overlay スタイル */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -12,7 +12,7 @@
   z-index: 1000;
 }
 
-/* modal content styles */
+/* modal content スタイル */
 .modal-content {
   position: relative;
   background: #f9f9f9;
@@ -57,4 +57,55 @@
   border: none;
   font-size: 20px;
   cursor: pointer;
+}
+
+/* フォームフィールド共通スタイル */
+.form-field {
+  margin-bottom: 16px;
+}
+
+.form-field label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+}
+
+.form-field input,
+.form-field select,
+.form-field textarea {
+  width: calc(100% - 16px);
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+}
+
+.form-field textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-field select {
+  width: 100%;
+  height: 36px;
+}
+
+/* エラー表示 */
+.form-field input.error,
+.form-field select.error,
+.form-field textarea.error {
+  border-color: #f44336;
+}
+
+.error-message {
+  color: #f44336;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* 必須項目のマーク */
+.required {
+  color: #f44336;
+  margin-left: 4px;
 }

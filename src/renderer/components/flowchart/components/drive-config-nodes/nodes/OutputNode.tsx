@@ -3,7 +3,7 @@ import { useReactFlow, type NodeProps } from '@xyflow/react';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import outputNodeDefinition from './OutputNodeDefinition';
 import { OutputNodeData } from '@/renderer/types/driveTypes';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 
 function OutputNode({ id, data }: NodeProps<OutputNodeData>) {

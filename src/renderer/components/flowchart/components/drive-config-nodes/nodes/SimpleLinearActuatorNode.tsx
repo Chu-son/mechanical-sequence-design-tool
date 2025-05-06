@@ -3,7 +3,7 @@ import { useReactFlow, type NodeProps } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import simpleLinearActuatorNodeDefinition from './SimpleLinearActuatorNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 import { LinearActuatorNodeData } from '@/renderer/types/driveTypes';
 
 function SimpleLinearActuatorNode({

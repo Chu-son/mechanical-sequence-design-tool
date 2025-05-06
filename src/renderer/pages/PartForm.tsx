@@ -1,22 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import {
-  DrivePart,
-  DrivePartType,
-  Manufacturer,
-  RotationalActuatorSpec,
-  LinearActuatorSpec,
-  RotToRotConverterSpec,
-  RotToLinConverterSpec,
-  LinToRotConverterSpec,
-  LinToLinConverterSpec,
-} from '@/renderer/types/databaseTypes';
-import {
-  partTypeFormConfigMap,
-  partTypeLabels,
-} from '@/renderer/config/modalConfigs';
-import { FieldDefinition } from '@/renderer/components/common/FormModal';
+import { Manufacturer, Part, PartType } from '@/renderer/types/databaseTypes';
+import '@/renderer/styles/Common.css';
+import '@/renderer/styles/Modal.css';
 
 // 部品種別の表示名マッピング
 const partTypeLabels: Record<DrivePartType, string> = {
@@ -314,7 +301,7 @@ const PartForm: React.FC = () => {
   const formConfig = partTypeFormConfigMap[partType];
 
   return (
-    <div className="part-form-container">
+    <div className="container">
       <h1>
         {isEditMode ? '部品編集' : '新規部品登録'} - {partTypeLabels[partType]}
       </h1>

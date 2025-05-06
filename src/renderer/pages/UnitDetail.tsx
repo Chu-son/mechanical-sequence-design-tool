@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import '@/renderer/pages/UnitDetail.css';
-import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import '@/renderer/styles/Common.css';
+import '@/renderer/styles/Modal.css';
 import ListComponent from '@/renderer/components/common/ListComponent';
 import FormModal from '@/renderer/components/common/FormModal';
 import { useFormModal } from '@/renderer/hooks/useModal';

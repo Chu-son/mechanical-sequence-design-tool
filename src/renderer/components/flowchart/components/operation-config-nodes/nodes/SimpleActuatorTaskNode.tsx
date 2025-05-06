@@ -5,7 +5,7 @@ import simpleActuatorTaskNodeDefinition from '@/renderer/components/flowchart/co
 import RenderNodeSideToolbar from '@/renderer/components/flowchart/common/renderNodeSideToolbar';
 import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 
 const renderCustomHandles = (id: string) => (
   <>

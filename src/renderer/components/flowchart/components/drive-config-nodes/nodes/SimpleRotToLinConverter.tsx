@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { useReactFlow, type NodeProps } from '@xyflow/react';
-import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import simpleRotToLinConverterNodeDefinition from './SimpleRotToLinConverterNodeDefinition';
-import '@/renderer/components/flowchart/styles/common.css';
+import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
+import '@/renderer/styles/FlowchartTheme.css';
 import { RotToLinConverterNodeData } from '@/renderer/types/driveTypes';
 
 function SimpleRotToLinConverterNode({

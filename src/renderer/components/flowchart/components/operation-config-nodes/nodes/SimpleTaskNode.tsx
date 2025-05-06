@@ -1,10 +1,9 @@
 import React, { memo } from 'react';
-import { type NodeProps, useReactFlow } from '@xyflow/react';
+import { useReactFlow, type NodeProps } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
-import simpleTaskNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/SimpleTaskNodeDefinition';
-import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
+import simpleTaskNodeDefinition from './SimpleTaskNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 
 function SimpleTaskNode({ id, data }: NodeProps<{ data: TaskNodeData }>) {
   const { updateNodeData } = useReactFlow();

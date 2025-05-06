@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import '@/renderer/pages/ProjectDetail.css';
-import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
-import ListComponent from '@/renderer/components/common/ListComponent';
-import FormModal from '@/renderer/components/common/FormModal';
 import { useFormModal } from '@/renderer/hooks/useModal';
+import FormModal from '@/renderer/components/common/FormModal';
+import ListComponent from '@/renderer/components/common/ListComponent';
 import { unitModalConfig } from '@/renderer/config/modalConfigs';
+import '@/renderer/styles/Common.css';
+import '@/renderer/styles/Modal.css';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 

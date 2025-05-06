@@ -1,16 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  DrivePart,
-  DrivePartType,
-  Manufacturer,
-} from '@/renderer/types/databaseTypes';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import { Manufacturer, Part } from '@/renderer/types/databaseTypes';
+import '@/renderer/styles/Common.css';
+
 import ListComponent, {
   MenuItem,
 } from '@/renderer/components/common/ListComponent';
-
-import './PartsList.css';
 
 // 部品種別の表示名マッピング
 const partTypeLabels: Record<DrivePartType, string> = {
@@ -134,13 +130,13 @@ const PartsList: React.FC = () => {
   }
 
   return (
-    <div className="parts-list-container">
+    <div className="container">
       <h1>駆動部品一覧</h1>
 
-      <div className="parts-actions">
+      <div className="actions">
         <button
           type="button"
-          className="manage-manufacturers-button"
+          className="action-button"
           onClick={handleManageManufacturers}
         >
           メーカー管理
@@ -148,7 +144,7 @@ const PartsList: React.FC = () => {
       </div>
 
       {Object.entries(groupedParts).map(([type, typeParts]) => (
-        <div key={type} className="part-type-section">
+        <div key={type} className="section">
           <ListComponent
             title={partTypeLabels[type as DrivePartType]}
             onAddNew={handleAddPart}

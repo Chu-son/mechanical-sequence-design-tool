@@ -1,5 +1,5 @@
-import React, { ReactNode } from 'react';
-import './BaseModal.css';
+import React from 'react';
+import '@/renderer/styles/Modal.css';
 
 interface BaseModalProps {
   isOpen: boolean;

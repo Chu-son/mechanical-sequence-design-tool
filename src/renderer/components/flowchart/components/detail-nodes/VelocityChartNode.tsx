@@ -10,7 +10,7 @@ import BaseNode from '@/renderer/components/flowchart/components/base-nodes/Base
 import velocityChartNodeDefinition from './VelocityChartNodeDefinition';
 import { TaskNodeData } from '@/renderer/components/flowchart/components/operation-config-nodes/common';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 
 /**
  * カスタムハンドルをレンダリングする関数

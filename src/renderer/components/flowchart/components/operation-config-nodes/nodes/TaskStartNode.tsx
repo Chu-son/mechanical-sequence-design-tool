@@ -1,9 +1,9 @@
 import React, { memo } from 'react';
-import { useReactFlow } from '@xyflow/react';
+import { NodeProps, useReactFlow } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
-import taskStartNodeDefinition from '@/renderer/components/flowchart/components/operation-config-nodes/nodes/TaskStartNodeDefinition';
+import taskStartNodeDefinition from './TaskStartNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
-import '@/renderer/components/flowchart/styles/common.css';
+import '@/renderer/styles/FlowchartTheme.css';
 
 function TaskStartNode({ id, data }: { id: string; data?: any }): JSX.Element {
   const { updateNodeData } = useReactFlow();

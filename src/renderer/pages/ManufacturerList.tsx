@@ -6,8 +6,8 @@ import FormModal from '@/renderer/components/common/FormModal';
 import ListComponent, {
   MenuItem,
 } from '@/renderer/components/common/ListComponent';
-import './ManufacturerList.css';
 import '@/renderer/styles/Common.css';
+import '@/renderer/styles/Modal.css';
 
 // メーカー一覧ページ
 const ManufacturerList: React.FC = () => {
@@ -164,8 +164,8 @@ const ManufacturerList: React.FC = () => {
   }
 
   return (
-    <div className="manufacturer-list-container">
-      <div className="manufacturer-actions">
+    <div className="container">
+      <div className="actions">
         <div className="search-container">
           <input
             type="text"
@@ -219,7 +219,7 @@ const ManufacturerList: React.FC = () => {
         onSave={editManufacturerModal.saveAndClose}
       />
       {filteredManufacturers.length === 0 ? (
-        <p className="no-manufacturers">
+        <p className="no-data">
           {filter
             ? '検索条件に一致するメーカーがありません'
             : '登録されたメーカーがありません'}
