@@ -93,11 +93,6 @@ const PartsList: React.FC = () => {
     }
   };
 
-  // 新規部品追加
-  const handleAddPart = () => {
-    navigate('/part-type-select');
-  };
-
   // 部品編集
   const handleEditPart = (partId: number) => {
     navigate(`/part-form/${partId}`);
@@ -147,7 +142,7 @@ const PartsList: React.FC = () => {
         <div key={type} className="section">
           <ListComponent
             title={partTypeLabels[type as DrivePartType]}
-            onAddNew={handleAddPart}
+            onAddNew={() => navigate(`/part-form/new/${type}`)}
             addButtonLabel="新規部品追加"
             headers={[
               { label: '型式' },
