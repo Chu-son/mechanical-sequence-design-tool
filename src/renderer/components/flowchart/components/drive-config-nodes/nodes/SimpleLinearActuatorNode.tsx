@@ -4,8 +4,12 @@ import BaseNode from '@/renderer/components/flowchart/components/base-nodes/Base
 import simpleLinearActuatorNodeDefinition from './SimpleLinearActuatorNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/components/flowchart/styles/common.css';
+import { LinearActuatorNodeData } from '@/renderer/types/driveTypes';
 
-function SimpleLinearActuatorNode({ id, data }: NodeProps<any>) {
+function SimpleLinearActuatorNode({
+  id,
+  data,
+}: NodeProps<LinearActuatorNodeData>) {
   const { updateNodeData } = useReactFlow();
   useNodeInitialData({
     id,

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import '@/renderer/pages/Projects.css';
-import '@/renderer/styles/Common.css'; // 共通スタイルをインポート
 import ListComponent from '@/renderer/components/common/ListComponent';
 import FormModal from '@/renderer/components/common/FormModal';
 import { useFormModal } from '@/renderer/hooks/useModal';
@@ -69,6 +68,14 @@ export default function Projects() {
           ],
         }))}
         addButtonLabel="新規作成"
+        menuItems={[
+          {
+            label: '削除',
+            onClick: () => {},
+            className: 'delete',
+          },
+        ]}
+        menuColumnWidth="48px"
       />
 
       {/* プロジェクト作成モーダル */}

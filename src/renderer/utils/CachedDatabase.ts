@@ -8,6 +8,9 @@ import {
   UnitIdentifier,
   ConfigIdentifier,
   FlowData,
+  DrivePartType,
+  DrivePart,
+  Manufacturer,
 } from '@/renderer/types/databaseTypes';
 
 class CachedDatabase implements DatabaseInterface {
@@ -215,6 +218,133 @@ class CachedDatabase implements DatabaseInterface {
     const data = await this.database.getOperationConfigById(identifier);
     this.cache.set(cacheKey, { data, timestamp: Date.now() });
     return data;
+  }
+
+  /* --- 部品管理メソッド --- */
+
+  /**
+   * 全ての部品を取得（オプションで種別フィルタリング）
+   */
+  async getAllParts(type?: DrivePartType): Promise<DrivePart[]> {
+    const cacheKey = `getAllParts-${type || 'all'}`;
+    if (this.isCacheValid(cacheKey)) {
+      return this.cache.get(cacheKey)!.data;
+    }
+    const data = await this.database.getAllParts(type);
+    this.cache.set(cacheKey, { data, timestamp: Date.now() });
+    return data;
+  }
+
+  /**
+   * 設計書準拠のメソッド名のエイリアス
+   */
+  async getParts(type?: DrivePartType): Promise<DrivePart[]> {
+    return this.getAllParts(type);
+  }
+
+  /**
+   * 部品IDで部品を取得
+   */
+  async getPartById(partId: number): Promise<DrivePart | null> {
+    const cacheKey = `getPartById-${partId}`;
+    if (this.isCacheValid(cacheKey)) {
+      return this.cache.get(cacheKey)!.data;
+    }
+    const data = await this.database.getPartById(partId);
+    this.cache.set(cacheKey, { data, timestamp: Date.now() });
+    return data;
+  }
+
+  /**
+   * 新しい部品を作成
+   */
+  async createPart(
+    part: Omit<DrivePart, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
+    await this.database.createPart(part);
+    this.cache.clear(); // キャッシュをクリア
+  }
+
+  /**
+   * 部品を更新
+   */
+  async updatePart(partId: number, part: Partial<DrivePart>): Promise<void> {
+    await this.database.updatePart(partId, part);
+    this.cache.clear(); // キャッシュをクリア
+  }
+
+  /**
+   * 部品を削除
+   */
+  async deletePart(partId: number): Promise<void> {
+    await this.database.deletePart(partId);
+    this.cache.clear(); // キャッシュをクリア
+  }
+
+  /* --- メーカー管理メソッド --- */
+
+  /**
+   * 全てのメーカーを取得
+   */
+  async getAllManufacturers(): Promise<Manufacturer[]> {
+    const cacheKey = 'getAllManufacturers';
+    if (this.isCacheValid(cacheKey)) {
+      return this.cache.get(cacheKey)!.data;
+    }
+    const data = await this.database.getAllManufacturers();
+    this.cache.set(cacheKey, { data, timestamp: Date.now() });
+    return data;
+  }
+
+  /**
+   * 設計書準拠のメソッド名のエイリアス
+   */
+  async getManufacturers(): Promise<Manufacturer[]> {
+    return this.getAllManufacturers();
+  }
+
+  /**
+   * メーカーIDでメーカーを取得
+   */
+  async getManufacturerById(
+    manufacturerId: number,
+  ): Promise<Manufacturer | null> {
+    const cacheKey = `getManufacturerById-${manufacturerId}`;
+    if (this.isCacheValid(cacheKey)) {
+      return this.cache.get(cacheKey)!.data;
+    }
+    const data = await this.database.getManufacturerById(manufacturerId);
+    this.cache.set(cacheKey, { data, timestamp: Date.now() });
+    return data;
+  }
+
+  /**
+   * 新しいメーカーを作成
+   */
+  async createManufacturer(
+    manufacturer: Omit<Manufacturer, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
+    await this.database.createManufacturer(manufacturer);
+    this.cache.clear(); // キャッシュをクリア
+  }
+
+  /**
+   * メーカーを更新
+   */
+  async updateManufacturer(
+    manufacturerId: number,
+    manufacturer: Partial<Manufacturer>,
+  ): Promise<void> {
+    await this.database.updateManufacturer(manufacturerId, manufacturer);
+    this.cache.clear(); // キャッシュをクリア
+  }
+
+  /**
+   * メーカーを削除
+   */
+  async deleteManufacturer(manufacturerId: number): Promise<void> {
+    await this.database.deleteManufacturer(manufacturerId);
+    this.cache.clear(); // キャッシュをクリア
   }
 }
 

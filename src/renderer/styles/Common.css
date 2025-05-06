@@ -13,7 +13,7 @@
 }
 
 /* ヘッダー内のボタンを右寄せに */
-.Header button {
+.Header .app-button {
   margin-left: auto;
 }
 
@@ -27,6 +27,7 @@
 /* リストヘッダーのスタイル */
 .ListHeader {
   display: flex;
+  justify-content: space-between;
   padding: 10px;
   background: #555;
   border-radius: 5px;
@@ -49,7 +50,7 @@
   width: 100%;
 }
 
-/* リスト行スタイル（新規追加） */
+/* リスト行スタイル */
 .list-row {
   display: flex;
   width: 100%;
@@ -57,10 +58,11 @@
 }
 
 /* リスト内のリンクスタイル */
-.List ul.ListItems li a.list-row {
+.List ul.ListItems li .list-row {
   color: inherit;
   text-decoration: none;
   display: flex;
+  justify-content: space-between;
   width: 100%;
   margin: 0;
 }
@@ -84,8 +86,69 @@
   font-weight: bold;
 }
 
+/* メニュートグルボタン（︙） */
+.list-menu-toggle {
+  background: none !important;
+  border: none !important;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 !important;
+  margin: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background-color: transparent !important;
+  vertical-align: middle;
+  line-height: 1;
+  border-radius: 4px;
+}
+
+.list-menu-toggle:hover {
+  opacity: 0.8;
+  background: none !important;
+}
+
+/* メニューポップアップ（Portalとして表示） */
+.list-menu-popup-portal {
+  position: fixed;
+  background-color: #2a2a2a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+  z-index: 9999;
+}
+
+/* メニュー項目リスト */
+.list-menu-items {
+  list-style: none;
+  margin: 0;
+  padding: 4px 0;
+  min-width: 120px;
+}
+
+/* メニュー項目 - シンプルなテキストリスト */
+.list-menu-item {
+  padding: 8px 16px;
+  cursor: pointer;
+  font-size: 14px;
+  color: white;
+  white-space: nowrap;
+}
+
+.list-menu-item:hover {
+  background-color: #444;
+}
+
+/* 削除メニュー項目 */
+.list-menu-item.delete {
+  color: #ff9999;
+}
+
+.list-menu-item.delete:hover {
+  background-color: #4d3636;
+}
+
 /* 共通のボタンスタイル */
-button {
+.app-button {
   background-color: white;
   padding: 10px 20px;
   border-radius: 10px;
@@ -97,7 +160,7 @@ button {
 }
 
 /* ボタンのホバースタイル */
-button:hover {
+.app-button:hover {
   transform: scale(1.05);
   opacity: 1;
 }

@@ -1,3 +1,16 @@
+import {
+  DrivePart,
+  DrivePartType,
+  LinearActuatorSpec,
+  LinearOutput,
+  LinToLinConverterSpec,
+  LinToRotConverterSpec,
+  RotationalActuatorSpec,
+  RotationalOutput,
+  RotToLinConverterSpec,
+  RotToRotConverterSpec,
+} from './driveTypes';
+
 export interface FlowData {
   nodes: Node[];
   edges: { source: string; target: string }[];
@@ -56,6 +69,21 @@ export interface UnitIdentifier extends ProjectIdentifier {
 export interface ConfigIdentifier extends UnitIdentifier {
   configId: number;
   configType: 'driveConfigs' | 'operationConfigs';
+}
+
+// 駆動部品関連型定義
+export interface Manufacturer {
+  id: number;
+  nameJa: string;
+  nameEn: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// データベース全体構造
+export interface PartsDatabase {
+  parts: DrivePart[];
+  manufacturers: Manufacturer[];
 }
 
 export interface DatabaseInterface {
@@ -120,4 +148,27 @@ export interface DatabaseInterface {
   // フローデータ操作
   getFlowData(identifier: ConfigIdentifier): Promise<FlowData | null>;
   saveFlowData(identifier: ConfigIdentifier, flowData: FlowData): Promise<void>;
+
+  // 部品管理
+  getAllParts(type?: DrivePartType): Promise<DrivePart[]>;
+  getParts(type?: DrivePartType): Promise<DrivePart[]>; // 設計書準拠のエイリアス
+  getPartById(partId: number): Promise<DrivePart | null>;
+  createPart(
+    part: Omit<DrivePart, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void>;
+  updatePart(partId: number, part: Partial<DrivePart>): Promise<void>;
+  deletePart(partId: number): Promise<void>;
+
+  // メーカー管理
+  getAllManufacturers(): Promise<Manufacturer[]>;
+  getManufacturers(): Promise<Manufacturer[]>; // 設計書準拠のエイリアス
+  getManufacturerById(manufacturerId: number): Promise<Manufacturer | null>;
+  createManufacturer(
+    manufacturer: Omit<Manufacturer, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void>;
+  updateManufacturer(
+    manufacturerId: number,
+    manufacturer: Partial<Manufacturer>,
+  ): Promise<void>;
+  deleteManufacturer(manufacturerId: number): Promise<void>;
 }

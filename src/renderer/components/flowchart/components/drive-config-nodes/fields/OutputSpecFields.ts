@@ -2,6 +2,7 @@
  * outputSpecフィールドの共通定義
  * 各ノード定義で重複している出力フィールドをここで一元管理
  */
+import { DriveOutput } from '@/renderer/types/driveTypes';
 import { NodeFieldDefinition } from '../../base-nodes/types';
 
 /**

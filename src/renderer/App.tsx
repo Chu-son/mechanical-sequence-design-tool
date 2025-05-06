@@ -8,6 +8,10 @@ import Projects from '@/renderer/pages/Projects';
 import Devices from '@/renderer/pages/Devices';
 import ProjectDetail from '@/renderer/pages/ProjectDetail';
 import UnitDetail from '@/renderer/pages/UnitDetail';
+import PartsList from '@/renderer/pages/PartsList';
+import PartTypeSelect from '@/renderer/pages/PartTypeSelect';
+import PartForm from '@/renderer/pages/PartForm';
+import ManufacturerList from '@/renderer/pages/ManufacturerList';
 import '@/renderer/styles/App.css';
 import Flowchart from '@/renderer/components/flowchart/pages/Flowchart';
 
@@ -67,6 +71,13 @@ const AppContent = () => {
             element={<Flowchart />}
           />
           <Route path="/devices" element={<Devices />} />
+
+          {/* 駆動部品管理ページのルート */}
+          <Route path="/parts" element={<PartsList />} />
+          <Route path="/part-type-select" element={<PartTypeSelect />} />
+          <Route path="/part-form/:partId" element={<PartForm />} />
+          <Route path="/part-form/new/:type" element={<PartForm />} />
+          <Route path="/manufacturers" element={<ManufacturerList />} />
         </Routes>
       </div>
     </div>

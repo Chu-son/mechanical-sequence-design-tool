@@ -4,12 +4,13 @@ import BaseNode from '@/renderer/components/flowchart/components/base-nodes/Base
 import simpleRotationalActuatorNodeDefinition from './SimpleRotationalActuatorNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/components/flowchart/styles/common.css';
+import { RotationalActuatorNodeData } from '@/renderer/types/driveTypes';
 
 function SimpleRotationalActuatorNode({
   id,
   data,
   readonly,
-}: NodeProps<any> & { readonly?: boolean }) {
+}: NodeProps<RotationalActuatorNodeData> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
   useNodeInitialData({
     id,

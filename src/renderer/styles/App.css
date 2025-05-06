@@ -14,22 +14,6 @@ body {
   overflow: hidden; /* bodyではスクロールを完全に無効化 */
 }
 
-button {
-  background-color: white;
-  padding: 10px 20px;
-  border-radius: 10px;
-  border: none;
-  appearance: none;
-  font-size: 1.3rem;
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-button:hover {
-  transform: scale(1.05);
-  opacity: 1;
-}
-
 a {
   text-decoration: none;
   height: fit-content;

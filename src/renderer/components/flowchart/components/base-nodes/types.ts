@@ -24,7 +24,8 @@ export type FieldType =
   | 'readonly'
   | 'chart'
   | 'custom'
-  | 'divider';
+  | 'divider'
+  | 'partSelector'; // 駆動部品選択用フィールドタイプを追加
 
 /**
  * フィールド定義の基本インターフェース
@@ -112,6 +113,27 @@ export interface DividerFieldDefinition
 }
 
 /**
+ * 駆動部品選択フィールド定義
+ * 部品データベースから部品を選択してノードデータと連携するためのフィールド
+ */
+export interface PartSelectorFieldDefinition extends BaseFieldDefinition {
+  type: 'partSelector';
+  partType?: string; // 部品種別（フィルタリング用）
+  getValue: (data: any) => number | null; // 選択された部品ID
+  setValue: (value: number | null, data: any) => any; // 部品IDを設定
+  onPartSelect?: (
+    partId: number,
+    partData: any,
+    nodeData: any,
+    update: (newData: any) => void,
+  ) => void; // 部品選択時のコールバック
+  hidden?: boolean | ((data: any) => boolean);
+  readonly?: boolean | ((data: any) => boolean);
+  group?: string;
+  condition?: (data: any) => boolean;
+}
+
+/**
  * ノードフィールド定義の共用型
  */
 export type NodeFieldDefinition =
@@ -119,7 +141,8 @@ export type NodeFieldDefinition =
   | ReadonlyFieldDefinition
   | ChartFieldDefinition
   | CustomFieldDefinition
-  | DividerFieldDefinition;
+  | DividerFieldDefinition
+  | PartSelectorFieldDefinition; // 駆動部品選択フィールドを追加
 
 /**
  * グループの表示オプション

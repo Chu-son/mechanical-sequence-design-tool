@@ -1,6 +1,9 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { LinearOutput, getDefaultLinearOutput } from '../common';
+import {
+  LinearOutput,
+  getDefaultLinearOutput,
+} from '@/renderer/types/driveTypes';
 import { createLinearOutputFields } from '../fields/OutputSpecFields';
 
 const simpleLinearActuatorNodeDefinition: NodeDefinition = {

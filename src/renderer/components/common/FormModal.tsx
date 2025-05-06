@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import BaseModal from '@/renderer/components/common/BaseModal';
 import './FormModal.css';
 
@@ -19,7 +19,7 @@ export interface FieldDefinition {
 interface FormModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSave: (formData: Record<string, any>) => void;
+  onSave: (formData: Record<string, any>) => Promise<boolean> | boolean;
   title: string;
   fields: FieldDefinition[];
   saveButtonLabel?: string;
@@ -41,6 +41,7 @@ export default function FormModal({
 }: FormModalProps) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const firstInputRef = useRef<HTMLInputElement>(null);
 
   // フィールドの初期値を設定
   useEffect(() => {
@@ -51,6 +52,10 @@ export default function FormModal({
       });
       setFormData(initialData);
       setErrors({});
+      // 最初のinputにフォーカス
+      setTimeout(() => {
+        firstInputRef.current?.focus();
+      }, 0);
     }
   }, [isOpen, fields]);
 
@@ -96,15 +101,19 @@ export default function FormModal({
     return isValid;
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (validateForm()) {
-      onSave(formData);
-      onClose();
+      // onSaveがPromiseを返す場合に対応
+      const result = await onSave(formData);
+      if (result !== false) {
+        onClose();
+      }
+      // resultがfalseならモーダルを閉じない（バリデーションや保存失敗時）
     }
   };
 
   // フィールドのレンダリング
-  const renderField = (field: FieldDefinition) => {
+  const renderField = (field: FieldDefinition, idx: number) => {
     const { id, label, type, placeholder, options, required } = field;
     const value = formData[id] || '';
     const error = errors[id];
@@ -124,6 +133,7 @@ export default function FormModal({
               placeholder={placeholder}
               onChange={(e) => handleInputChange(id, e.target.value)}
               className={error ? 'error' : ''}
+              ref={idx === 0 ? firstInputRef : undefined}
             />
             {error && <div className="error-message">{error}</div>}
           </div>
@@ -215,10 +225,10 @@ export default function FormModal({
 
   const renderFooter = () => (
     <>
-      <button type="button" onClick={handleSave}>
+      <button className="app-button" type="button" onClick={handleSave}>
         {saveButtonLabel}
       </button>
-      <button type="button" onClick={onClose}>
+      <button className="app-button" type="button" onClick={onClose}>
         {cancelButtonLabel}
       </button>
     </>
@@ -231,7 +241,7 @@ export default function FormModal({
       title={title}
       footer={renderFooter()}
     >
-      <form>{fields.map((field) => renderField(field))}</form>
+      <form>{fields.map((field, idx) => renderField(field, idx))}</form>
     </BaseModal>
   );
 }

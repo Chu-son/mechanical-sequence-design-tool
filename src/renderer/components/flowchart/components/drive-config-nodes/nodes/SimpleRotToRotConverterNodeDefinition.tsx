@@ -1,6 +1,9 @@
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
-import { RotationalOutput, getDefaultRotationalOutput } from '../common';
+import {
+  RotationalOutput,
+  getDefaultRotationalOutput,
+} from '@/renderer/types/driveTypes';
 import { createRotationalOutputFields } from '../fields/OutputSpecFields';
 
 const simpleRotToRotConverterNodeDefinition: NodeDefinition = {

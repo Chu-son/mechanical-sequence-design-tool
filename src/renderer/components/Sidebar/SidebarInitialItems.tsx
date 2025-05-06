@@ -1,6 +1,8 @@
 import ProjectContent from '@/renderer/components/Sidebar/ProjectContent';
 import FlowchartNodeList from '@/renderer/components/flowchart/components/sidebar/FlowchartNodeList';
 import { SidebarItem } from '@/renderer/components/Sidebar/types';
+import { Link } from 'react-router-dom';
+import PartsManagementContent from './items/PartsManagementContent';
 
 export const getInitialItems = (): SidebarItem[] => {
   return [
@@ -21,6 +23,17 @@ export const getInitialItems = (): SidebarItem[] => {
       isEnabled: (location) => location.pathname.includes('/flowchart'),
       shouldAutoOpen: (location) => location.pathname.includes('/flowchart'),
       shouldAutoPin: (location) => location.pathname.includes('/flowchart'),
+    },
+    {
+      id: 'parts-management',
+      type: 'parts-management',
+      title: '駆動部品管理',
+      icon: '⚙️',
+      content: <PartsManagementContent />,
+      shouldAutoOpen: (location) =>
+        location.pathname.includes('/parts') ||
+        location.pathname.includes('/part-') ||
+        location.pathname.includes('/manufacturers'),
     },
   ];
 };

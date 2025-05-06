@@ -4,12 +4,13 @@ import { useNodeInitialData } from '@/renderer/components/flowchart/components/c
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
 import simpleRotToLinConverterNodeDefinition from './SimpleRotToLinConverterNodeDefinition';
 import '@/renderer/components/flowchart/styles/common.css';
+import { RotToLinConverterNodeData } from '@/renderer/types/driveTypes';
 
 function SimpleRotToLinConverterNode({
   id,
   data,
   readonly = false,
-}: NodeProps<any> & { readonly?: boolean }) {
+}: NodeProps<RotToLinConverterNodeData> & { readonly?: boolean }) {
   const { updateNodeData } = useReactFlow();
   useNodeInitialData({
     id,

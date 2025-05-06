@@ -1,7 +1,7 @@
 /**
  * ノードUIを宣言的に定義するための基本コンポーネント
  */
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   Handle,
   Position,
@@ -15,12 +15,15 @@ import {
   ReadonlyFieldDefinition,
   ChartFieldDefinition,
   DividerFieldDefinition,
+  PartSelectorFieldDefinition,
 } from './types';
 import '@/renderer/components/flowchart/styles/common.css';
 import {
   roundToDigits,
   ROUND_DIGITS,
 } from '@/renderer/components/flowchart/common/flowchartUtils';
+import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import { DrivePart, Manufacturer } from '@/renderer/types/databaseTypes';
 
 /**
  * 入力フィールドをレンダリングする関数
@@ -195,6 +198,156 @@ const renderDivider = (field: DividerFieldDefinition, id: string) => {
   );
 };
 
+/**
+ * 駆動部品選択フィールドをレンダリングする関数
+ */
+const renderPartSelectorField = (
+  field: PartSelectorFieldDefinition,
+  data: any,
+  updateData: (newData: any) => void,
+  id: string,
+  readonly?: boolean,
+) => {
+  const { key, label, partType, getValue, setValue, required } = field;
+  const fieldId = `${id}-${key}`;
+  const selectedPartId = getValue(data);
+
+  const [parts, setParts] = useState<DrivePart[]>([]);
+  const [selectedPart, setSelectedPart] = useState<DrivePart | null>(null);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // 部品データとメーカーデータを読み込む
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        const database = DatabaseFactory.createDatabase();
+        // 部品種別が指定されていればフィルタリング
+        const partsList = partType
+          ? await database.getParts(partType as any)
+          : await database.getParts();
+        const manufacturersList = await database.getManufacturers();
+
+        setParts(partsList);
+        setManufacturers(manufacturersList);
+
+        // 選択中の部品がある場合、詳細データを取得
+        if (selectedPartId) {
+          const part = await database.getPartById(selectedPartId);
+          setSelectedPart(part);
+        }
+      } catch (err) {
+        console.error('部品データ読み込みエラー:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, [selectedPartId, partType]);
+
+  // メーカー名を取得する関数
+  const getManufacturerName = (manufacturerId: number): string => {
+    const manufacturer = manufacturers.find((m) => m.id === manufacturerId);
+    return manufacturer ? manufacturer.nameJa : '不明';
+  };
+
+  // 部品選択ハンドラ
+  const handlePartChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    if (readonly) return;
+
+    const partId = e.target.value ? parseInt(e.target.value, 10) : null;
+
+    try {
+      if (partId) {
+        const database = DatabaseFactory.createDatabase();
+        const part = await database.getPartById(partId);
+        setSelectedPart(part);
+
+        // データを更新
+        const newData = setValue(partId, data);
+        updateData(newData);
+
+        // 選択コールバックがあれば実行
+        if (field.onPartSelect && part) {
+          field.onPartSelect(partId, part, newData, updateData);
+        }
+      } else {
+        setSelectedPart(null);
+        const newData = setValue(null, data);
+        updateData(newData);
+      }
+    } catch (err) {
+      console.error('部品データ取得エラー:', err);
+    }
+  };
+
+  // 部品詳細表示
+  const renderPartDetails = () => {
+    if (!selectedPart) return null;
+
+    return (
+      <div className="part-details">
+        <div className="part-info">
+          <span className="part-model">{selectedPart.model}</span>
+          <span className="part-manufacturer">
+            {getManufacturerName(selectedPart.manufacturerId)}
+          </span>
+        </div>
+        <a
+          className="view-details-link"
+          href="#"
+          onClick={(e) => {
+            e.preventDefault();
+            // メインウィンドウに部品詳細ページを開くよう要求
+            if (window.electron) {
+              window.electron.ipcRenderer.invoke(
+                'open-part-details',
+                selectedPart.id,
+              );
+            }
+          }}
+        >
+          詳細を表示
+        </a>
+      </div>
+    );
+  };
+
+  return (
+    <div key={fieldId} className="node-setting-field part-selector-field">
+      <label htmlFor={fieldId}>
+        {label}
+        {required && <span className="required">*</span>}
+      </label>
+
+      <div className="input-container">
+        {loading ? (
+          <div className="loading-indicator">読み込み中...</div>
+        ) : (
+          <>
+            <select
+              id={fieldId}
+              value={selectedPartId?.toString() || ''}
+              onChange={handlePartChange}
+              disabled={readonly}
+            >
+              <option value="">部品を選択してください</option>
+              {parts.map((part) => (
+                <option key={part.id} value={part.id.toString()}>
+                  {part.model} ({getManufacturerName(part.manufacturerId)})
+                </option>
+              ))}
+            </select>
+            {selectedPart && renderPartDetails()}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const shouldFieldBeHidden = (field: NodeFieldDefinition, data: any) => {
   if (typeof field.hidden === 'function') return field.hidden(data);
   if (typeof field.hidden === 'boolean') return field.hidden;
@@ -250,6 +403,8 @@ const renderField = (
       return field.render(data, updateData, readonly);
     case 'divider':
       return renderDivider(field, id);
+    case 'partSelector':
+      return renderPartSelectorField(field, data, updateData, id, readonly);
     default:
       return null;
   }

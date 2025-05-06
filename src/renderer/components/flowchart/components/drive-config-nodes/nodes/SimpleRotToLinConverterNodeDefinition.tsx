@@ -2,9 +2,10 @@ import { NodeDefinition } from '@/renderer/components/flowchart/components/base-
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import {
   LinearOutput,
+  RotationalOutput,
   getDefaultLinearOutput,
   getDefaultRotationalOutput,
-} from '../common';
+} from '@/renderer/types/driveTypes';
 import { createLinearOutputFields } from '../fields/OutputSpecFields';
 
 const simpleRotToLinConverterNodeDefinition: NodeDefinition = {

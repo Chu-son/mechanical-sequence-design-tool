@@ -13,6 +13,10 @@ import {
   DriveConfig,
   OperationConfig,
   BaseEntity,
+  DrivePartType,
+  DrivePart,
+  Manufacturer,
+  PartsDatabase,
 } from '@/renderer/types/databaseTypes';
 
 // window.electronが存在する場合はipcRendererを使用し、テスト環境では代替を提供
@@ -66,8 +70,11 @@ function updateEntity<T extends BaseEntity>(entity: T): T {
 class JsonDatabase implements DatabaseInterface {
   private fileName: string;
 
+  private partsFileName: string = 'parts.json';
+
   constructor(fileName: string) {
     this.fileName = fileName;
+    this.partsFileName = 'parts.json'; // 部品データは別ファイルで管理
   }
 
   public async getFlowData(
@@ -476,6 +483,245 @@ class JsonDatabase implements DatabaseInterface {
     const unit = await this.getUnitById(identifier);
     if (!unit) return [];
     return unit.operationConfigs;
+  }
+
+  /* --- 部品データベース関連メソッド --- */
+
+  /**
+   * 部品データベースを取得
+   */
+  private async getPartsDatabase(): Promise<PartsDatabase> {
+    try {
+      const result = await ipcRenderer.invoke('getAll', this.partsFileName);
+      return {
+        parts: result.parts || [],
+        manufacturers: result.manufacturers || [],
+      } as PartsDatabase;
+    } catch (error) {
+      console.error('Error loading parts database:', error);
+      return { parts: [], manufacturers: [] };
+    }
+  }
+
+  /**
+   * 部品データベースを保存
+   */
+  private async savePartsDatabase(database: PartsDatabase): Promise<void> {
+    await ipcRenderer.invoke('save', this.partsFileName, database);
+  }
+
+  /* --- 部品管理メソッド --- */
+
+  /**
+   * 全ての部品を取得（オプションで種別フィルタリング）
+   */
+  public async getAllParts(type?: DrivePartType): Promise<DrivePart[]> {
+    const database = await this.getPartsDatabase();
+    if (type) {
+      return database.parts.filter((part) => part.type === type);
+    }
+    return database.parts;
+  }
+
+  /**
+   * 設計書に準拠したメソッド名のエイリアス
+   * getAllPartsと同じ機能
+   */
+  public async getParts(type?: DrivePartType): Promise<DrivePart[]> {
+    return this.getAllParts(type);
+  }
+
+  /**
+   * 部品IDで部品を取得
+   */
+  public async getPartById(partId: number): Promise<DrivePart | null> {
+    const database = await this.getPartsDatabase();
+    return database.parts.find((part) => part.id === partId) || null;
+  }
+
+  /**
+   * 新しい部品を作成
+   */
+  public async createPart(
+    part: Omit<DrivePart, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
+    const database = await this.getPartsDatabase();
+    const newPartId =
+      database.parts.length > 0
+        ? Math.max(...database.parts.map((p) => p.id)) + 1
+        : 1;
+
+    const newPart: DrivePart = {
+      id: newPartId,
+      type: part.type,
+      model: part.model,
+      manufacturerId: part.manufacturerId,
+      spec: part.spec,
+      ...initializeBaseEntity(),
+    };
+
+    database.parts.push(newPart);
+    await this.savePartsDatabase(database);
+  }
+
+  /**
+   * 部品を更新
+   */
+  public async updatePart(
+    partId: number,
+    part: Partial<DrivePart>,
+  ): Promise<void> {
+    const database = await this.getPartsDatabase();
+    const index = database.parts.findIndex((p) => p.id === partId);
+
+    if (index !== -1) {
+      const existingPart = database.parts[index];
+      database.parts[index] = updateEntity({
+        ...existingPart,
+        ...part,
+        id: existingPart.id, // IDは変更不可
+        createdAt: existingPart.createdAt, // 作成日は変更不可
+      });
+
+      await this.savePartsDatabase(database);
+    }
+  }
+
+  /**
+   * 部品を削除
+   */
+  public async deletePart(partId: number): Promise<void> {
+    const database = await this.getPartsDatabase();
+    database.parts = database.parts.filter((part) => part.id !== partId);
+    await this.savePartsDatabase(database);
+  }
+
+  /* --- メーカー管理メソッド --- */
+
+  /**
+   * 全てのメーカーを取得
+   */
+  public async getAllManufacturers(): Promise<Manufacturer[]> {
+    const database = await this.getPartsDatabase();
+    return database.manufacturers;
+  }
+
+  /**
+   * 設計書に準拠したメソッド名のエイリアス
+   * getAllManufacturersと同じ機能
+   */
+  public async getManufacturers(): Promise<Manufacturer[]> {
+    return this.getAllManufacturers();
+  }
+
+  /**
+   * メーカーIDでメーカーを取得
+   */
+  public async getManufacturerById(
+    manufacturerId: number,
+  ): Promise<Manufacturer | null> {
+    const database = await this.getPartsDatabase();
+    return (
+      database.manufacturers.find((mfr) => mfr.id === manufacturerId) || null
+    );
+  }
+
+  /**
+   * 新しいメーカーを作成
+   */
+  public async createManufacturer(
+    manufacturer: Omit<Manufacturer, 'id' | 'createdAt' | 'updatedAt'>,
+  ): Promise<void> {
+    const database = (await this.getPartsDatabase()) || [];
+
+    // メーカー名の重複チェック（日本語名・英語名）
+    const isDuplicate = (database.manufacturers ?? []).some(
+      (mfr) =>
+        mfr.nameJa === manufacturer.nameJa ||
+        mfr.nameEn === manufacturer.nameEn,
+    );
+
+    if (isDuplicate) {
+      throw new Error('同じ名前のメーカーが既に存在します。');
+    }
+
+    const newManufacturerId =
+      database.manufacturers.length > 0
+        ? Math.max(...database.manufacturers.map((m) => m.id)) + 1
+        : 1;
+
+    const newManufacturer: Manufacturer = {
+      id: newManufacturerId,
+      nameJa: manufacturer.nameJa,
+      nameEn: manufacturer.nameEn,
+      ...initializeBaseEntity(),
+    };
+
+    database.manufacturers.push(newManufacturer);
+    await this.savePartsDatabase(database);
+  }
+
+  /**
+   * メーカーを更新
+   */
+  public async updateManufacturer(
+    manufacturerId: number,
+    manufacturer: Partial<Manufacturer>,
+  ): Promise<void> {
+    console.log('Updating manufacturer:', manufacturerId, manufacturer);
+    const database = await this.getPartsDatabase();
+    const index = database.manufacturers.findIndex(
+      (m) => m.id === manufacturerId,
+    );
+
+    if (index !== -1) {
+      console.log('Manufacturer found:', database.manufacturers[index]);
+      const existingManufacturer = database.manufacturers[index];
+
+      // 名前変更時の重複チェック
+      if (manufacturer.nameJa || manufacturer.nameEn) {
+        const isDuplicate = database.manufacturers.some(
+          (mfr) =>
+            mfr.id !== manufacturerId &&
+            ((manufacturer.nameJa && mfr.nameJa === manufacturer.nameJa) ||
+              (manufacturer.nameEn && mfr.nameEn === manufacturer.nameEn)),
+        );
+
+        if (isDuplicate) {
+          throw new Error('同じ名前のメーカーが既に存在します。');
+        }
+      }
+
+      database.manufacturers[index] = updateEntity({
+        ...existingManufacturer,
+        ...manufacturer,
+        id: existingManufacturer.id, // IDは変更不可
+        createdAt: existingManufacturer.createdAt, // 作成日は変更不可
+      });
+
+      await this.savePartsDatabase(database);
+    }
+  }
+
+  /**
+   * メーカーを削除
+   */
+  public async deleteManufacturer(manufacturerId: number): Promise<void> {
+    const database = await this.getPartsDatabase();
+
+    // このメーカーを参照している部品があるかチェック
+    const hasReferences = (database.parts ?? []).some(
+      (part) => part.manufacturerId === manufacturerId,
+    );
+
+    if (hasReferences) {
+      throw new Error('このメーカーは部品で使用されているため削除できません。');
+    }
+
+    database.manufacturers = (database.manufacturers ?? []).filter(
+      (mfr) => mfr.id !== manufacturerId,
+    );
+    await this.savePartsDatabase(database);
   }
 }
 
