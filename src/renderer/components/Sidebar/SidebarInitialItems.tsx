@@ -30,10 +30,6 @@ export const getInitialItems = (): SidebarItem[] => {
       title: '駆動部品管理',
       icon: '⚙️',
       content: <PartsManagementContent />,
-      shouldAutoOpen: (location) =>
-        location.pathname.includes('/parts') ||
-        location.pathname.includes('/part-') ||
-        location.pathname.includes('/manufacturers'),
     },
   ];
 };
