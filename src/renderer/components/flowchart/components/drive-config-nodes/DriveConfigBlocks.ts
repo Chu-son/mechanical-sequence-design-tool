@@ -6,16 +6,10 @@ import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
  */
 const actuatorBlock: NodeBlock = {
   title: 'Actuator',
+  partTypes: ['rotationalActuator', 'linearActuator'],
   nodes: [
     { type: 'simpleRotationalActuator', label: 'Simple Rotational Actuator' },
     { type: 'simpleLinearActuator', label: 'Simple Linear Actuator' },
-    /* TODO: 以下のノードは未実装
-    { type: 'motorActuator', label: 'Motor' },
-    { type: 'steppingMotorActuator', label: 'Stepping Motor' },
-    { type: 'servoMotorActuator', label: 'Servo Motor' },
-    { type: 'electricCylinder', label: 'Electric Cylinder' },
-    { type: 'airCylinder', label: 'Air Cylinder' },
-    */
   ],
 };
 
@@ -24,15 +18,8 @@ const actuatorBlock: NodeBlock = {
  */
 const rotationalToRotationalBlock: NodeBlock = {
   title: 'Rotational to Rotational',
-  nodes: [
-    { type: 'simpleRotToRotConverter', label: 'Simple R→R Converter' },
-    /* TODO: 以下のノードは未実装
-    { type: 'gearbox', label: 'Gearbox' },
-    { type: 'pulleySystem', label: 'Pulley System' },
-    { type: 'chainDrive', label: 'Chain Drive' },
-    { type: 'beltDrive', label: 'Belt Drive' },
-    */
-  ],
+  partTypes: ['rotToRotConverter'],
+  nodes: [{ type: 'simpleRotToRotConverter', label: 'Simple R→R Converter' }],
 };
 
 /**
@@ -40,15 +27,8 @@ const rotationalToRotationalBlock: NodeBlock = {
  */
 const rotationalToLinearBlock: NodeBlock = {
   title: 'Rotational to Linear',
-  nodes: [
-    { type: 'simpleRotToLinConverter', label: 'Simple R→L Converter' },
-    /* TODO: 以下のノードは未実装
-    { type: 'ballScrew', label: 'Ball Screw' },
-    { type: 'leadScrew', label: 'Lead Screw' },
-    { type: 'rackPinion', label: 'Rack & Pinion' },
-    { type: 'cam', label: 'Cam' },
-    */
-  ],
+  partTypes: ['rotToLinConverter'],
+  nodes: [{ type: 'simpleRotToLinConverter', label: 'Simple R→L Converter' }],
 };
 
 /**
@@ -56,13 +36,8 @@ const rotationalToLinearBlock: NodeBlock = {
  */
 const linearToRotationalBlock: NodeBlock = {
   title: 'Linear to Rotational',
-  nodes: [
-    // simpleLinToRotConverterノードを削除
-    /* TODO: 以下のノードは未実装
-    { type: 'crankMechanism', label: 'Crank Mechanism' },
-    { type: 'rackPinionReverse', label: 'Rack & Pinion (Reverse)' },
-    */
-  ],
+  partTypes: ['linToRotConverter'],
+  nodes: [],
 };
 
 /**
@@ -70,14 +45,8 @@ const linearToRotationalBlock: NodeBlock = {
  */
 const linearToLinearBlock: NodeBlock = {
   title: 'Linear to Linear',
-  nodes: [
-    // simpleLinToLinConverterノードを削除
-    /* TODO: 以下のノードは未実装
-    { type: 'leverMechanism', label: 'Lever Mechanism' },
-    { type: 'linkageMechanism', label: 'Linkage Mechanism' },
-    { type: 'hydraulicSystem', label: 'Hydraulic System' },
-    */
-  ],
+  partTypes: ['linToLinConverter'],
+  nodes: [],
 };
 
 /**

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { DriveConfig, ConfigIdentifier } from '@/renderer/types/databaseTypes';
+import { DrivePart, Manufacturer } from '@/renderer/types/driveTypes';
 
 import NodeBlockDisplay from '@/renderer/components/flowchart/components/sidebar/NodeBlockDisplay';
 import { driveConfigBlocks } from '@/renderer/components/flowchart/components/drive-config-nodes/DriveConfigBlocks';
@@ -20,6 +21,8 @@ function FlowchartNodeList({
   const [configIdentifier, setConfigIdentifier] =
     useState<ConfigIdentifier | null>(propConfigIdentifier || null);
   const location = useLocation();
+  const [parts, setParts] = useState<DrivePart[]>([]);
+  const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
 
   // URLパスからconfigIdentifierを取得
   useEffect(() => {
@@ -79,6 +82,37 @@ function FlowchartNodeList({
     loadDriveConfigs();
   }, [configIdentifier]);
 
+  useEffect(() => {
+    const loadParts = async () => {
+      const db = DatabaseFactory.createDatabase();
+      setParts(await db.getParts());
+      setManufacturers(await db.getManufacturers());
+    };
+    loadParts();
+  }, []);
+
+  // 部品種別ごとに既存ブロックへ部品ノードを追加
+  const getManufacturerName = (id: number) => {
+    const m = manufacturers.find((m) => m.id === id);
+    return m ? m.nameJa : '';
+  };
+
+  // 既存ブロックをコピーして部品ノードを追加
+  const blocksWithParts = driveConfigBlocks.blocks.map((block) => {
+    const partNodes = parts
+      .filter((p) => block.partTypes && block.partTypes.includes(p.type))
+      .map((p) => ({
+        type: p.type,
+        label: `${p.model} (${getManufacturerName(p.manufacturerId)})`,
+        partId: p.id,
+        isPart: true,
+      }));
+    return {
+      ...block,
+      nodes: [...block.nodes, ...partNodes],
+    };
+  });
+
   // configIdentifierが無効な場合はプレースホルダーを表示
   if (!configIdentifier) {
     return (
@@ -91,7 +125,7 @@ function FlowchartNodeList({
   return (
     <div className="flowchart-node-list">
       {configIdentifier.configType === 'driveConfigs' && (
-        <NodeBlockDisplay blocks={driveConfigBlocks.blocks} />
+        <NodeBlockDisplay blocks={blocksWithParts} />
       )}
 
       {configIdentifier.configType === 'operationConfigs' && (

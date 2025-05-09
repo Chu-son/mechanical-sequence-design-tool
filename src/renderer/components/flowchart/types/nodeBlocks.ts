@@ -6,6 +6,7 @@
 export interface NodeBlock {
   title: string;
   nodes: Array<NodeInfo>;
+  partTypes?: string[];
 }
 
 /**

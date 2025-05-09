@@ -35,6 +35,7 @@ const defaultEdgeOptions: DefaultEdgeOptions = {
 const combinedNodeTypes = { ...operationNodeTypes, ...driveNodeTypes };
 import '@xyflow/react/dist/style.css';
 import '@/renderer/styles/FlowchartTheme.css';
+import { title } from 'process';
 
 const ProjectsDB = DatabaseFactory.createDatabase();
 
@@ -302,23 +303,52 @@ function DnDFlow() {
   );
 
   const onDrop = useCallback(
-    (event: React.DragEvent) => {
+    async (event: React.DragEvent) => {
       event.preventDefault();
-
+      let nodeInfo = null;
+      try {
+        const nodeInfoStr = event.dataTransfer.getData('application/nodeinfo');
+        if (nodeInfoStr) {
+          nodeInfo = JSON.parse(nodeInfoStr);
+        }
+      } catch (e) {}
       if (!type) {
         return;
       }
-
       const position = screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
+      let newNodeData = {};
+      if (nodeInfo && nodeInfo.isPart && nodeInfo.partId) {
+        const db = DatabaseFactory.createDatabase();
+        const part = await db.getPartById(nodeInfo.partId);
+        let manufacturerName = '';
+        if (part) {
+          const manufacturer = await db.getManufacturerById(
+            part.manufacturerId,
+          );
+          manufacturerName = manufacturer ? manufacturer.nameJa : '';
+          newNodeData = {
+            isPart: true,
+            partId: part.id,
+            model: part.model,
+            manufacturer: manufacturerName,
+            ...part.spec,
+          };
+        } else {
+          newNodeData = {
+            isPart: true,
+            partId: nodeInfo.partId,
+          };
+        }
+      }
       const newNode = {
         id: getId(),
         type,
         position,
+        data: newNodeData,
       };
-
       setNodes((nds) => nds.concat(newNode));
     },
     [screenToFlowPosition, type, setNodes],

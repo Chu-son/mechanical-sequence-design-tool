@@ -12,12 +12,12 @@ interface NodeBlockDisplayProps {
 export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
   const [, setType] = useDnD();
 
-  const onDragStart = (event: React.DragEvent, nodeType: string) => {
-    event.dataTransfer.setData('application/reactflow', nodeType);
+  // ノード情報を全てdataTransferに渡す
+  const onDragStart = (event: React.DragEvent, node: any) => {
+    event.dataTransfer.setData('application/reactflow', node.type);
+    event.dataTransfer.setData('application/nodeinfo', JSON.stringify(node));
     event.dataTransfer.effectAllowed = 'move';
-
-    // DnDContextにノードタイプを設定
-    setType(nodeType);
+    setType(node.type);
   };
 
   return (
@@ -30,7 +30,7 @@ export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
               <div
                 key={`node-${nodeIndex}`}
                 className="dndnode"
-                onDragStart={(event) => onDragStart(event, node.type)}
+                onDragStart={(event) => onDragStart(event, node)}
                 draggable
               >
                 {node.label}

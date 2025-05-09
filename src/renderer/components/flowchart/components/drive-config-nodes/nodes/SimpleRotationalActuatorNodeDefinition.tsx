@@ -66,10 +66,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       step: 0.1,
       group: 'parameters',
       getValue: (data) => data.ratedTorque,
-      setValue: (value, data) => ({
-        ...data,
-        ratedTorque: parseFloat(value),
-      }),
+      setValue: (value, data) => ({ ...data, ratedTorque: parseFloat(value) }),
     },
     {
       key: 'ratedSpeed',
@@ -79,10 +76,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       step: 1,
       group: 'parameters',
       getValue: (data) => data.ratedSpeed,
-      setValue: (value, data) => ({
-        ...data,
-        ratedSpeed: parseFloat(value),
-      }),
+      setValue: (value, data) => ({ ...data, ratedSpeed: parseFloat(value) }),
     },
     {
       key: 'maxTorque',
@@ -102,10 +96,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       step: 1,
       group: 'parameters',
       getValue: (data) => data.maxSpeed,
-      setValue: (value, data) => ({
-        ...data,
-        maxSpeed: parseFloat(value),
-      }),
+      setValue: (value, data) => ({ ...data, maxSpeed: parseFloat(value) }),
     },
     {
       key: 'rotorInertia',
@@ -115,10 +106,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
       step: 0.0001,
       group: 'parameters',
       getValue: (data) => data.rotorInertia,
-      setValue: (value, data) => ({
-        ...data,
-        rotorInertia: parseFloat(value),
-      }),
+      setValue: (value, data) => ({ ...data, rotorInertia: parseFloat(value) }),
     },
     // 出力値（rotationalOutputFieldsを使用）
     ...createRotationalOutputFields(),

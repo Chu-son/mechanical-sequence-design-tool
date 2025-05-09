@@ -371,6 +371,19 @@ function getFieldReadonly(
   return nodeReadonly;
 }
 
+// isPartがtrueなら全フィールドをreadonlyにする
+function applyReadonlyForPart(
+  fields: NodeFieldDefinition[],
+  data: any,
+): NodeFieldDefinition[] {
+  if (!data?.isPart) return fields;
+  return fields.map((field) => {
+    // forceEditableがtrueならreadonly化しない
+    if ((field as any).forceEditable) return field;
+    return { ...field, readonly: true };
+  });
+}
+
 const renderField = (
   field: NodeFieldDefinition,
   data: any,
@@ -489,7 +502,9 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
     }
   }, [data, id, definition, handleUpdateData]);
 
-  const grouped = groupFields(definition.fields, data);
+  // fieldsをisPartなら全readonly化
+  const processedFields = applyReadonlyForPart(definition.fields, data);
+  const grouped = groupFields(processedFields, data);
 
   return (
     <div className={`node ${className} ${readonly ? 'readonly' : ''}`}>

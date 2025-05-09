@@ -24,8 +24,12 @@ export const nodeTypes = {
   // Actuator Nodes
   simpleRotationalActuator: SimpleRotationalActuatorNode,
   simpleLinearActuator: SimpleLinearActuatorNode,
+  rotationalActuator: SimpleRotationalActuatorNode,
+  linearActuator: SimpleLinearActuatorNode,
 
   // Drive Component Nodes
   simpleRotToRotConverter: SimpleRotToRotConverterNode,
   simpleRotToLinConverter: SimpleRotToLinConverterNode,
+  rotToRotConverter: SimpleRotToRotConverterNode,
+  rotToLinConverter: SimpleRotToLinConverterNode,
 };
