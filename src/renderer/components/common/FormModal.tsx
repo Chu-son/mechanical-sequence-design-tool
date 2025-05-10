@@ -1,27 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import BaseModal from './BaseModal';
+import {
+  roundToDigits,
+  ROUND_DIGITS,
+} from '@/renderer/components/flowchart/common/flowchartUtils';
+import { NodeFieldDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import '@/renderer/styles/Modal.css';
-
-// フィールドの型定義
-export type FieldType = 'text' | 'number' | 'date' | 'select' | 'textarea';
-
-export interface FieldDefinition {
-  id: string;
-  label: string;
-  type: FieldType;
-  required?: boolean;
-  placeholder?: string;
-  options?: { value: string; label: string }[]; // select タイプの場合の選択肢
-  defaultValue?: any;
-  validation?: (value: any) => string | null; // バリデーション関数（エラーメッセージまたはnullを返す）
-}
 
 interface FormModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSave: (formData: Record<string, any>) => Promise<boolean> | boolean;
   title: string;
-  fields: FieldDefinition[];
+  fields: NodeFieldDefinition[];
   saveButtonLabel?: string;
   cancelButtonLabel?: string;
   initialValues?: Record<string, any>;
@@ -29,7 +20,7 @@ interface FormModalProps {
 
 /**
  * フォーム要素を持つ汎用モーダルコンポーネント
- * 動的にフィールドを生成し、フォームの状態を管理する
+ * ノード定義のNodeFieldDefinitionを利用し、flowchartノードと共通のフィールド定義を使用する
  */
 export default function FormModal({
   isOpen,
@@ -55,39 +46,91 @@ export default function FormModal({
     }
   }, [isOpen, initialValues]);
 
-  const handleInputChange = (fieldId: string, value: any) => {
-    setFormData((prev) => ({
-      ...prev,
-      [fieldId]: value,
-    }));
+  // NodeFieldDefinitionのvalue取得関数
+  const getFieldValue = (
+    field: NodeFieldDefinition,
+    data: Record<string, any>,
+  ): any => {
+    if ('getValue' in field) {
+      return field.getValue(data);
+    }
+    return data[field.key];
+  };
 
-    // 入力時にバリデーションを実行
-    const field = fields.find((f) => f.id === fieldId);
-    if (field?.validation) {
-      const error = field.validation(value);
+  // NodeFieldDefinitionのvalue設定関数
+  const setFieldValue = (
+    field: NodeFieldDefinition,
+    value: any,
+    data: Record<string, any>,
+  ): Record<string, any> => {
+    if ('setValue' in field) {
+      return field.setValue(value, data);
+    }
+    return { ...data, [field.key]: value };
+  };
+
+  // フィールドがreadonlyかどうかを判定
+  const isFieldReadonly = (field: NodeFieldDefinition): boolean => {
+    if ('readonly' in field) {
+      return typeof field.readonly === 'function'
+        ? field.readonly(formData)
+        : !!field.readonly;
+    }
+    return false;
+  };
+
+  // 入力変更ハンドラ
+  const handleInputChange = (field: NodeFieldDefinition, value: any) => {
+    if (isFieldReadonly(field)) return;
+
+    // フィールドタイプがnumberの場合は数値変換
+    if (field.type === 'number' && value !== '') {
+      value = parseFloat(value);
+    }
+
+    // データを更新
+    const newData = setFieldValue(field, value, formData);
+    setFormData(newData);
+
+    // バリデーション
+    if ('validation' in field && typeof field.validation === 'function') {
+      const error = field.validation(value, newData);
       setErrors((prev) => ({
         ...prev,
-        [fieldId]: error || '',
+        [field.key]: error || '',
       }));
+    }
+
+    // 追加のコールバックがあれば実行
+    if ('onChange' in field && typeof field.onChange === 'function') {
+      field.onChange(value, newData, (updatedData) => {
+        setFormData(updatedData);
+      });
     }
   };
 
+  // フォームバリデーション
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
     let isValid = true;
 
     fields.forEach((field) => {
-      // 必須フィールドの検証
-      if (field.required && !formData[field.id]) {
-        newErrors[field.id] = `${field.label}は必須です`;
+      const value = getFieldValue(field, formData);
+
+      // 必須フィールドのチェック
+      if (
+        field.required &&
+        (value === undefined || value === null || value === '')
+      ) {
+        newErrors[field.key] = `${field.label}は必須です`;
         isValid = false;
       }
 
       // カスタムバリデーション
-      if (field.validation) {
-        const error = field.validation(formData[field.id]);
+      if ('validation' in field && typeof field.validation === 'function') {
+        const error = field.validation(value, formData);
         if (error) {
-          newErrors[field.id] = error;
+          newErrors[field.key] = error;
           isValid = false;
         }
       }
@@ -97,38 +140,85 @@ export default function FormModal({
     return isValid;
   };
 
+  // 保存処理
   const handleSave = async () => {
     if (validateForm()) {
-      // onSaveがPromiseを返す場合に対応
-      const result = await onSave(formData);
-      if (result !== false) {
-        onClose();
+      try {
+        const result = await onSave(formData);
+        if (result !== false) {
+          onClose();
+        }
+      } catch (error) {
+        console.error('Form save error:', error);
       }
-      // resultがfalseならモーダルを閉じない（バリデーションや保存失敗時）
     }
   };
 
   // フィールドのレンダリング
-  const renderField = (field: FieldDefinition, idx: number) => {
-    const { id, label, type, placeholder, options, required } = field;
-    const value = formData[id] || '';
-    const error = errors[id];
+  const renderField = (field: NodeFieldDefinition, idx: number) => {
+    if ('hidden' in field) {
+      const isHidden =
+        typeof field.hidden === 'function'
+          ? field.hidden(formData)
+          : !!field.hidden;
+      if (isHidden) return null;
+    }
+
+    if ('condition' in field && typeof field.condition === 'function') {
+      if (!field.condition(formData)) return null;
+    }
+
+    const { key, label, type, required } = field;
+    const value = getFieldValue(field, formData);
+    const error = errors[key];
+    const readonly = isFieldReadonly(field);
+    const placeholder = 'placeholder' in field ? field.placeholder : undefined;
+    const unit = 'unit' in field ? field.unit : undefined;
+
+    // 数値型の場合、表示時に丸める処理を追加
+    let displayValue = value;
+    if (
+      type === 'number' &&
+      typeof value === 'number' &&
+      'displayDigits' in field
+    ) {
+      displayValue = roundToDigits(value, field.displayDigits ?? ROUND_DIGITS);
+    }
+
+    // ラベルと単位を組み合わせて表示用のラベルを作成
+    const displayLabel = unit ? `${label} (${unit})` : label;
+
+    // カスタムレンダリング
+    if ('customRender' in field && typeof field.customRender === 'function') {
+      return (
+        <div key={key} className="form-field custom-field">
+          {field.customRender(
+            formData,
+            (newData) => setFormData(newData),
+            readonly,
+          )}
+          {error && <div className="error-message">{error}</div>}
+        </div>
+      );
+    }
 
     switch (type) {
       case 'text':
         return (
-          <div key={id} className="form-field">
-            <label htmlFor={id}>
-              {label}
+          <div key={key} className="form-field">
+            <label htmlFor={key}>
+              {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <input
-              id={id}
+              id={key}
               type="text"
-              value={value}
+              value={displayValue || ''}
               placeholder={placeholder}
-              onChange={(e) => handleInputChange(id, e.target.value)}
+              onChange={(e) => handleInputChange(field, e.target.value)}
               className={error ? 'error' : ''}
+              readOnly={readonly}
+              disabled={readonly}
               ref={idx === 0 ? firstInputRef : undefined}
             />
             {error && <div className="error-message">{error}</div>}
@@ -137,36 +227,27 @@ export default function FormModal({
 
       case 'number':
         return (
-          <div key={id} className="form-field">
-            <label htmlFor={id}>
-              {label}
+          <div key={key} className="form-field">
+            <label htmlFor={key}>
+              {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <input
-              id={id}
+              id={key}
               type="number"
-              value={value}
+              value={
+                displayValue !== undefined && displayValue !== null
+                  ? displayValue
+                  : ''
+              }
               placeholder={placeholder}
-              onChange={(e) => handleInputChange(id, e.target.value)}
+              onChange={(e) => handleInputChange(field, e.target.value)}
               className={error ? 'error' : ''}
-            />
-            {error && <div className="error-message">{error}</div>}
-          </div>
-        );
-
-      case 'date':
-        return (
-          <div key={id} className="form-field">
-            <label htmlFor={id}>
-              {label}
-              {required && <span className="required">*</span>}
-            </label>
-            <input
-              id={id}
-              type="date"
-              value={value}
-              onChange={(e) => handleInputChange(id, e.target.value)}
-              className={error ? 'error' : ''}
+              min={'min' in field ? field.min : undefined}
+              max={'max' in field ? field.max : undefined}
+              step={'step' in field ? field.step : 'any'}
+              readOnly={readonly}
+              disabled={readonly}
             />
             {error && <div className="error-message">{error}</div>}
           </div>
@@ -174,41 +255,58 @@ export default function FormModal({
 
       case 'select':
         return (
-          <div key={id} className="form-field">
-            <label htmlFor={id}>
-              {label}
+          <div key={key} className="form-field">
+            <label htmlFor={key}>
+              {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <select
-              id={id}
-              value={value}
-              onChange={(e) => handleInputChange(id, e.target.value)}
+              id={key}
+              value={displayValue || ''}
+              onChange={(e) => handleInputChange(field, e.target.value)}
               className={error ? 'error' : ''}
+              disabled={readonly}
             >
               <option value="">選択してください</option>
-              {options?.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
+              {'options' in field &&
+                field.options?.map((option) => (
+                  <option key={`${key}-${option.value}`} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
             </select>
+            {error && <div className="error-message">{error}</div>}
+          </div>
+        );
+
+      case 'readonly':
+        const formattedValue =
+          'formatValue' in field && field.formatValue
+            ? field.formatValue(displayValue, formData)
+            : displayValue;
+        return (
+          <div key={key} className="form-field readonly-field">
+            <label htmlFor={key}>{displayLabel}</label>
+            <div className="readonly-value">{formattedValue}</div>
             {error && <div className="error-message">{error}</div>}
           </div>
         );
 
       case 'textarea':
         return (
-          <div key={id} className="form-field">
-            <label htmlFor={id}>
-              {label}
+          <div key={key} className="form-field">
+            <label htmlFor={key}>
+              {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <textarea
-              id={id}
-              value={value}
+              id={key}
+              value={displayValue || ''}
               placeholder={placeholder}
-              onChange={(e) => handleInputChange(id, e.target.value)}
+              onChange={(e) => handleInputChange(field, e.target.value)}
               className={error ? 'error' : ''}
+              readOnly={readonly}
+              disabled={readonly}
             />
             {error && <div className="error-message">{error}</div>}
           </div>
@@ -219,6 +317,7 @@ export default function FormModal({
     }
   };
 
+  // フッターのレンダリング
   const renderFooter = () => (
     <>
       <button className="app-button" type="button" onClick={handleSave}>

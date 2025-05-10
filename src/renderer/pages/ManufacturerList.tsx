@@ -184,15 +184,21 @@ const ManufacturerList: React.FC = () => {
         title="メーカー追加"
         fields={[
           {
-            id: 'nameJa',
+            key: 'nameJa',
             label: 'メーカー名（日本語）',
             type: 'text',
+            getValue: (data) => data.nameJa || '',
+            setValue: (value, data) => ({ ...data, nameJa: value }),
           },
           {
-            id: 'nameEn',
+            key: 'nameEn',
             label: 'メーカー名（英語）',
             type: 'text',
             required: true,
+            getValue: (data) => data.nameEn || '',
+            setValue: (value, data) => ({ ...data, nameEn: value }),
+            validation: (value) =>
+              !value ? 'メーカー名（英語）は必須です' : null,
           },
         ]}
         initialValues={manufacturerModal.formData}
@@ -204,21 +210,29 @@ const ManufacturerList: React.FC = () => {
         title="メーカー編集"
         fields={[
           {
-            id: 'id',
+            key: 'id',
             label: 'ID',
             type: 'text',
-            readOnly: true,
+            readonly: true,
+            getValue: (data) => data.id || '',
+            setValue: (value, data) => ({ ...data, id: value }),
           },
           {
-            id: 'nameJa',
+            key: 'nameJa',
             label: 'メーカー名（日本語）',
             type: 'text',
+            getValue: (data) => data.nameJa || '',
+            setValue: (value, data) => ({ ...data, nameJa: value }),
           },
           {
-            id: 'nameEn',
+            key: 'nameEn',
             label: 'メーカー名（英語）',
             type: 'text',
             required: true,
+            getValue: (data) => data.nameEn || '',
+            setValue: (value, data) => ({ ...data, nameEn: value }),
+            validation: (value) =>
+              !value ? 'メーカー名（英語）は必須です' : null,
           },
         ]}
         initialValues={editManufacturerModal.formData}

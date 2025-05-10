@@ -3,7 +3,7 @@
  * 再利用可能なモーダル設定を提供する
  */
 
-import { FieldDefinition } from '@/renderer/components/common/FormModal';
+import { NodeFieldDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 
 /**
  * プロジェクトモーダルの設定
@@ -863,9 +863,11 @@ export { PART_TYPE_FORM_CONFIG_MAP as partTypeFormConfigMap };
  * @param customConfig カスタマイズ設定
  * @returns カスタマイズされたモーダル設定
  */
-export function customizeModalConfig<T extends { fields: FieldDefinition[] }>(
+export function customizeModalConfig<
+  T extends { fields: NodeFieldDefinition[] },
+>(
   baseConfig: T,
-  customConfig: Partial<T> & { additionalFields?: FieldDefinition[] },
+  customConfig: Partial<T> & { additionalFields?: NodeFieldDefinition[] },
 ): T {
   const { additionalFields, ...customProps } = customConfig;
 
