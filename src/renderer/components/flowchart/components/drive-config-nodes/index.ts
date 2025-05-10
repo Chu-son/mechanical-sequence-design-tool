@@ -1,35 +1,29 @@
-// ノードタイプのインポート
-import SimpleRotationalActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotationalActuatorNode';
-import SimpleLinearActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleLinearActuatorNode';
-import SimpleRotToRotConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotToRotConverterNode';
-import SimpleRotToLinConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/SimpleRotToLinConverter';
+// Baseノードタイプのインポート
+import BaseRotationalActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/BaseRotationalActuatorNode';
+import BaseLinearActuatorNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/BaseLinearActuatorNode';
+import BaseRotToRotConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/BaseRotToRotConverterNode';
+import BaseRotToLinConverterNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/BaseRotToLinConverterNode';
 import OutputNode from '@/renderer/components/flowchart/components/drive-config-nodes/nodes/OutputNode';
 
 // 個別にエクスポート
-export { SimpleRotationalActuatorNode };
-export { SimpleLinearActuatorNode };
-export { SimpleRotToRotConverterNode };
-export { SimpleRotToLinConverterNode };
+export { BaseRotationalActuatorNode };
+export { BaseLinearActuatorNode };
+export { BaseRotToRotConverterNode };
+export { BaseRotToLinConverterNode };
 export { OutputNode };
 
 // Common
 export * from './common';
 export * from './DriveConfigBlocks';
 
-// ノードタイプの登録
+// ノードタイプの登録 - baseNodeTypeのみで統一
 export const nodeTypes = {
-  // Common Nodes
+  // Baseノード - 実装の本体
+  baseRotationalActuator: BaseRotationalActuatorNode,
+  baseLinearActuator: BaseLinearActuatorNode,
+  baseRotToRotConverter: BaseRotToRotConverterNode,
+  baseRotToLinConverter: BaseRotToLinConverterNode,
+
+  // 共通ノード
   outputNode: OutputNode,
-
-  // Actuator Nodes
-  simpleRotationalActuator: SimpleRotationalActuatorNode,
-  simpleLinearActuator: SimpleLinearActuatorNode,
-  rotationalActuator: SimpleRotationalActuatorNode,
-  linearActuator: SimpleLinearActuatorNode,
-
-  // Drive Component Nodes
-  simpleRotToRotConverter: SimpleRotToRotConverterNode,
-  simpleRotToLinConverter: SimpleRotToLinConverterNode,
-  rotToRotConverter: SimpleRotToRotConverterNode,
-  rotToLinConverter: SimpleRotToLinConverterNode,
 };

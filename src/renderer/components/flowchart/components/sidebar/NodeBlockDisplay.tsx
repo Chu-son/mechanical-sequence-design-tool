@@ -14,10 +14,15 @@ export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
 
   // ノード情報を全てdataTransferに渡す
   const onDragStart = (event: React.DragEvent, node: any) => {
-    event.dataTransfer.setData('application/reactflow', node.type);
+    // baseNodeTypeをreactflowのタイプとして設定
+    // これによりindex.tsで登録したnodeTypesの正しいコンポーネントが選択される
+    event.dataTransfer.setData('application/reactflow', node.baseNodeType);
+
+    // ノードの追加情報をJSONとして渡す
     event.dataTransfer.setData('application/nodeinfo', JSON.stringify(node));
+
     event.dataTransfer.effectAllowed = 'move';
-    setType(node.type);
+    setType(node.baseNodeType);
   };
 
   return (
@@ -29,9 +34,10 @@ export default function NodeBlockDisplay({ blocks }: NodeBlockDisplayProps) {
             {block.nodes.map((node, nodeIndex) => (
               <div
                 key={`node-${nodeIndex}`}
-                className="dndnode"
+                className={`dndnode ${node.isPart ? 'part-node' : ''}`}
                 onDragStart={(event) => onDragStart(event, node)}
                 draggable
+                title={node.isPart ? `部品ID: ${node.partId}` : ''}
               >
                 {node.label}
               </div>

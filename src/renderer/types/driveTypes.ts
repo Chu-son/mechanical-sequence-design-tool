@@ -141,12 +141,12 @@ export interface OutputNodeData extends DriveNodeData {
  * 部品種別
  */
 export type DrivePartType =
-  | 'rotationalActuator' // 回転アクチュエータ
-  | 'linearActuator' // 直動アクチュエータ
-  | 'rotToRotConverter' // 回転→回転変換
-  | 'rotToLinConverter' // 回転→直動変換
-  | 'linToRotConverter' // 直動→回転変換
-  | 'linToLinConverter'; // 直動→直動変換
+  | 'baseRotationalActuator' // 回転アクチュエータ
+  | 'baseLinearActuator' // 直動アクチュエータ
+  | 'baseRotToRotConverter' // 回転→回転変換
+  | 'baseRotToLinConverter' // 回転→直動変換
+  | 'baseLinToRotConverter' // 直動→回転変換
+  | 'baseLinToLinConverter'; // 直動→直動変換
 
 /**
  * 回転アクチュエータ用スペック

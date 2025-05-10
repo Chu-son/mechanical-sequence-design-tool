@@ -91,7 +91,7 @@ function FlowchartNodeList({
     loadParts();
   }, []);
 
-  // 部品種別ごとに既存ブロックへ部品ノードを追加
+  // メーカー名を取得
   const getManufacturerName = (id: number) => {
     const m = manufacturers.find((m) => m.id === id);
     return m ? m.nameJa : '';
@@ -101,12 +101,17 @@ function FlowchartNodeList({
   const blocksWithParts = driveConfigBlocks.blocks.map((block) => {
     const partNodes = parts
       .filter((p) => block.partTypes && block.partTypes.includes(p.type))
-      .map((p) => ({
-        type: p.type,
-        label: `${p.model} (${getManufacturerName(p.manufacturerId)})`,
-        partId: p.id,
-        isPart: true,
-      }));
+      .map((p) => {
+        const label = `${p.model} (${getManufacturerName(p.manufacturerId)})`;
+        return {
+          baseNodeType: p.type,
+          label: label,
+          partId: p.id,
+          isPart: true,
+          displayName: label,
+        };
+      });
+
     return {
       ...block,
       nodes: [...block.nodes, ...partNodes],

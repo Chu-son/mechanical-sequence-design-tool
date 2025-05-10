@@ -1,0 +1,28 @@
+{
+  "parts": [
+    {
+      "id": 1,
+      "type": "baseRotationalActuator",
+      "model": "aaa",
+      "manufacturerId": 1,
+      "spec": {
+        "ratedTorque": 3,
+        "ratedSpeed": 300,
+        "maxTorque": 5,
+        "maxSpeed": 500,
+        "rotorInertia": 1
+      },
+      "createdAt": "2025-05-06T14:48:01.699Z",
+      "updatedAt": "2025-05-06T14:48:01.699Z"
+    }
+  ],
+  "manufacturers": [
+    {
+      "id": 1,
+      "nameJa": "a",
+      "nameEn": "a",
+      "createdAt": "2025-05-05T15:27:42.522Z",
+      "updatedAt": "2025-05-05T15:27:42.522Z"
+    }
+  ]
+}

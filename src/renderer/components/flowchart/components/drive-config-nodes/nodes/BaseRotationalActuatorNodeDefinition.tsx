@@ -1,3 +1,4 @@
+// Baseノード定義 - 回転型アクチュエータの基本ノード定義
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import {
@@ -6,9 +7,9 @@ import {
 } from '@/renderer/types/driveTypes';
 import { createRotationalOutputFields } from '../fields/OutputSpecFields';
 
-const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
+const baseRotationalActuatorNodeDefinition: NodeDefinition = {
   type: 'rotationalActuator',
-  title: 'Simple Rotational Actuator',
+  title: 'Rotational Actuator Base',
   groupTitles: {
     parameters: 'Parameters',
     output: 'Output',
@@ -30,6 +31,7 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
     model: '',
     manufacturer: '',
     maxTorque: 0,
+    displayName: '', // 表示名フィールドを追加
     outputSpec: getDefaultRotationalOutput(),
   }),
   handles: {
@@ -152,4 +154,4 @@ const simpleRotationalActuatorNodeDefinition: NodeDefinition = {
   },
 };
 
-export default simpleRotationalActuatorNodeDefinition;
+export default baseRotationalActuatorNodeDefinition;

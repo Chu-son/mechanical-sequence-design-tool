@@ -517,7 +517,9 @@ const BaseNode: React.FC<BaseNodeProps & { readonly?: boolean }> = ({
       {renderHandles && renderHandles(id, data)}
 
       {/* ノードタイトル */}
-      <div className="node-title">{definition.title}</div>
+      <div className="node-title">
+        {data.label ? data.label : definition.title}
+      </div>
 
       {/* ノードコンテンツ */}
       <div className="node-content">

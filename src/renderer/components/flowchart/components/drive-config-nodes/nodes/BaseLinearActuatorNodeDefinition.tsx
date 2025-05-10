@@ -1,3 +1,4 @@
+// Baseノード定義 - 直動型アクチュエータの基本ノード定義
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import {
@@ -6,9 +7,9 @@ import {
 } from '@/renderer/types/driveTypes';
 import { createLinearOutputFields } from '../fields/OutputSpecFields';
 
-const simpleLinearActuatorNodeDefinition: NodeDefinition = {
+const baseLinearActuatorNodeDefinition: NodeDefinition = {
   type: 'linearActuator',
-  title: 'Simple Linear Actuator',
+  title: 'Linear Actuator Base',
   groupTitles: {
     parameters: 'Parameters',
     output: 'Output',
@@ -31,6 +32,7 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
     maxSpeed: 0,
     acceleration: 0,
     maxForce: 0,
+    displayName: '', // 表示名フィールドを追加
     outputSpec: getDefaultLinearOutput(),
   }),
   handles: {
@@ -158,4 +160,4 @@ const simpleLinearActuatorNodeDefinition: NodeDefinition = {
   },
 };
 
-export default simpleLinearActuatorNodeDefinition;
+export default baseLinearActuatorNodeDefinition;

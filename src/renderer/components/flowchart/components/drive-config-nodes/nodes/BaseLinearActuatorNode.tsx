@@ -1,22 +1,32 @@
+// Baseノード実装 - 直動型アクチュエータの基本ノード
 import React, { memo, useEffect } from 'react';
 import { useReactFlow, type NodeProps } from '@xyflow/react';
 import BaseNode from '@/renderer/components/flowchart/components/base-nodes/BaseNode';
-import simpleLinearActuatorNodeDefinition from './SimpleLinearActuatorNodeDefinition';
+import baseLinearActuatorNodeDefinition from './BaseLinearActuatorNodeDefinition';
 import { useNodeInitialData } from '@/renderer/components/flowchart/components/common/useNodeInitialData';
 import '@/renderer/styles/FlowchartTheme.css';
 import { LinearActuatorNodeData } from '@/renderer/types/driveTypes';
 
-function SimpleLinearActuatorNode({
+interface BaseLinearActuatorNodeProps
+  extends NodeProps<LinearActuatorNodeData> {
+  readonly?: boolean;
+  displayName?: string; // 表示名をpropsで受け取れるように追加
+}
+
+function BaseLinearActuatorNode({
   id,
   data,
-}: NodeProps<LinearActuatorNodeData>) {
+  readonly,
+  displayName,
+}: BaseLinearActuatorNodeProps) {
   const { updateNodeData } = useReactFlow();
   useNodeInitialData({
     id,
     data,
-    definition: simpleLinearActuatorNodeDefinition,
+    definition: baseLinearActuatorNodeDefinition,
     updateNodeData,
   });
+
   // アクチュエータは前段ノードを持たないため、パラメータ変化時のみ計算
   useEffect(() => {
     if (!data) return;
@@ -45,18 +55,26 @@ function SimpleLinearActuatorNode({
     if (
       JSON.stringify(data.calculatedOutput) !== JSON.stringify(calculatedOutput)
     ) {
-      updateNodeData(id, { ...data, calculatedOutput });
+      updateNodeData(id, {
+        ...data,
+        displayName: displayName || data.displayName, // 表示名を優先的に使用
+        calculatedOutput,
+      });
     }
-  }, [id, data, updateNodeData]);
+  }, [id, data, updateNodeData, displayName]);
 
   return (
     <BaseNode
       id={id}
-      data={data}
-      definition={simpleLinearActuatorNodeDefinition}
+      data={{
+        ...data,
+        displayName: displayName || data.displayName, // 表示名を優先的に使用
+      }}
+      definition={baseLinearActuatorNodeDefinition}
       updateNodeData={updateNodeData}
+      readonly={readonly}
     />
   );
 }
 
-export default memo(SimpleLinearActuatorNode);
+export default memo(BaseLinearActuatorNode);

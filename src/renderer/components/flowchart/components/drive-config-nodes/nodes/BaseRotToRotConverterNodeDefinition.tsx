@@ -1,16 +1,15 @@
+// Baseノード定義 - 回転から回転への変換コンバーターの基本ノード定義
 import { NodeDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
 import { roundToDigits } from '@/renderer/components/flowchart/common/flowchartUtils';
 import {
-  LinearOutput,
   RotationalOutput,
-  getDefaultLinearOutput,
   getDefaultRotationalOutput,
 } from '@/renderer/types/driveTypes';
-import { createLinearOutputFields } from '../fields/OutputSpecFields';
+import { createRotationalOutputFields } from '../fields/OutputSpecFields';
 
-const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
-  type: 'rotToLinConverter',
-  title: 'Simple Rotational to Linear Converter',
+const baseRotToRotConverterNodeDefinition: NodeDefinition = {
+  type: 'rotToRotConverter',
+  title: 'Rot To Rot Converter Base',
   groupTitles: {
     parameters: 'Parameters',
     output: 'Output',
@@ -28,23 +27,23 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
   /**
    * 初期データ生成
    * - 入力値（ユーザー指定）と出力値（outputSpec）を明確に分離
-   * - outputSpecはLinearOutput型
+   * - outputSpecはRotationalOutput型
    */
   getInitialData: () => ({
     model: '',
     manufacturer: '',
-    leadPitch: 0,
-    conversionRatio: 1,
-    maxForce: 0,
-    maxSpeed: 0,
-    efficiency: 0.9,
+    gearRatio: 1,
+    inertia: 0,
+    allowableTorque: 0,
+    efficiency: 1,
     inputType: 'rotational', // 設計ドキュメント準拠
-    outputType: 'linear', // 設計ドキュメント準拠
-    outputSpec: getDefaultLinearOutput(),
+    outputType: 'rotational', // 設計ドキュメント準拠
+    displayName: '', // 表示名フィールドを追加
+    outputSpec: getDefaultRotationalOutput(),
   }),
   /**
    * fields: 入力値（parameters）と出力値（output）を分離して定義
-   * - 入力値: 型式、メーカー、効率、リード/ピッチ、変換比、許容推力
+   * - 入力値: 型式、メーカー、効率、減速比、慣性モーメント、許容トルク
    * - 出力値: outputSpecの各プロパティをreadonlyで表示
    */
   fields: [
@@ -65,54 +64,38 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
       setValue: (value, data) => ({ ...data, manufacturer: value }),
     },
     {
-      key: 'leadPitch',
-      label: 'Lead/Pitch',
-      unit: 'mm',
+      key: 'gearRatio',
+      label: 'Gear Ratio',
       type: 'number',
       step: 0.01,
       group: 'parameters',
-      getValue: (data) => data.leadPitch,
+      getValue: (data) => data.gearRatio,
       setValue: (value, data) => ({
         ...data,
-        leadPitch: parseFloat(value),
+        gearRatio: parseFloat(value),
       }),
     },
     {
-      key: 'conversionRatio',
-      label: 'Conversion Ratio',
+      key: 'inertia',
+      label: 'Inertia',
+      unit: 'kg・m²',
       type: 'number',
-      step: 0.01,
+      step: 0.0001,
       group: 'parameters',
-      getValue: (data) => data.conversionRatio,
-      setValue: (value, data) => ({
-        ...data,
-        conversionRatio: parseFloat(value),
-      }),
+      getValue: (data) => data.inertia,
+      setValue: (value, data) => ({ ...data, inertia: parseFloat(value) }),
     },
     {
-      key: 'maxForce',
-      label: 'Max Force',
-      unit: 'N',
+      key: 'allowableTorque',
+      label: 'Allowable Torque',
+      unit: 'N・m',
       type: 'number',
       step: 0.1,
       group: 'parameters',
-      getValue: (data) => data.maxForce,
+      getValue: (data) => data.allowableTorque,
       setValue: (value, data) => ({
         ...data,
-        maxForce: parseFloat(value),
-      }),
-    },
-    {
-      key: 'maxSpeed',
-      label: 'Max Speed',
-      unit: 'mm/s',
-      type: 'number',
-      step: 1,
-      group: 'parameters',
-      getValue: (data) => data.maxSpeed,
-      setValue: (value, data) => ({
-        ...data,
-        maxSpeed: parseFloat(value),
+        allowableTorque: parseFloat(value),
       }),
     },
     {
@@ -127,22 +110,23 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
         efficiency: parseFloat(value),
       }),
     },
-    // 出力値（linearOutputFieldsを使用）
-    ...createLinearOutputFields(),
+    // 出力値（rotationalOutputFieldsを使用）
+    ...createRotationalOutputFields(),
   ],
   /**
    * compute: 前段ノードの出力値と入力値からoutputSpecを計算
    * - 設計ドキュメント「計算ロジック・データ伝播のポイント」に準拠
    */
   compute: (data: any, nodeId: string, update: (newData: any) => void) => {
-    // 前段ノードの出力値（回転）を受け取り、直動系に変換
-    const conversionRatio = parseFloat(data.conversionRatio) || 1;
-    const efficiency = parseFloat(data.efficiency) || 0.9;
-    const maxForce = parseFloat(data.maxForce) || 0;
-    const maxSpeed = parseFloat(data.maxSpeed) || 0;
+    // 前段ノードの出力値を受け取り、変換
+    const gearRatio = parseFloat(data.gearRatio);
+    const efficiency = parseFloat(data.efficiency);
+    const inertia = parseFloat(data.inertia);
+    const allowableTorque = parseFloat(data.allowableTorque);
 
     // 前段ノードからのoutputSpecは自ノードのprevOutputSpecに伝播されている
-    let prev: any = data.prevOutputSpec;
+    let prev: RotationalOutput = data.prevOutputSpec as RotationalOutput;
+
     if (!prev) {
       console.warn(
         'Node ID:',
@@ -152,34 +136,34 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
       prev = getDefaultRotationalOutput();
     }
 
-    // 例: 回転→直動変換（ボールねじ等）
-    // 速度変換: ratedSpeed[rpm] * conversionRatio[mm/rev] = [mm/min] → [mm/s]
-    const ratedSpeed = ((prev.ratedSpeed || 0) * conversionRatio) / 60;
-    // 推力変換: ratedTorque[Nm] * 2π / conversionRatio[mm/rev] = [N]
-    const ratedForce =
-      ((prev.ratedTorque || 0) * 2 * Math.PI) / (conversionRatio || 1);
-    const ratedPower = (ratedForce * ratedSpeed) / 1000;
-    const outputSpec: LinearOutput = {
-      type: 'linear',
-      ratedForce: roundToDigits(ratedForce, 2),
+    // 減速機の変換式
+    const ratedTorque = prev.ratedTorque * gearRatio * efficiency;
+    const ratedSpeed = prev.ratedSpeed / gearRatio;
+    const ratedPower = (ratedTorque * ratedSpeed * 2 * Math.PI) / 60;
+
+    const maxTorque = prev.maxTorque * gearRatio * efficiency;
+    const maxSpeed = prev.maxSpeed / gearRatio;
+    const maxPower = (ratedTorque * maxSpeed * 2 * Math.PI) / 60;
+
+    const totalGearRatio = prev.totalGearRatio * gearRatio;
+    const totalInertia = prev.totalInertia + inertia;
+
+    const outputSpec: RotationalOutput = {
+      type: 'rotational',
+      ratedTorque: roundToDigits(ratedTorque, 2),
       ratedSpeed: roundToDigits(ratedSpeed, 2),
       ratedPower: roundToDigits(ratedPower, 2),
-      maxForce: maxForce || roundToDigits(ratedForce, 2),
-      maxSpeed: maxSpeed || roundToDigits(ratedSpeed, 2),
-      maxPower: roundToDigits(
-        (ratedForce * (maxSpeed || ratedSpeed)) / 1000,
-        2,
-      ),
-      stroke: 0,
-      maxAcceleration: 0,
+      maxTorque: maxTorque || roundToDigits(ratedTorque, 2),
+      maxSpeed: roundToDigits(maxSpeed, 2),
+      maxPower: roundToDigits(maxPower, 2),
+      allowableTorque,
+      totalGearRatio,
+      totalInertia,
       efficiency: prev.efficiency ? prev.efficiency * efficiency : efficiency,
     };
-    // inputType/outputType/efficiencyを明示的に保持
+
     const newData = {
       ...data,
-      inputType: 'rotational',
-      outputType: 'linear',
-      efficiency,
       outputSpec,
     };
     if (JSON.stringify(data.outputSpec) !== JSON.stringify(outputSpec)) {
@@ -188,4 +172,4 @@ const simpleRotToLinConverterNodeDefinition: NodeDefinition = {
   },
 };
 
-export default simpleRotToLinConverterNodeDefinition;
+export default baseRotToRotConverterNodeDefinition;

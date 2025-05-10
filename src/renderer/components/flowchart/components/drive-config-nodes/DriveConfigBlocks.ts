@@ -6,10 +6,17 @@ import { ConfigBlocks, NodeBlock } from '@/renderer/flowchart/types/nodeBlocks';
  */
 const actuatorBlock: NodeBlock = {
   title: 'Actuator',
-  partTypes: ['rotationalActuator', 'linearActuator'],
+  partTypes: ['baseRotationalActuator', 'baseLinearActuator'],
   nodes: [
-    { type: 'simpleRotationalActuator', label: 'Simple Rotational Actuator' },
-    { type: 'simpleLinearActuator', label: 'Simple Linear Actuator' },
+    // Simpleノード（baseNodeTypeのみで定義）
+    {
+      baseNodeType: 'baseRotationalActuator',
+      label: 'Simple Rotational Actuator',
+    },
+    {
+      baseNodeType: 'baseLinearActuator',
+      label: 'Simple Linear Actuator',
+    },
   ],
 };
 
@@ -18,8 +25,13 @@ const actuatorBlock: NodeBlock = {
  */
 const rotationalToRotationalBlock: NodeBlock = {
   title: 'Rotational to Rotational',
-  partTypes: ['rotToRotConverter'],
-  nodes: [{ type: 'simpleRotToRotConverter', label: 'Simple R→R Converter' }],
+  partTypes: ['baseRotToRotConverter'],
+  nodes: [
+    {
+      baseNodeType: 'baseRotToRotConverter',
+      label: 'Simple R→R Converter',
+    },
+  ],
 };
 
 /**
@@ -27,8 +39,13 @@ const rotationalToRotationalBlock: NodeBlock = {
  */
 const rotationalToLinearBlock: NodeBlock = {
   title: 'Rotational to Linear',
-  partTypes: ['rotToLinConverter'],
-  nodes: [{ type: 'simpleRotToLinConverter', label: 'Simple R→L Converter' }],
+  partTypes: ['baseRotToLinConverter'],
+  nodes: [
+    {
+      baseNodeType: 'baseRotToLinConverter',
+      label: 'Simple R→L Converter',
+    },
+  ],
 };
 
 /**
@@ -36,7 +53,7 @@ const rotationalToLinearBlock: NodeBlock = {
  */
 const linearToRotationalBlock: NodeBlock = {
   title: 'Linear to Rotational',
-  partTypes: ['linToRotConverter'],
+  partTypes: ['baseLinToRotConverter'],
   nodes: [],
 };
 
@@ -45,7 +62,7 @@ const linearToRotationalBlock: NodeBlock = {
  */
 const linearToLinearBlock: NodeBlock = {
   title: 'Linear to Linear',
-  partTypes: ['linToLinConverter'],
+  partTypes: ['baseLinToLinConverter'],
   nodes: [],
 };
 
@@ -54,7 +71,7 @@ const linearToLinearBlock: NodeBlock = {
  */
 const outputBlock: NodeBlock = {
   title: 'Output',
-  nodes: [{ type: 'outputNode', label: 'Output' }],
+  nodes: [{ baseNodeType: 'outputNode', label: 'Output' }],
 };
 
 /**

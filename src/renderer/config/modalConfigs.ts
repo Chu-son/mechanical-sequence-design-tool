@@ -872,10 +872,10 @@ export function customizeModalConfig<T extends { fields: FieldDefinition[] }>(
  * 部品種別ごとのフォーム設定マッピング
  */
 export const partTypeFormConfigMap = {
-  rotationalActuator: rotationalActuatorFormConfig,
-  linearActuator: linearActuatorFormConfig,
-  rotToRotConverter: rotToRotConverterFormConfig,
-  rotToLinConverter: rotToLinConverterFormConfig,
-  linToRotConverter: linToRotConverterFormConfig,
-  linToLinConverter: linToLinConverterFormConfig,
+  baseRotationalActuator: rotationalActuatorFormConfig,
+  baseLinearActuator: linearActuatorFormConfig,
+  baseRotToRotConverter: rotToRotConverterFormConfig,
+  baseRotToLinConverter: rotToLinConverterFormConfig,
+  baseLinToRotConverter: linToRotConverterFormConfig,
+  baseLinToLinConverter: linToLinConverterFormConfig,
 };

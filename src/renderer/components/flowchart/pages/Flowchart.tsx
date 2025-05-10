@@ -320,6 +320,9 @@ function DnDFlow() {
         y: event.clientY,
       });
       let newNodeData = {};
+      // nodeInfoにlabelがあれば保持する
+      let nodeLabel = nodeInfo?.label || '';
+
       if (nodeInfo && nodeInfo.isPart && nodeInfo.partId) {
         const db = DatabaseFactory.createDatabase();
         const part = await db.getPartById(nodeInfo.partId);
@@ -329,6 +332,8 @@ function DnDFlow() {
             part.manufacturerId,
           );
           manufacturerName = manufacturer ? manufacturer.nameJa : '';
+          // 部品ノードの場合はモデル名とメーカー名をラベルにする
+          nodeLabel = `${part.model} (${manufacturerName})`;
           newNodeData = {
             isPart: true,
             partId: part.id,
@@ -347,7 +352,10 @@ function DnDFlow() {
         id: getId(),
         type,
         position,
-        data: newNodeData,
+        data: {
+          ...newNodeData,
+          label: nodeLabel, // labelを設定
+        },
       };
       setNodes((nds) => nds.concat(newNode));
     },

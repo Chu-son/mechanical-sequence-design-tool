@@ -4,7 +4,7 @@
     "name": "【サンプル】プロジェクト",
     "description": "これはサンプルデータです。実際のプロジェクトに置き換えてご利用ください。",
     "createdAt": "2025-01-15T10:00:00.000Z",
-    "updatedAt": "2025-05-04T14:43:07.164Z",
+    "updatedAt": "2025-05-10T09:04:35.025Z",
     "units": [
       {
         "id": 1,
@@ -33,29 +33,29 @@
                     "dummy": "",
                     "prevOutputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 20.48,
-                      "ratedSpeed": 12.5,
-                      "ratedPower": 26.81,
-                      "maxTorque": 30.720000000000006,
-                      "maxSpeed": 25,
-                      "maxPower": 53.62,
-                      "allowableTorque": 20,
-                      "totalGearRatio": 8,
+                      "ratedTorque": 12.96,
+                      "ratedSpeed": 50,
+                      "ratedPower": 67.86,
+                      "maxTorque": 21.6,
+                      "maxSpeed": 83.33,
+                      "maxPower": 113.1,
+                      "allowableTorque": 10,
+                      "totalGearRatio": 6,
                       "totalInertia": 3,
-                      "efficiency": 0.6400000000000001
+                      "efficiency": 0.7200000000000001
                     },
                     "outputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 20.48,
-                      "ratedSpeed": 12.5,
-                      "ratedPower": 26.81,
-                      "maxTorque": 30.720000000000006,
-                      "maxSpeed": 25,
-                      "maxPower": 53.62,
-                      "allowableTorque": 20,
-                      "totalGearRatio": 8,
+                      "ratedTorque": 12.96,
+                      "ratedSpeed": 50,
+                      "ratedPower": 67.86,
+                      "maxTorque": 21.6,
+                      "maxSpeed": 83.33,
+                      "maxPower": 113.1,
+                      "allowableTorque": 10,
+                      "totalGearRatio": 6,
                       "totalInertia": 3,
-                      "efficiency": 0.6400000000000001
+                      "efficiency": 0.7200000000000001
                     }
                   },
                   "measured": {
@@ -66,29 +66,32 @@
                   "dragging": false
                 },
                 {
-                  "id": "2",
-                  "type": "simpleRotationalActuator",
+                  "id": "5",
+                  "type": "baseRotationalActuator",
                   "position": {
                     "x": 0,
                     "y": 0
                   },
                   "data": {
-                    "ratedTorque": 4,
-                    "ratedSpeed": 100,
-                    "maxSpeed": 200,
+                    "isPart": true,
+                    "partId": 1,
+                    "model": "aaa",
+                    "manufacturer": "a",
+                    "ratedTorque": 3,
+                    "ratedSpeed": 300,
+                    "maxTorque": 5,
+                    "maxSpeed": 500,
                     "rotorInertia": 1,
-                    "model": "",
-                    "manufacturer": "",
-                    "maxTorque": 6,
+                    "label": "aaa (a)",
                     "outputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 4,
-                      "ratedSpeed": 100,
-                      "ratedPower": 41.89,
-                      "maxTorque": 6,
-                      "maxSpeed": 200,
-                      "maxPower": 83.78,
-                      "allowableTorque": 4,
+                      "ratedTorque": 3,
+                      "ratedSpeed": 300,
+                      "ratedPower": 94.25,
+                      "maxTorque": 5,
+                      "maxSpeed": 500,
+                      "maxPower": 157.08,
+                      "allowableTorque": 3,
                       "totalGearRatio": 1,
                       "totalInertia": 1,
                       "efficiency": 1
@@ -98,32 +101,26 @@
                     "width": 342,
                     "height": 754
                   },
-                  "selected": false
+                  "selected": false,
+                  "dragging": false
                 },
                 {
-                  "id": "3",
-                  "type": "simpleRotToRotConverter",
+                  "id": "6",
+                  "type": "baseRotToRotConverter",
                   "position": {
                     "x": 0,
                     "y": 804
                   },
                   "data": {
-                    "model": "",
-                    "manufacturer": "",
-                    "gearRatio": 4,
-                    "inertia": 1,
-                    "allowableTorque": 10,
-                    "efficiency": 0.8,
-                    "inputType": "rotational",
-                    "outputType": "rotational",
+                    "label": "Simple R→R Converter",
                     "outputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 12.8,
-                      "ratedSpeed": 25,
-                      "ratedPower": 33.51,
-                      "maxTorque": 19.200000000000003,
-                      "maxSpeed": 50,
-                      "maxPower": 67.02,
+                      "ratedTorque": 9.6,
+                      "ratedSpeed": 75,
+                      "ratedPower": 75.4,
+                      "maxTorque": 16,
+                      "maxSpeed": 125,
+                      "maxPower": 125.66,
                       "allowableTorque": 10,
                       "totalGearRatio": 4,
                       "totalInertia": 2,
@@ -131,17 +128,21 @@
                     },
                     "prevOutputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 4,
-                      "ratedSpeed": 100,
-                      "ratedPower": 41.89,
-                      "maxTorque": 6,
-                      "maxSpeed": 200,
-                      "maxPower": 83.78,
-                      "allowableTorque": 4,
+                      "ratedTorque": 3,
+                      "ratedSpeed": 300,
+                      "ratedPower": 94.25,
+                      "maxTorque": 5,
+                      "maxSpeed": 500,
+                      "maxPower": 157.08,
+                      "allowableTorque": 3,
                       "totalGearRatio": 1,
                       "totalInertia": 1,
                       "efficiency": 1
-                    }
+                    },
+                    "gearRatio": 4,
+                    "inertia": 1,
+                    "allowableTorque": 10,
+                    "efficiency": 0.8
                   },
                   "measured": {
                     "width": 342,
@@ -151,47 +152,44 @@
                   "dragging": false
                 },
                 {
-                  "id": "4",
-                  "type": "simpleRotToRotConverter",
+                  "id": "7",
+                  "type": "baseRotToRotConverter",
                   "position": {
                     "x": 0,
                     "y": 1560
                   },
                   "data": {
-                    "model": "",
-                    "manufacturer": "",
-                    "gearRatio": 2,
-                    "inertia": 1,
-                    "allowableTorque": 20,
-                    "efficiency": 0.8,
-                    "inputType": "rotational",
-                    "outputType": "rotational",
+                    "label": "Simple R→R Converter",
                     "outputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 20.48,
-                      "ratedSpeed": 12.5,
-                      "ratedPower": 26.81,
-                      "maxTorque": 30.720000000000006,
-                      "maxSpeed": 25,
-                      "maxPower": 53.62,
-                      "allowableTorque": 20,
-                      "totalGearRatio": 8,
+                      "ratedTorque": 12.96,
+                      "ratedSpeed": 50,
+                      "ratedPower": 67.86,
+                      "maxTorque": 21.6,
+                      "maxSpeed": 83.33,
+                      "maxPower": 113.1,
+                      "allowableTorque": 10,
+                      "totalGearRatio": 6,
                       "totalInertia": 3,
-                      "efficiency": 0.6400000000000001
+                      "efficiency": 0.7200000000000001
                     },
                     "prevOutputSpec": {
                       "type": "rotational",
-                      "ratedTorque": 12.8,
-                      "ratedSpeed": 25,
-                      "ratedPower": 33.51,
-                      "maxTorque": 19.200000000000003,
-                      "maxSpeed": 50,
-                      "maxPower": 67.02,
+                      "ratedTorque": 9.6,
+                      "ratedSpeed": 75,
+                      "ratedPower": 75.4,
+                      "maxTorque": 16,
+                      "maxSpeed": 125,
+                      "maxPower": 125.66,
                       "allowableTorque": 10,
                       "totalGearRatio": 4,
                       "totalInertia": 2,
                       "efficiency": 0.8
-                    }
+                    },
+                    "efficiency": 0.9,
+                    "gearRatio": 1.5,
+                    "inertia": 1,
+                    "allowableTorque": 10
                   },
                   "measured": {
                     "width": 342,
@@ -203,23 +201,20 @@
               ],
               "edges": [
                 {
-                  "interactionWidth": 75,
-                  "source": "2",
-                  "sourceHandle": "bottom",
-                  "target": "3",
-                  "targetHandle": "top",
-                  "id": "xy-edge__2bottom-1top",
+                  "id": "5->4",
+                  "source": "5",
+                  "target": "6",
                   "style": {}
                 },
                 {
-                  "id": "3->1",
-                  "source": "3",
-                  "target": "4",
+                  "id": "6->1",
+                  "source": "6",
+                  "target": "7",
                   "style": {}
                 },
                 {
-                  "id": "4->1",
-                  "source": "4",
+                  "id": "7->1",
+                  "source": "7",
                   "target": "1"
                 }
               ],
