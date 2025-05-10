@@ -32,9 +32,8 @@ export function useFormModal<T extends Record<string, any>>(
   const { isOpen, open, close, toggle } = useModal();
   const [formData, setFormData] = useState<T>(initialState);
 
-  // モーダルを開く際に初期状態をリセット
+  // モーダルを開く
   const openModal = () => {
-    setFormData(initialState);
     open();
   };
 

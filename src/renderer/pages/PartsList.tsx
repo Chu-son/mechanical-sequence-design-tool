@@ -147,7 +147,7 @@ const PartsList: React.FC = () => {
               id: part.id,
               columns: [
                 { content: part.model },
-                { content: getManufacturerName(String(part.manufacturerId)) },
+                { content: getManufacturerName(part.manufacturerId) },
                 {
                   content: new Date(part.createdAt).toLocaleDateString('ja-JP'),
                 },

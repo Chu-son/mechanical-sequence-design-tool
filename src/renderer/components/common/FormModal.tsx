@@ -24,6 +24,7 @@ interface FormModalProps {
   fields: FieldDefinition[];
   saveButtonLabel?: string;
   cancelButtonLabel?: string;
+  initialValues?: Record<string, any>;
 }
 
 /**
@@ -38,26 +39,21 @@ export default function FormModal({
   fields,
   saveButtonLabel = '保存',
   cancelButtonLabel = 'キャンセル',
+  initialValues = {},
 }: FormModalProps) {
   const [formData, setFormData] = useState<Record<string, any>>({});
   const [errors, setErrors] = useState<Record<string, string>>({});
   const firstInputRef = useRef<HTMLInputElement>(null);
 
-  // フィールドの初期値を設定
   useEffect(() => {
     if (isOpen) {
-      const initialData: Record<string, any> = {};
-      fields.forEach((field) => {
-        initialData[field.id] = field.defaultValue || '';
-      });
-      setFormData(initialData);
+      setFormData(initialValues || {});
       setErrors({});
-      // 最初のinputにフォーカス
       setTimeout(() => {
         firstInputRef.current?.focus();
       }, 0);
     }
-  }, [isOpen, fields]);
+  }, [isOpen, initialValues]);
 
   const handleInputChange = (fieldId: string, value: any) => {
     setFormData((prev) => ({

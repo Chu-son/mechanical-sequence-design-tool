@@ -56,7 +56,9 @@ const ManufacturerList: React.FC = () => {
     async (data) => {
       try {
         const database = DatabaseFactory.createDatabase();
+        console.log('Editing manufacturer id:', data.id);
         const id = Number(data.id);
+        console.log('Editing manufacturer id:', id);
         console.log('Editing manufacturer:', id, data);
         await database.updateManufacturer(id, {
           nameJa: data.nameJa,
@@ -201,6 +203,12 @@ const ManufacturerList: React.FC = () => {
         onClose={editManufacturerModal.close}
         title="メーカー編集"
         fields={[
+          {
+            id: 'id',
+            label: 'ID',
+            type: 'text',
+            readOnly: true,
+          },
           {
             id: 'nameJa',
             label: 'メーカー名（日本語）',
