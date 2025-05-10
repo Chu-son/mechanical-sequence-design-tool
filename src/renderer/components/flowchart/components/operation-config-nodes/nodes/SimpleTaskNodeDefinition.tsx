@@ -5,6 +5,12 @@ import {
   validateNumericInput,
   ROUND_DIGITS,
 } from '@/renderer/components/flowchart/common/flowchartUtils';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
+
+const timeUnitLabel = getUnitLabel(PhysicalQuantityType.TIME);
 
 const simpleTaskNodeDefinition: NodeDefinition = {
   type: 'task',
@@ -35,7 +41,7 @@ const simpleTaskNodeDefinition: NodeDefinition = {
     },
     {
       key: 'duration',
-      label: 'Duration [sec]',
+      label: `Duration [${timeUnitLabel}]`,
       type: 'number',
       group: 'parameters',
       getValue: (data) => data.duration,
@@ -50,7 +56,7 @@ const simpleTaskNodeDefinition: NodeDefinition = {
     },
     {
       key: 'totalDuration',
-      label: 'Total Duration [sec]',
+      label: `Total Duration [${timeUnitLabel}]`,
       type: 'readonly',
       group: 'results',
       getValue: (data) => data.totalDuration,

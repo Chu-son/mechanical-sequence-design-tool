@@ -6,6 +6,10 @@ import {
   getDefaultLinearOutput,
 } from '@/renderer/types/driveTypes';
 import { createLinearOutputFields } from '../fields/OutputSpecFields';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 const baseLinearActuatorNodeDefinition: NodeDefinition = {
   type: 'linearActuator',
@@ -64,7 +68,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'stroke',
       label: 'Stroke',
-      unit: 'mm',
+      unit: getUnitLabel(PhysicalQuantityType.STROKE),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -74,7 +78,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'ratedForce',
       label: 'Rated Force',
-      unit: 'N',
+      unit: getUnitLabel(PhysicalQuantityType.FORCE),
       type: 'number',
       step: 0.1,
       group: 'parameters',
@@ -84,7 +88,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'ratedSpeed',
       label: 'Rated Speed',
-      unit: 'mm/s',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_SPEED),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -94,7 +98,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'maxSpeed',
       label: 'Max Speed',
-      unit: 'mm/s',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_SPEED),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -104,7 +108,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'acceleration',
       label: 'Acceleration',
-      unit: 'mm/s²',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_ACCELERATION),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -114,7 +118,7 @@ const baseLinearActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'maxForce',
       label: 'Max Force',
-      unit: 'N',
+      unit: getUnitLabel(PhysicalQuantityType.FORCE),
       type: 'number',
       step: 0.1,
       group: 'parameters',

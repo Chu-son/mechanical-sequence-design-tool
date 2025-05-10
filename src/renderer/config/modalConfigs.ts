@@ -844,6 +844,20 @@ export const linToLinConverterFormConfig = {
 };
 
 /**
+ * 部品タイプごとのフォーム設定マッピング
+ */
+export const PART_TYPE_FORM_CONFIG_MAP = {
+  baseRotationalActuator: rotationalActuatorFormConfig,
+  baseLinearActuator: linearActuatorFormConfig,
+  baseRotToRotConverter: rotToRotConverterFormConfig,
+  baseRotToLinConverter: rotToLinConverterFormConfig,
+  baseLinToRotConverter: linToRotConverterFormConfig,
+  baseLinToLinConverter: linToLinConverterFormConfig,
+};
+
+export { PART_TYPE_FORM_CONFIG_MAP as partTypeFormConfigMap };
+
+/**
  * モーダル設定をカスタマイズするためのヘルパー関数
  * @param baseConfig ベースとなるモーダル設定
  * @param customConfig カスタマイズ設定
@@ -867,15 +881,3 @@ export function customizeModalConfig<T extends { fields: FieldDefinition[] }>(
     fields: mergedFields,
   } as T;
 }
-
-/**
- * 部品種別ごとのフォーム設定マッピング
- */
-export const partTypeFormConfigMap = {
-  baseRotationalActuator: rotationalActuatorFormConfig,
-  baseLinearActuator: linearActuatorFormConfig,
-  baseRotToRotConverter: rotToRotConverterFormConfig,
-  baseRotToLinConverter: rotToLinConverterFormConfig,
-  baseLinToRotConverter: linToRotConverterFormConfig,
-  baseLinToLinConverter: linToLinConverterFormConfig,
-};

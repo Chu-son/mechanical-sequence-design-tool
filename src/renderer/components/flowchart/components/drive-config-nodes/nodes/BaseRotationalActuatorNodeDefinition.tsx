@@ -6,6 +6,10 @@ import {
   getDefaultRotationalOutput,
 } from '@/renderer/types/driveTypes';
 import { createRotationalOutputFields } from '../fields/OutputSpecFields';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 const baseRotationalActuatorNodeDefinition: NodeDefinition = {
   type: 'rotationalActuator',
@@ -63,7 +67,7 @@ const baseRotationalActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'ratedTorque',
       label: 'Rated Torque',
-      unit: 'N・m',
+      unit: getUnitLabel(PhysicalQuantityType.TORQUE),
       type: 'number',
       step: 0.1,
       group: 'parameters',
@@ -73,7 +77,7 @@ const baseRotationalActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'ratedSpeed',
       label: 'Rated Speed',
-      unit: 'rpm',
+      unit: getUnitLabel(PhysicalQuantityType.ROTATIONAL_SPEED),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -83,7 +87,7 @@ const baseRotationalActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'maxTorque',
       label: 'Max Torque',
-      unit: 'N・m',
+      unit: getUnitLabel(PhysicalQuantityType.TORQUE),
       type: 'number',
       step: 0.1,
       group: 'parameters',
@@ -93,7 +97,7 @@ const baseRotationalActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'maxSpeed',
       label: 'Max Speed',
-      unit: 'rpm',
+      unit: getUnitLabel(PhysicalQuantityType.ROTATIONAL_SPEED),
       type: 'number',
       step: 1,
       group: 'parameters',
@@ -103,7 +107,7 @@ const baseRotationalActuatorNodeDefinition: NodeDefinition = {
     {
       key: 'rotorInertia',
       label: 'Rotor Inertia',
-      unit: 'kg・m²',
+      unit: getUnitLabel(PhysicalQuantityType.INERTIA),
       type: 'number',
       step: 0.0001,
       group: 'parameters',

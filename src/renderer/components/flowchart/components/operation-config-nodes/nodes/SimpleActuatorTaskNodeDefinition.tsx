@@ -7,6 +7,10 @@ import {
   roundToDigits,
   ROUND_DIGITS,
 } from '@/renderer/components/flowchart/common/flowchartUtils';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 /**
  * SimpleActuatorTaskNodeの定義
@@ -62,7 +66,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'position',
       label: 'Displacement',
       type: 'number',
-      unit: 'mm',
+      unit: getUnitLabel(PhysicalQuantityType.DISTANCE),
       min: 0,
       step: 0.1,
       group: 'parameters',
@@ -99,7 +103,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'velocity',
       label: 'Velocity',
       type: 'number',
-      unit: 'mm/s',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_SPEED),
       min: 0,
       step: 0.1,
       group: 'parameters',
@@ -135,7 +139,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'acceleration',
       label: 'Acceleration',
       type: 'number',
-      unit: 'mm/s²',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_ACCELERATION),
       min: 0,
       step: 0.1,
       group: 'parameters',
@@ -171,7 +175,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'deceleration',
       label: 'Deceleration',
       type: 'number',
-      unit: 'mm/s²',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_ACCELERATION),
       min: 0,
       step: 0.1,
       group: 'parameters',
@@ -207,7 +211,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'duration',
       label: 'Duration',
       type: 'readonly',
-      unit: 'sec',
+      unit: getUnitLabel(PhysicalQuantityType.TIME),
       group: 'results',
       getValue: (data) => data.duration,
       formatValue: (value) => roundToDigits(value, ROUND_DIGITS).toString(),
@@ -218,7 +222,7 @@ const simpleActuatorTaskNodeDefinition: NodeDefinition = {
       key: 'totalDuration',
       label: 'Total Duration',
       type: 'readonly',
-      unit: 'sec',
+      unit: getUnitLabel(PhysicalQuantityType.TIME),
       group: 'output',
       getValue: (data) => data.totalDuration,
       formatValue: (value) => roundToDigits(value, ROUND_DIGITS).toString(),

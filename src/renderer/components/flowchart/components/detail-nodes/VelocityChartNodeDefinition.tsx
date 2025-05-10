@@ -17,6 +17,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 /**
  * 速度プロファイルチャートを描画する関数
@@ -48,6 +52,9 @@ const renderVelocityChart = (
     );
   }
 
+  const timeUnitLabel = getUnitLabel(PhysicalQuantityType.TIME);
+  const velocityUnitLabel = getUnitLabel(PhysicalQuantityType.LINEAR_SPEED);
+
   return (
     <ResponsiveContainer width="100%" height="100%">
       <LineChart
@@ -58,14 +65,14 @@ const renderVelocityChart = (
         <XAxis
           dataKey="time"
           label={{
-            value: 'Time [sec]',
+            value: `Time [${timeUnitLabel}]`,
             position: 'insideBottomRight',
             offset: -5,
           }}
         />
         <YAxis
           label={{
-            value: 'Velocity [mm/s]',
+            value: `Velocity [${velocityUnitLabel}]`,
             angle: -90,
             position: 'insideLeft',
           }}
@@ -73,7 +80,7 @@ const renderVelocityChart = (
         <Tooltip
           formatter={(value: number, name: string) => {
             if (name === 'velocity') {
-              return [`${value} mm/s`, 'Velocity'];
+              return [`${value} ${velocityUnitLabel}`, 'Velocity'];
             }
             return [`${value}`, name];
           }}

@@ -6,6 +6,10 @@ import {
   getDefaultRotationalOutput,
 } from '@/renderer/types/driveTypes';
 import { createRotationalOutputFields } from '../fields/OutputSpecFields';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 const baseRotToRotConverterNodeDefinition: NodeDefinition = {
   type: 'rotToRotConverter',
@@ -78,7 +82,7 @@ const baseRotToRotConverterNodeDefinition: NodeDefinition = {
     {
       key: 'inertia',
       label: 'Inertia',
-      unit: 'kg・m²',
+      unit: getUnitLabel(PhysicalQuantityType.INERTIA),
       type: 'number',
       step: 0.0001,
       group: 'parameters',
@@ -88,7 +92,7 @@ const baseRotToRotConverterNodeDefinition: NodeDefinition = {
     {
       key: 'allowableTorque',
       label: 'Allowable Torque',
-      unit: 'N・m',
+      unit: getUnitLabel(PhysicalQuantityType.TORQUE),
       type: 'number',
       step: 0.1,
       group: 'parameters',

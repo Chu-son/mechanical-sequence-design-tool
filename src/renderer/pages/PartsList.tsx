@@ -2,21 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { Manufacturer, Part } from '@/renderer/types/databaseTypes';
+import { DrivePartType } from '@/renderer/types/driveTypes';
+import { DrivePart } from '@/renderer/types/driveTypes';
+import { PART_TYPE_LABELS } from '@/renderer/types/partTypeMappings';
 import '@/renderer/styles/Common.css';
 
 import ListComponent, {
   MenuItem,
 } from '@/renderer/components/common/ListComponent';
-
-// 部品種別の表示名マッピング
-const partTypeLabels: Record<DrivePartType, string> = {
-  baseRotationalActuator: '回転アクチュエータ',
-  baseLinearActuator: '直動アクチュエータ',
-  baseRotToRotConverter: '回転→回転変換',
-  baseRotToLinConverter: '回転→直動変換',
-  baseLinToRotConverter: '直動→回転変換',
-  baseLinToLinConverter: '直動→直動変換',
-};
 
 // 部品一覧ページ
 const PartsList: React.FC = () => {
@@ -141,7 +134,7 @@ const PartsList: React.FC = () => {
       {Object.entries(groupedParts).map(([type, typeParts]) => (
         <div key={type} className="section">
           <ListComponent
-            title={partTypeLabels[type as DrivePartType]}
+            title={PART_TYPE_LABELS[type as DrivePartType]}
             onAddNew={() => navigate(`/part-form/new/${type}`)}
             addButtonLabel="新規部品追加"
             headers={[

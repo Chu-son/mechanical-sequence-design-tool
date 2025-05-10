@@ -8,6 +8,10 @@ import {
   getDefaultRotationalOutput,
 } from '@/renderer/types/driveTypes';
 import { createLinearOutputFields } from '../fields/OutputSpecFields';
+import {
+  PhysicalQuantityType,
+  getUnitLabel,
+} from '@/renderer/types/unitMappings';
 
 const baseRotToLinConverterNodeDefinition: NodeDefinition = {
   type: 'rotToLinConverter',
@@ -69,7 +73,7 @@ const baseRotToLinConverterNodeDefinition: NodeDefinition = {
     {
       key: 'leadPitch',
       label: 'Lead/Pitch',
-      unit: 'mm',
+      unit: getUnitLabel(PhysicalQuantityType.DISTANCE),
       type: 'number',
       step: 0.01,
       group: 'parameters',
@@ -94,7 +98,7 @@ const baseRotToLinConverterNodeDefinition: NodeDefinition = {
     {
       key: 'maxForce',
       label: 'Max Force',
-      unit: 'N',
+      unit: getUnitLabel(PhysicalQuantityType.FORCE),
       type: 'number',
       step: 0.1,
       group: 'parameters',
@@ -107,7 +111,7 @@ const baseRotToLinConverterNodeDefinition: NodeDefinition = {
     {
       key: 'maxSpeed',
       label: 'Max Speed',
-      unit: 'mm/s',
+      unit: getUnitLabel(PhysicalQuantityType.LINEAR_SPEED),
       type: 'number',
       step: 1,
       group: 'parameters',

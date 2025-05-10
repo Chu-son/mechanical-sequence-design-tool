@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { Manufacturer, Part, PartType } from '@/renderer/types/databaseTypes';
+import { DrivePartType } from '@/renderer/types/driveTypes';
+import {
+  RotationalActuatorSpec,
+  LinearActuatorSpec,
+  RotToRotConverterSpec,
+  RotToLinConverterSpec,
+  LinToRotConverterSpec,
+  LinToLinConverterSpec,
+} from '@/renderer/types/driveTypes';
+import { PART_TYPE_LABELS } from '@/renderer/types/partTypeMappings';
+import { PART_TYPE_FORM_CONFIG_MAP } from '@/renderer/config/modalConfigs';
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
-import { partTypeFormConfigMap } from '@/renderer/config/modalConfigs';
-
-// 部品種別の表示名マッピング
-const partTypeLabels: Record<DrivePartType, string> = {
-  baseRotationalActuator: '回転アクチュエータ',
-  baseLinearActuator: '直動アクチュエータ',
-  baseRotToRotConverter: '回転→回転変換',
-  baseRotToLinConverter: '回転→直動変換',
-  baseLinToRotConverter: '直動→回転変換',
-  baseLinToLinConverter: '直動→直動変換',
-};
 
 // 空のスペックオブジェクトを生成する関数
 function createEmptySpec(type: DrivePartType): any {
@@ -189,7 +189,7 @@ const PartForm: React.FC = () => {
   const validate = (): boolean => {
     // 現在の部品種別に応じたフォーム設定を取得
     if (!partType) return false;
-    const formConfig = partTypeFormConfigMap[partType];
+    const formConfig = PART_TYPE_FORM_CONFIG_MAP[partType];
 
     const errors: Record<string, string> = {};
     let isValid = true;
@@ -299,12 +299,13 @@ const PartForm: React.FC = () => {
   }
 
   // 現在の部品種別に応じたフォーム設定を取得
-  const formConfig = partTypeFormConfigMap[partType];
+  const formConfig = PART_TYPE_FORM_CONFIG_MAP[partType];
 
   return (
     <div className="container">
       <h1>
-        {isEditMode ? '部品編集' : '新規部品登録'} - {partTypeLabels[partType]}
+        {isEditMode ? '部品編集' : '新規部品登録'} -{' '}
+        {PART_TYPE_LABELS[partType]}
       </h1>
 
       <form onSubmit={handleSubmit} className="part-form">
