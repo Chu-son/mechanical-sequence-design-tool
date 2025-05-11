@@ -54,7 +54,7 @@ export default function FormModal({
     if ('getValue' in field) {
       return field.getValue(data);
     }
-    return data[field.key];
+    return data[field.id];
   };
 
   // NodeFieldDefinitionのvalue設定関数
@@ -66,7 +66,7 @@ export default function FormModal({
     if ('setValue' in field) {
       return field.setValue(value, data);
     }
-    return { ...data, [field.key]: value };
+    return { ...data, [field.id]: value };
   };
 
   // フィールドがreadonlyかどうかを判定
@@ -97,7 +97,7 @@ export default function FormModal({
       const error = field.validation(value, newData);
       setErrors((prev) => ({
         ...prev,
-        [field.key]: error || '',
+        [field.id]: error || '',
       }));
     }
 
@@ -122,7 +122,7 @@ export default function FormModal({
         field.required &&
         (value === undefined || value === null || value === '')
       ) {
-        newErrors[field.key] = `${field.label}は必須です`;
+        newErrors[field.id] = `${field.label}は必須です`;
         isValid = false;
       }
 
@@ -130,7 +130,7 @@ export default function FormModal({
       if ('validation' in field && typeof field.validation === 'function') {
         const error = field.validation(value, formData);
         if (error) {
-          newErrors[field.key] = error;
+          newErrors[field.id] = error;
           isValid = false;
         }
       }
@@ -168,9 +168,9 @@ export default function FormModal({
       if (!field.condition(formData)) return null;
     }
 
-    const { key, label, type, required } = field;
+    const { id, label, type, required } = field;
     const value = getFieldValue(field, formData);
-    const error = errors[key];
+    const error = errors[id];
     const readonly = isFieldReadonly(field);
     const placeholder = 'placeholder' in field ? field.placeholder : undefined;
     const unit = 'unit' in field ? field.unit : undefined;
@@ -191,7 +191,7 @@ export default function FormModal({
     // カスタムレンダリング
     if ('customRender' in field && typeof field.customRender === 'function') {
       return (
-        <div key={key} className="form-field custom-field">
+        <div key={id} className="form-field custom-field">
           {field.customRender(
             formData,
             (newData) => setFormData(newData),
@@ -205,13 +205,13 @@ export default function FormModal({
     switch (type) {
       case 'text':
         return (
-          <div key={key} className="form-field">
-            <label htmlFor={key}>
+          <div key={id + '-' + idx} className="form-field">
+            <label htmlFor={id}>
               {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <input
-              id={key}
+              id={id}
               type="text"
               value={displayValue || ''}
               placeholder={placeholder}
@@ -227,13 +227,13 @@ export default function FormModal({
 
       case 'number':
         return (
-          <div key={key} className="form-field">
-            <label htmlFor={key}>
+          <div key={id + '-' + idx} className="form-field">
+            <label htmlFor={id}>
               {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <input
-              id={key}
+              id={id}
               type="number"
               value={
                 displayValue !== undefined && displayValue !== null
@@ -255,13 +255,13 @@ export default function FormModal({
 
       case 'select':
         return (
-          <div key={key} className="form-field">
-            <label htmlFor={key}>
+          <div key={id + '-' + idx} className="form-field">
+            <label htmlFor={id}>
               {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <select
-              id={key}
+              id={id}
               value={displayValue || ''}
               onChange={(e) => handleInputChange(field, e.target.value)}
               className={error ? 'error' : ''}
@@ -269,8 +269,11 @@ export default function FormModal({
             >
               <option value="">選択してください</option>
               {'options' in field &&
-                field.options?.map((option) => (
-                  <option key={`${key}-${option.value}`} value={option.value}>
+                field.options?.map((option, optIdx) => (
+                  <option
+                    key={`${id}-${option.value}-${optIdx}`}
+                    value={option.value}
+                  >
                     {option.label}
                   </option>
                 ))}
@@ -285,8 +288,8 @@ export default function FormModal({
             ? field.formatValue(displayValue, formData)
             : displayValue;
         return (
-          <div key={key} className="form-field readonly-field">
-            <label htmlFor={key}>{displayLabel}</label>
+          <div key={id + '-' + idx} className="form-field readonly-field">
+            <label htmlFor={id}>{displayLabel}</label>
             <div className="readonly-value">{formattedValue}</div>
             {error && <div className="error-message">{error}</div>}
           </div>
@@ -294,13 +297,13 @@ export default function FormModal({
 
       case 'textarea':
         return (
-          <div key={key} className="form-field">
-            <label htmlFor={key}>
+          <div key={id + '-' + idx} className="form-field">
+            <label htmlFor={id}>
               {displayLabel}
               {required && <span className="required">*</span>}
             </label>
             <textarea
-              id={key}
+              id={id}
               value={displayValue || ''}
               placeholder={placeholder}
               onChange={(e) => handleInputChange(field, e.target.value)}

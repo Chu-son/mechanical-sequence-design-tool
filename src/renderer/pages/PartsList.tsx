@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import { Manufacturer, Part } from '@/renderer/types/databaseTypes';
-import { DrivePartType } from '@/renderer/types/driveTypes';
-import { DrivePart } from '@/renderer/types/driveTypes';
+import {
+  Manufacturer,
+  DrivePart,
+  DrivePartType,
+} from '@/renderer/types/databaseTypes';
 import { PART_TYPE_LABELS } from '@/renderer/types/partTypeMappings';
-import '@/renderer/styles/Common.css';
-
+import { PART_TYPE_FORM_CONFIG_MAP } from '@/renderer/config/modalConfigs';
+import { useFormModal } from '@/renderer/hooks/useModal';
+import FormModal from '@/renderer/components/common/FormModal';
 import ListComponent, {
   MenuItem,
 } from '@/renderer/components/common/ListComponent';
+import '@/renderer/styles/Common.css';
 
 // 部品一覧ページ
 const PartsList: React.FC = () => {
@@ -17,38 +21,77 @@ const PartsList: React.FC = () => {
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedType, setSelectedType] = useState<DrivePartType | null>(null);
+  const [editTarget, setEditTarget] = useState<DrivePart | null>(null);
   const navigate = useNavigate();
 
-  // メーカー名を取得する関数
-  const getManufacturerName = (manufacturerId: string): string => {
-    const manufacturer = manufacturers.find((m) => m.id === manufacturerId);
-    return manufacturer ? manufacturer.nameJa : '不明';
-  };
+  // 新規追加モーダル
+  const addModal = useFormModal<any>(async (data) => {
+    try {
+      const database = DatabaseFactory.createDatabase();
+      await database.createPart({
+        type: selectedType,
+        model: data.model,
+        manufacturerId: data.manufacturerId,
+        spec: Object.fromEntries(
+          Object.entries(data)
+            .filter(([k]) => k.startsWith('spec.'))
+            .map(([k, v]) => [k.replace('spec.', ''), v]),
+        ),
+      });
+      await loadData();
+      return true;
+    } catch (err: any) {
+      alert(err.message || '部品の追加に失敗しました。');
+      return false;
+    }
+  });
+
+  // 編集モーダル
+  const editModal = useFormModal<any>(async (data) => {
+    try {
+      const database = DatabaseFactory.createDatabase();
+      await database.updatePart(editTarget!.id, {
+        model: data.model,
+        manufacturerId: data.manufacturerId,
+        spec: Object.fromEntries(
+          Object.entries(data)
+            .filter(([k]) => k.startsWith('spec.'))
+            .map(([k, v]) => [k.replace('spec.', ''), v]),
+        ),
+      });
+      await loadData();
+      return true;
+    } catch (err: any) {
+      alert(err.message || '部品の更新に失敗しました。');
+      return false;
+    }
+  });
 
   // データ読み込み
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setLoading(true);
-        const database = DatabaseFactory.createDatabase();
-        let partsList = await database.getParts();
-        let manufacturersList = await database.getManufacturers();
-        // データベースが空や未初期化の場合は空配列で初期化
-        if (!Array.isArray(partsList)) partsList = [];
-        if (!Array.isArray(manufacturersList)) manufacturersList = [];
-        setParts(partsList);
-        setManufacturers(manufacturersList);
-        setError(null);
-      } catch (err) {
-        console.error('部品データ読み込みエラー:', err);
-        setParts([]);
-        setManufacturers([]);
-        setError('部品データの読み込みに失敗しました。');
-      } finally {
-        setLoading(false);
-      }
-    };
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const database = DatabaseFactory.createDatabase();
+      let partsList = await database.getParts();
+      let manufacturersList = await database.getManufacturers();
+      // データベースが空や未初期化の場合は空配列で初期化
+      if (!Array.isArray(partsList)) partsList = [];
+      if (!Array.isArray(manufacturersList)) manufacturersList = [];
+      setParts(partsList);
+      setManufacturers(manufacturersList);
+      setError(null);
+    } catch (err) {
+      console.error('部品データ読み込みエラー:', err);
+      setParts([]);
+      setManufacturers([]);
+      setError('部品データの読み込みに失敗しました。');
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     loadData();
   }, []);
 
@@ -68,6 +111,43 @@ const PartsList: React.FC = () => {
     }
   });
 
+  // メーカー名を取得する関数
+  const getManufacturerName = (manufacturerId: string): string => {
+    const manufacturer = manufacturers.find((m) => m.id === manufacturerId);
+    return manufacturer ? manufacturer.nameJa : '不明';
+  };
+
+  // 新規部品追加モーダルを開く
+  const handleAddPart = (type: DrivePartType) => {
+    setSelectedType(type);
+    addModal.setFormData({
+      model: '',
+      manufacturerId: '',
+      ...Object.fromEntries(
+        PART_TYPE_FORM_CONFIG_MAP[type].fields
+          .filter((f) => f.id.startsWith('spec.'))
+          .map((f) => [f.id, '']),
+      ),
+    });
+    addModal.open();
+  };
+
+  // 部品編集モーダルを開く
+  const handleEditPart = (id: number) => {
+    const part = parts.find((p) => p.id === id);
+    if (!part) return;
+    setEditTarget(part);
+    const formData: any = {
+      model: part.model,
+      manufacturerId: part.manufacturerId,
+    };
+    Object.entries(part.spec || {}).forEach(([k, v]) => {
+      formData[`spec.${k}`] = v;
+    });
+    editModal.setFormData(formData);
+    editModal.open();
+  };
+
   // 部品削除ハンドラ
   const handleDelete = async (partId: string) => {
     if (!window.confirm('この部品を削除してもよろしいですか？')) {
@@ -78,17 +158,11 @@ const PartsList: React.FC = () => {
       const database = DatabaseFactory.createDatabase();
       await database.deletePart(partId);
       // 削除後に部品一覧を再取得
-      const updatedParts = await database.getParts();
-      setParts(updatedParts);
+      loadData();
     } catch (err) {
       console.error('部品削除エラー:', err);
       alert('部品の削除に失敗しました。');
     }
-  };
-
-  // 部品編集
-  const handleEditPart = (partId: number) => {
-    navigate(`/part-form/${partId}`);
   };
 
   // メーカー管理ページへ
@@ -135,7 +209,7 @@ const PartsList: React.FC = () => {
         <div key={type} className="section">
           <ListComponent
             title={PART_TYPE_LABELS[type as DrivePartType]}
-            onAddNew={() => navigate(`/part-form/new/${type}`)}
+            onAddNew={() => handleAddPart(type as DrivePartType)}
             addButtonLabel="新規部品追加"
             headers={[
               { label: '型式' },
@@ -161,6 +235,52 @@ const PartsList: React.FC = () => {
           />
         </div>
       ))}
+
+      {/* 新規追加モーダル */}
+      {selectedType && (
+        <FormModal
+          isOpen={addModal.isOpen}
+          onClose={addModal.close}
+          title={PART_TYPE_FORM_CONFIG_MAP[selectedType].title}
+          fields={PART_TYPE_FORM_CONFIG_MAP[selectedType].fields.map((f) =>
+            f.id === 'manufacturerId'
+              ? {
+                  ...f,
+                  options: manufacturers.map((m) => ({
+                    value: m.id,
+                    label: m.nameJa,
+                  })),
+                }
+              : f,
+          )}
+          initialValues={addModal.formData}
+          onSave={addModal.saveAndClose}
+        />
+      )}
+      {/* 編集モーダル */}
+      {editTarget && (
+        <FormModal
+          isOpen={editModal.isOpen}
+          onClose={() => {
+            editModal.close();
+            setEditTarget(null);
+          }}
+          title={PART_TYPE_FORM_CONFIG_MAP[editTarget.type].title + '編集'}
+          fields={PART_TYPE_FORM_CONFIG_MAP[editTarget.type].fields.map((f) =>
+            f.id === 'manufacturerId'
+              ? {
+                  ...f,
+                  options: manufacturers.map((m) => ({
+                    value: m.id,
+                    label: m.nameJa,
+                  })),
+                }
+              : f,
+          )}
+          initialValues={editModal.formData}
+          onSave={editModal.saveAndClose}
+        />
+      )}
     </div>
   );
 };

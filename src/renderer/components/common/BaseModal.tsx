@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ReactNode } from 'react';
 import '@/renderer/styles/Modal.css';
 
 interface BaseModalProps {
@@ -7,6 +7,7 @@ interface BaseModalProps {
   title: string;
   children: ReactNode;
   footer?: ReactNode;
+  className?: string; // モーダルにカスタムクラスを追加するためのprop
 }
 
 /**
@@ -19,12 +20,13 @@ export default function BaseModal({
   title,
   children,
   footer,
+  className,
 }: BaseModalProps) {
   if (!isOpen) return null;
 
   return (
     <div className="modal-overlay">
-      <div className="modal-content">
+      <div className={`modal-content ${className || ''}`}>
         <button type="button" className="close-button" onClick={onClose}>
           ×
         </button>

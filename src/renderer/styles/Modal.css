@@ -20,8 +20,9 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 400px;
+  width: 500px; /* 幅を広げる */
   max-width: 90%;
+  max-height: 80vh; /* 高さを制限する */
 }
 
 .modal-content h2 {
@@ -30,11 +31,32 @@
 
 .modal-body {
   margin-bottom: 20px;
+  max-height: calc(80vh - 140px); /* フッターとヘッダーを除いた高さに制限 */
+  overflow-y: auto; /* スクロール可能にする */
+}
+
+/* 部品フォームモーダル用スタイル */
+.part-form-modal .modal-content {
+  width: 600px; /* 部品フォーム用に幅を広げる */
+}
+
+.part-form-modal .modal-body {
+  padding-right: 10px; /* スクロールバー用の余白 */
+}
+
+.part-form h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 5px;
 }
 
 .modal-footer {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end; /* ボタンを右寄せに変更 */
+  gap: 10px; /* ボタン間の間隔を設定 */
+  padding-top: 10px;
+  border-top: 1px solid #eee;
 }
 
 .modal-footer button {
@@ -108,4 +130,11 @@
 .required {
   color: #f44336;
   margin-left: 4px;
+}
+
+/* 単位表示 */
+.unit {
+  color: #757575;
+  margin-left: 4px;
+  font-size: 0.9em;
 }

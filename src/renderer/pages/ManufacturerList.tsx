@@ -9,34 +9,24 @@ import ListComponent, {
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
 
-// メーカー一覧ページ
 const ManufacturerList: React.FC = () => {
   const [manufacturers, setManufacturers] = useState<Manufacturer[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<string>('');
 
-  // useFormModalを利用
-  const manufacturerModal = useFormModal<{
-    nameJa: string;
-    nameEn: string;
-  }>(
+  const manufacturerModal = useFormModal<{ nameJa: string; nameEn: string }>(
     async (data) => {
-      // manufacturersがundefinedの場合でも必ず空配列でガード
-      console.log('ManufacturerModal:', data);
-      console.log('manufacturers:', manufacturers);
-      if ((manufacturers ?? []).some((m) => m.nameJa === data.nameJa)) {
+      if (manufacturers.some((m) => m.nameJa === data.nameJa)) {
         alert('同じ日本語名のメーカーが既に存在します。');
         return false;
       }
       try {
-        console.log('Adding manufacturer:', data);
         const database = DatabaseFactory.createDatabase();
         await database.createManufacturer({
           nameJa: data.nameJa,
           nameEn: data.nameEn,
         });
-        console.log('Manufacturer added successfully');
         await loadManufacturers();
         return true;
       } catch (err: any) {
@@ -47,7 +37,6 @@ const ManufacturerList: React.FC = () => {
     { nameJa: '', nameEn: '' },
   );
 
-  // 編集用モーダルの状態
   const editManufacturerModal = useFormModal<{
     id: number;
     nameJa: string;
@@ -56,11 +45,7 @@ const ManufacturerList: React.FC = () => {
     async (data) => {
       try {
         const database = DatabaseFactory.createDatabase();
-        console.log('Editing manufacturer id:', data.id);
-        const id = Number(data.id);
-        console.log('Editing manufacturer id:', id);
-        console.log('Editing manufacturer:', id, data);
-        await database.updateManufacturer(id, {
+        await database.updateManufacturer(Number(data.id), {
           nameJa: data.nameJa,
           nameEn: data.nameEn,
         });
@@ -74,7 +59,6 @@ const ManufacturerList: React.FC = () => {
     { id: 0, nameJa: '', nameEn: '' },
   );
 
-  // データ読み込み
   const loadManufacturers = async () => {
     try {
       setLoading(true);
@@ -84,7 +68,6 @@ const ManufacturerList: React.FC = () => {
       setManufacturers(manufacturersList);
       setError(null);
     } catch (err) {
-      console.error('メーカーデータ読み込みエラー:', err);
       setManufacturers([]);
       setError('メーカーデータの読み込みに失敗しました。');
     } finally {
@@ -96,8 +79,7 @@ const ManufacturerList: React.FC = () => {
     loadManufacturers();
   }, []);
 
-  // フィルタリングされたメーカーリスト
-  const filteredManufacturers = (manufacturers ?? []).filter((manufacturer) => {
+  const filteredManufacturers = manufacturers.filter((manufacturer) => {
     const searchTerm = filter.toLowerCase();
     return (
       manufacturer.nameJa.toLowerCase().includes(searchTerm) ||
@@ -105,18 +87,13 @@ const ManufacturerList: React.FC = () => {
     );
   });
 
-  // 新規メーカー追加
   const handleAddManufacturer = () => {
     manufacturerModal.open();
   };
 
-  // メーカー編集
   const handleEditManufacturer = (manufacturerId: number) => {
-    // IDに一致するメーカーを探す
     const manufacturer = manufacturers.find((m) => m.id === manufacturerId);
     if (!manufacturer) return;
-
-    console.log('Editing manufacturer:', manufacturer);
     editManufacturerModal.setFormData({
       id: manufacturer.id,
       nameJa: manufacturer.nameJa,
@@ -125,45 +102,29 @@ const ManufacturerList: React.FC = () => {
     editManufacturerModal.open();
   };
 
-  // メーカー削除
   const handleDeleteManufacturer = async (manufacturerId: number) => {
     if (
       !window.confirm(
         'このメーカーを削除してもよろしいですか？部品で使用されているメーカーは削除できません。',
       )
-    ) {
+    )
       return;
-    }
-
     try {
       const database = DatabaseFactory.createDatabase();
       await database.deleteManufacturer(manufacturerId);
-      await loadManufacturers(); // リスト再読み込み
+      await loadManufacturers();
     } catch (err: any) {
       alert(err.message || 'メーカーの削除に失敗しました。');
     }
   };
 
-  // メニュー項目の定義
   const menuItems: MenuItem[] = [
-    {
-      label: '編集',
-      onClick: handleEditManufacturer,
-    },
-    {
-      label: '削除',
-      onClick: handleDeleteManufacturer,
-      className: 'delete',
-    },
+    { label: '編集', onClick: handleEditManufacturer },
+    { label: '削除', onClick: handleDeleteManufacturer, className: 'delete' },
   ];
 
-  if (loading) {
-    return <div className="loading">読み込み中...</div>;
-  }
-
-  if (error) {
-    return <div className="error">{error}</div>;
-  }
+  if (loading) return <div className="loading">読み込み中...</div>;
+  if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="container">
