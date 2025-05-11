@@ -270,3 +270,12 @@ export function getDefaultLinearOutput(): LinearOutput {
     efficiency: 0.9,
   };
 }
+
+// すべての部品スペック型をまとめたDrivePartSpec型
+export type DrivePartSpec =
+  | RotationalActuatorSpec
+  | LinearActuatorSpec
+  | RotToRotConverterSpec
+  | RotToLinConverterSpec
+  | LinToRotConverterSpec
+  | LinToLinConverterSpec;

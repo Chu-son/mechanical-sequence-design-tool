@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
+import { Manufacturer } from '@/renderer/types/databaseTypes';
 import {
-  Manufacturer,
   DrivePart,
   DrivePartType,
-} from '@/renderer/types/databaseTypes';
+  DrivePartSpec,
+} from '@/renderer/types/driveTypes';
 import { PART_TYPE_LABELS } from '@/renderer/types/partTypeMappings';
 import { PART_TYPE_FORM_CONFIG_MAP } from '@/renderer/config/modalConfigs';
 import { useFormModal } from '@/renderer/hooks/useModal';
@@ -14,6 +15,43 @@ import ListComponent, {
   MenuItem,
 } from '@/renderer/components/common/ListComponent';
 import '@/renderer/styles/Common.css';
+
+// フォームデータ型
+interface PartFormData {
+  model: string;
+  manufacturerId: number | null;
+  [key: string]: any;
+}
+
+// データ整形共通関数
+function normalizePartFormData(
+  data: Record<string, any>,
+): PartFormData & { spec: DrivePartSpec } {
+  return {
+    ...data,
+    manufacturerId:
+      typeof data.manufacturerId === 'string'
+        ? Number(data.manufacturerId)
+        : data.manufacturerId,
+    spec: Object.fromEntries(
+      Object.entries(data)
+        .filter(([k]) => k.startsWith('spec.'))
+        .map(([k, v]) => [k.replace('spec.', ''), v]),
+    ) as DrivePartSpec,
+  };
+}
+
+// fields生成共通関数
+function getPartFormFields(type: DrivePartType, manufacturers: Manufacturer[]) {
+  return PART_TYPE_FORM_CONFIG_MAP[type].fields.map((f: any) =>
+    f.id === 'manufacturerId'
+      ? {
+          ...f,
+          options: manufacturers.map((m) => ({ value: m.id, label: m.nameJa })),
+        }
+      : f,
+  );
+}
 
 // 部品一覧ページ
 const PartsList: React.FC = () => {
@@ -26,18 +64,15 @@ const PartsList: React.FC = () => {
   const navigate = useNavigate();
 
   // 新規追加モーダル
-  const addModal = useFormModal<any>(async (data) => {
+  const addModal = useFormModal<PartFormData>(async (data) => {
     try {
       const database = DatabaseFactory.createDatabase();
+      const normalized = normalizePartFormData(data);
       await database.createPart({
-        type: selectedType,
-        model: data.model,
-        manufacturerId: data.manufacturerId,
-        spec: Object.fromEntries(
-          Object.entries(data)
-            .filter(([k]) => k.startsWith('spec.'))
-            .map(([k, v]) => [k.replace('spec.', ''), v]),
-        ),
+        type: selectedType!,
+        model: normalized.model,
+        manufacturerId: normalized.manufacturerId,
+        spec: normalized.spec,
       });
       await loadData();
       return true;
@@ -48,17 +83,14 @@ const PartsList: React.FC = () => {
   });
 
   // 編集モーダル
-  const editModal = useFormModal<any>(async (data) => {
+  const editModal = useFormModal<PartFormData>(async (data) => {
     try {
       const database = DatabaseFactory.createDatabase();
+      const normalized = normalizePartFormData(data);
       await database.updatePart(editTarget!.id, {
-        model: data.model,
-        manufacturerId: data.manufacturerId,
-        spec: Object.fromEntries(
-          Object.entries(data)
-            .filter(([k]) => k.startsWith('spec.'))
-            .map(([k, v]) => [k.replace('spec.', ''), v]),
-        ),
+        model: normalized.model,
+        manufacturerId: normalized.manufacturerId,
+        spec: normalized.spec,
       });
       await loadData();
       return true;
@@ -112,7 +144,7 @@ const PartsList: React.FC = () => {
   });
 
   // メーカー名を取得する関数
-  const getManufacturerName = (manufacturerId: string): string => {
+  const getManufacturerName = (manufacturerId: number): string => {
     const manufacturer = manufacturers.find((m) => m.id === manufacturerId);
     return manufacturer ? manufacturer.nameJa : '不明';
   };
@@ -122,7 +154,7 @@ const PartsList: React.FC = () => {
     setSelectedType(type);
     addModal.setFormData({
       model: '',
-      manufacturerId: '',
+      manufacturerId: null,
       ...Object.fromEntries(
         PART_TYPE_FORM_CONFIG_MAP[type].fields
           .filter((f) => f.id.startsWith('spec.'))
@@ -149,7 +181,7 @@ const PartsList: React.FC = () => {
   };
 
   // 部品削除ハンドラ
-  const handleDelete = async (partId: string) => {
+  const handleDelete = async (partId: number) => {
     if (!window.confirm('この部品を削除してもよろしいですか？')) {
       return;
     }
@@ -178,7 +210,7 @@ const PartsList: React.FC = () => {
     },
     {
       label: '削除',
-      onClick: (id) => handleDelete(String(id)),
+      onClick: (id) => handleDelete(Number(id)),
       className: 'delete',
     },
   ];
@@ -242,19 +274,9 @@ const PartsList: React.FC = () => {
           isOpen={addModal.isOpen}
           onClose={addModal.close}
           title={PART_TYPE_FORM_CONFIG_MAP[selectedType].title}
-          fields={PART_TYPE_FORM_CONFIG_MAP[selectedType].fields.map((f) =>
-            f.id === 'manufacturerId'
-              ? {
-                  ...f,
-                  options: manufacturers.map((m) => ({
-                    value: m.id,
-                    label: m.nameJa,
-                  })),
-                }
-              : f,
-          )}
+          fields={getPartFormFields(selectedType, manufacturers)}
           initialValues={addModal.formData}
-          onSave={addModal.saveAndClose}
+          onSave={(data) => addModal.saveAndClose(normalizePartFormData(data))}
         />
       )}
       {/* 編集モーダル */}
@@ -266,19 +288,9 @@ const PartsList: React.FC = () => {
             setEditTarget(null);
           }}
           title={PART_TYPE_FORM_CONFIG_MAP[editTarget.type].title + '編集'}
-          fields={PART_TYPE_FORM_CONFIG_MAP[editTarget.type].fields.map((f) =>
-            f.id === 'manufacturerId'
-              ? {
-                  ...f,
-                  options: manufacturers.map((m) => ({
-                    value: m.id,
-                    label: m.nameJa,
-                  })),
-                }
-              : f,
-          )}
+          fields={getPartFormFields(editTarget.type, manufacturers)}
           initialValues={editModal.formData}
-          onSave={editModal.saveAndClose}
+          onSave={(data) => editModal.saveAndClose(normalizePartFormData(data))}
         />
       )}
     </div>
