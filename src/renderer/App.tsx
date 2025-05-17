@@ -12,6 +12,7 @@ import PartsList from '@/renderer/pages/PartsList';
 import ManufacturerList from '@/renderer/pages/ManufacturerList';
 import '@/renderer/styles/App.css';
 import Flowchart from '@/renderer/components/flowchart/pages/Flowchart';
+import VTCurveEditPage from '@/renderer/pages/VTCurveEditPage';
 
 // サイドバーの状態に応じてコンテンツのクラスを設定するためのラッパーコンポーネント
 const AppContent = () => {
@@ -73,6 +74,7 @@ const AppContent = () => {
           {/* 駆動部品管理ページのルート */}
           <Route path="/parts" element={<PartsList />} />
           <Route path="/manufacturers" element={<ManufacturerList />} />
+          <Route path="/vtcurve-edit/:partId" element={<VTCurveEditPage />} />
         </Routes>
       </div>
     </div>

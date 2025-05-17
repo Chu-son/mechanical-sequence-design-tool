@@ -4,6 +4,8 @@
  */
 
 import { NodeFieldDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
+import VTCurveEditor from '@/renderer/components/parts/VTCurveEditor';
+import { useNavigate } from 'react-router-dom';
 
 /**
  * プロジェクトモーダルの設定
@@ -309,6 +311,31 @@ export const rotationalActuatorFormConfig = {
         return null;
       },
     },
+    {
+      id: 'spec.vtCurve',
+      label: 'V-T曲線',
+      type: 'custom' as const,
+      required: false,
+      customRender: (formData, setFormData) => {
+        const vtCurve = formData['spec.vtCurve'] || { points: [] };
+        const partId = Number(formData.id);
+        const navigate = useNavigate();
+        return (
+          <div>
+            <h4>V-T曲線</h4>
+            <VTCurveEditor value={vtCurve} readonly onChange={() => {}} />
+            <button
+              type="button"
+              className="vt-curve-button"
+              onClick={() => navigate(`/vtcurve-edit/${partId}`)}
+              disabled={isNaN(partId)}
+            >
+              編集
+            </button>
+          </div>
+        );
+      },
+    },
   ],
   saveButtonLabel: '保存',
   cancelButtonLabel: 'キャンセル',
@@ -554,6 +581,31 @@ export const rotToRotConverterFormConfig = {
         return null;
       },
     },
+    {
+      id: 'spec.vtCurve',
+      label: 'V-T曲線',
+      type: 'custom' as const,
+      required: false,
+      customRender: (formData, setFormData) => {
+        const vtCurve = formData['spec.vtCurve'] || { points: [] };
+        const partId = Number(formData.id);
+        const navigate = useNavigate();
+        return (
+          <div>
+            <h4>V-T曲線</h4>
+            <VTCurveEditor value={vtCurve} readonly onChange={() => {}} />
+            <button
+              type="button"
+              className="vt-curve-button"
+              onClick={() => navigate(`/vtcurve-edit/${partId}`)}
+              disabled={isNaN(partId)}
+            >
+              編集
+            </button>
+          </div>
+        );
+      },
+    },
   ],
   saveButtonLabel: '保存',
   cancelButtonLabel: 'キャンセル',
@@ -747,6 +799,31 @@ export const linToRotConverterFormConfig = {
           return '0より大きい値を入力してください';
         }
         return null;
+      },
+    },
+    {
+      id: 'spec.vtCurve',
+      label: 'V-T曲線',
+      type: 'custom' as const,
+      required: false,
+      customRender: (formData, setFormData) => {
+        const vtCurve = formData['spec.vtCurve'] || { points: [] };
+        const partId = Number(formData.id);
+        const navigate = useNavigate();
+        return (
+          <div>
+            <h4>V-T曲線</h4>
+            <VTCurveEditor value={vtCurve} readonly onChange={() => {}} />
+            <button
+              type="button"
+              className="vt-curve-button"
+              onClick={() => navigate(`/vtcurve-edit/${partId}`)}
+              disabled={isNaN(partId)}
+            >
+              編集
+            </button>
+          </div>
+        );
       },
     },
   ],

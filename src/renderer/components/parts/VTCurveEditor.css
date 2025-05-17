@@ -1,0 +1,105 @@
+/* VTCurveEditor専用のグラフ・エディタ用スタイル */
+.vt-curve-editor-container {
+  position: relative;
+}
+.vt-curve-graph-container {
+  position: relative;
+  height: 400px;
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+.vt-curve-background-image {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 1;
+}
+.origin-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+.calibration-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+}
+.calibration-point.x-axis {
+  background-color: blue;
+}
+.calibration-point.y-axis {
+  background-color: green;
+}
+.temp-calibration-point {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  border: 2px dashed;
+}
+.temp-calibration-point.x-axis {
+  background-color: rgba(0, 0, 255, 0.5);
+  border-color: blue;
+}
+.temp-calibration-point.y-axis {
+  background-color: rgba(0, 255, 0, 0.5);
+  border-color: green;
+}
+.calibration-dialog {
+  background: white;
+  border: 1px solid #ccc;
+  padding: 15px;
+  border-radius: 5px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  text-align: center;
+}
+.calibration-dialog-fixed {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 9999;
+}
+.calibration-dialog-buttons {
+  display: flex;
+  justify-content: space-around;
+}
+.calibration-points-list {
+  margin-top: 10px;
+  max-height: 150px;
+  overflow-y: auto;
+}
+.calibration-points-table table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.calibration-points-table th,
+.calibration-points-table td {
+  padding: 5px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+button.active {
+  background-color: #4caf50;
+  color: white;
+}
+button.x-axis {
+  background-color: rgba(0, 0, 255, 0.7);
+  color: white;
+}
+button.y-axis {
+  background-color: rgba(0, 128, 0, 0.7);
+  color: white;
+}

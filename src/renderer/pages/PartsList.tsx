@@ -170,6 +170,7 @@ const PartsList: React.FC = () => {
     if (!part) return;
     setEditTarget(part);
     const formData: any = {
+      id: part.id,
       model: part.model,
       manufacturerId: part.manufacturerId,
     };

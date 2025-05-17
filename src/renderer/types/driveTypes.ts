@@ -2,6 +2,39 @@
  * 駆動部品・駆動ノード関連の型定義を一元管理するファイル
  */
 
+/**
+ * V-T曲線データ型
+ * 回転数とトルクのペアデータを保持し、背景画像のスケールと原点情報も含む
+ */
+export interface VTCurve {
+  /**
+   * 回転数-トルク点のセット
+   */
+  points: { rpm: number; torque: number }[];
+
+  /**
+   * 背景画像（Base64エンコードされたPNG）
+   */
+  backgroundImage?: string;
+
+  /**
+   * 画像内の原点座標（ピクセル）
+   */
+  backgroundOrigin?: { x: number; y: number };
+
+  /**
+   * 背景画像のスケール情報
+   */
+  backgroundScale?: {
+    xMin: number; // X軸最小値 (rpm)
+    xMax: number; // X軸最大値 (rpm)
+    yMin: number; // Y軸最小値 (torque)
+    yMax: number; // Y軸最大値 (torque)
+    width: number; // 画像の幅（ピクセル）
+    height: number; // 画像の高さ（ピクセル）
+  };
+}
+
 // 出力仕様の基本型（共通プロパティ）
 export interface OutputSpec {
   ratedPower: number; // 定格出力 [W]
@@ -159,6 +192,7 @@ export interface RotationalActuatorSpec {
   rotorInertia: number; // ローター慣性モーメント
   ratedPower?: number; // 定格出力
   maxPower?: number; // 最大出力
+  vtCurve?: VTCurve; // V-T曲線
 }
 
 /**
@@ -183,6 +217,7 @@ export interface RotToRotConverterSpec {
   gearRatio: number; // 減速比
   inertia: number; // 慣性モーメント
   allowableTorque: number; // 許容トルク
+  vtCurve?: VTCurve; // V-T曲線
 }
 
 /**
@@ -202,6 +237,7 @@ export interface LinToRotConverterSpec {
   efficiency: number; // 効率
   conversionRatio: number; // 変換比
   allowableTorque: number; // 許容トルク
+  vtCurve?: VTCurve; // V-T曲線
 }
 
 /**
