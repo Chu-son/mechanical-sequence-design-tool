@@ -36,15 +36,43 @@ export default function VTCurveEditor({
 
   // 原点合わせ用state
   const [showOriginModal, setShowOriginModal] = useState(false);
+  // 原点・X軸・Y軸基準点の画像上座標と物理量を管理
   const [origin, setOrigin] = useState<{ x: number; y: number } | null>(null);
+  const [xAxisPoint, setXAxisPoint] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [yAxisPoint, setYAxisPoint] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  const [originValue, setOriginValue] = useState<{
+    rpm: string;
+    torque: string;
+  }>({ rpm: '', torque: '' });
+  const [xAxisValue, setXAxisValue] = useState<{ rpm: string; torque: string }>(
+    { rpm: '', torque: '' },
+  );
+  const [yAxisValue, setYAxisValue] = useState<{ rpm: string; torque: string }>(
+    { rpm: '', torque: '' },
+  );
+  const [selectStep, setSelectStep] = useState<
+    'origin' | 'xAxis' | 'yAxis' | null
+  >(null);
+  const [plotOrigin, setPlotOrigin] = useState<{ x: number; y: number } | null>(
+    null,
+  );
+  // 画像サイズ管理用state
   const [imageSize, setImageSize] = useState<{
     width: number;
     height: number;
   } | null>(null);
-  const [originStep, setOriginStep] = useState(false);
-  const [plotOrigin, setPlotOrigin] = useState<{ x: number; y: number } | null>(
-    null,
-  );
+  // エラーメッセージ表示用state
+  const [modalError, setModalError] = useState<string | null>(null);
+
+  // プロットエリアのXY軸の最大値・最小値をユーザーが設定できるようにするstate
+  const [xMin, setXMin] = useState<string>('0');
+  const [xMax, setXMax] = useState<string>('3000');
+  const [yMin, setYMin] = useState<string>('0');
+  const [yMax, setYMax] = useState<string>('10');
 
   useEffect(() => {
     const svg = document.querySelector('.recharts-surface');
@@ -124,22 +152,77 @@ export default function VTCurveEditor({
     setImageSize({ width: img.naturalWidth, height: img.naturalHeight });
   };
 
-  // 画像クリックで原点ピクセル座標取得
+  // 画像クリックで原点/X軸/Y軸ピクセル座標取得
   const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (!imageSize || !originStep) return;
+    if (!imageSize || !selectStep) return;
     const rect = (e.target as HTMLImageElement).getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-    setOrigin({ x, y });
-    setOriginStep(false);
+    if (selectStep === 'origin') {
+      setOrigin({ x, y });
+    } else if (selectStep === 'xAxis') {
+      setXAxisPoint({ x, y });
+    } else if (selectStep === 'yAxis') {
+      setYAxisPoint({ x, y });
+    }
+    setSelectStep(null);
   };
 
+  // 3点情報を保存しonChangeで親に渡す
   const saveOrigin = () => {
-    if (!origin) return;
+    setModalError(null);
+    if (!origin || !xAxisPoint || !yAxisPoint) {
+      setModalError('全ての座標を選択してください');
+      return;
+    }
+    if (
+      originValue.rpm === '' ||
+      originValue.torque === '' ||
+      xAxisValue.rpm === '' ||
+      xAxisValue.torque === '' ||
+      yAxisValue.rpm === '' ||
+      yAxisValue.torque === ''
+    ) {
+      setModalError('全ての数値を入力してください');
+      return;
+    }
+    // ピクセル座標と物理量からスケールを計算
+    const ox = origin.x,
+      oy = origin.y;
+    const x1 = xAxisPoint.x,
+      y1 = xAxisPoint.y;
+    const x2 = yAxisPoint.x,
+      y2 = yAxisPoint.y;
+    const rpm0 = parseFloat(originValue.rpm),
+      tq0 = parseFloat(originValue.torque);
+    const rpm1 = parseFloat(xAxisValue.rpm),
+      tq1 = parseFloat(xAxisValue.torque);
+    const rpm2 = parseFloat(yAxisValue.rpm),
+      tq2 = parseFloat(yAxisValue.torque);
+    // X軸方向のスケール
+    const xMin = rpm0 - (ox * (rpm1 - rpm0)) / (x1 - ox);
+    const xMax =
+      rpm0 +
+      ((imageSize ? imageSize.width - ox : 0) * (rpm1 - rpm0)) / (x1 - ox);
+    // Y軸方向のスケール
+    const yMin =
+      tq0 + ((imageSize ? imageSize.height - oy : 0) * (tq2 - tq0)) / (y2 - oy);
+    const yMax = tq0 - (oy * (tq2 - tq0)) / (y2 - oy);
     onChange({
       ...value,
-      backgroundOrigin: origin,
-      backgroundScale: undefined,
+      backgroundOrigin: { x: ox, y: oy },
+      backgroundXAxis: { x: x1, y: y1 },
+      backgroundYAxis: { x: x2, y: y2 },
+      backgroundScale: imageSize
+        ? {
+            xMin,
+            xMax,
+            yMin,
+            yMax,
+            width: imageSize.width,
+            height: imageSize.height,
+          }
+        : undefined,
     });
     setShowOriginModal(false);
   };
@@ -202,6 +285,50 @@ export default function VTCurveEditor({
   return (
     <div className="vt-curve-editor-container">
       <h3 className="header">V-T曲線エディタ</h3>
+      {/* XY軸範囲設定UI */}
+      {!readonly && (
+        <div
+          style={{
+            display: 'flex',
+            gap: 16,
+            alignItems: 'center',
+            marginBottom: 8,
+          }}
+        >
+          <span>X軸範囲:</span>
+          <input
+            type="number"
+            value={xMin}
+            onChange={(e) => setXMin(e.target.value)}
+            style={{ width: 70 }}
+            placeholder="最小"
+          />
+          <span>～</span>
+          <input
+            type="number"
+            value={xMax}
+            onChange={(e) => setXMax(e.target.value)}
+            style={{ width: 70 }}
+            placeholder="最大"
+          />
+          <span style={{ marginLeft: 16 }}>Y軸範囲:</span>
+          <input
+            type="number"
+            value={yMin}
+            onChange={(e) => setYMin(e.target.value)}
+            style={{ width: 70 }}
+            placeholder="最小"
+          />
+          <span>～</span>
+          <input
+            type="number"
+            value={yMax}
+            onChange={(e) => setYMax(e.target.value)}
+            style={{ width: 70 }}
+            placeholder="最大"
+          />
+        </div>
+      )}
       <div
         className="container vt-curve-graph-container"
         ref={graphContainerRef}
@@ -226,12 +353,18 @@ export default function VTCurveEditor({
               dataKey="rpm"
               label={{ value: '回転数 [rpm]', position: 'bottom' }}
               type="number"
-              domain={[0, 3000]}
+              domain={[
+                isNaN(Number(xMin)) ? 0 : Number(xMin),
+                isNaN(Number(xMax)) ? 3000 : Number(xMax),
+              ]}
             />
             <YAxis
               label={{ value: 'トルク [N・m]', angle: -90, position: 'left' }}
               type="number"
-              domain={[0, 10]}
+              domain={[
+                isNaN(Number(yMin)) ? 0 : Number(yMin),
+                isNaN(Number(yMax)) ? 10 : Number(yMax),
+              ]}
             />
             <Tooltip />
             <Legend />
@@ -372,16 +505,14 @@ export default function VTCurveEditor({
       <BaseModal
         isOpen={showOriginModal}
         onClose={() => setShowOriginModal(false)}
+        title="原点・基準点合わせ"
       >
         <div style={{ textAlign: 'center' }}>
-          <h3>原点合わせ</h3>
           {value.backgroundImage && (
             <img
               src={value.backgroundImage}
               alt="origin"
               style={{
-                // maxWidth: 600,
-                // maxHeight: 400,
                 border: '1px solid #ccc',
                 cursor: 'crosshair',
               }}
@@ -392,8 +523,10 @@ export default function VTCurveEditor({
           <div style={{ margin: 12 }}>
             <button
               type="button"
-              className={originStep ? 'app-button active' : 'app-button'}
-              onClick={() => setOriginStep(true)}
+              className={
+                selectStep === 'origin' ? 'app-button active' : 'app-button'
+              }
+              onClick={() => setSelectStep('origin')}
             >
               原点を選択
             </button>
@@ -403,15 +536,106 @@ export default function VTCurveEditor({
                 ? `${origin.x.toFixed(0)}, ${origin.y.toFixed(0)}`
                 : '未設定'}
             </span>
+            <input
+              type="number"
+              placeholder="rpm"
+              value={originValue.rpm}
+              onChange={(e) =>
+                setOriginValue((v) => ({ ...v, rpm: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 8 }}
+            />
+            <input
+              type="number"
+              placeholder="torque"
+              value={originValue.torque}
+              onChange={(e) =>
+                setOriginValue((v) => ({ ...v, torque: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 4 }}
+            />
           </div>
+          <div style={{ margin: 12 }}>
+            <button
+              type="button"
+              className={
+                selectStep === 'xAxis' ? 'app-button active' : 'app-button'
+              }
+              onClick={() => setSelectStep('xAxis')}
+            >
+              X軸基準点を選択
+            </button>
+            <span style={{ marginLeft: 8 }}>
+              X軸:{' '}
+              {xAxisPoint
+                ? `${xAxisPoint.x.toFixed(0)}, ${xAxisPoint.y.toFixed(0)}`
+                : '未設定'}
+            </span>
+            <input
+              type="number"
+              placeholder="rpm"
+              value={xAxisValue.rpm}
+              onChange={(e) =>
+                setXAxisValue((v) => ({ ...v, rpm: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 8 }}
+            />
+            <input
+              type="number"
+              placeholder="torque"
+              value={xAxisValue.torque}
+              onChange={(e) =>
+                setXAxisValue((v) => ({ ...v, torque: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 4 }}
+            />
+          </div>
+          <div style={{ margin: 12 }}>
+            <button
+              type="button"
+              className={
+                selectStep === 'yAxis' ? 'app-button active' : 'app-button'
+              }
+              onClick={() => setSelectStep('yAxis')}
+            >
+              Y軸基準点を選択
+            </button>
+            <span style={{ marginLeft: 8 }}>
+              Y軸:{' '}
+              {yAxisPoint
+                ? `${yAxisPoint.x.toFixed(0)}, ${yAxisPoint.y.toFixed(0)}`
+                : '未設定'}
+            </span>
+            <input
+              type="number"
+              placeholder="rpm"
+              value={yAxisValue.rpm}
+              onChange={(e) =>
+                setYAxisValue((v) => ({ ...v, rpm: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 8 }}
+            />
+            <input
+              type="number"
+              placeholder="torque"
+              value={yAxisValue.torque}
+              onChange={(e) =>
+                setYAxisValue((v) => ({ ...v, torque: e.target.value }))
+              }
+              style={{ width: 70, marginLeft: 4 }}
+            />
+          </div>
+          {modalError && (
+            <div style={{ color: 'red', marginBottom: 8 }}>{modalError}</div>
+          )}
           <div style={{ margin: 12 }}>
             <button
               type="button"
               className="app-button"
               onClick={saveOrigin}
-              disabled={!origin}
+              disabled={!(origin && xAxisPoint && yAxisPoint)}
             >
-              原点保存
+              保存
             </button>
             <button
               type="button"
