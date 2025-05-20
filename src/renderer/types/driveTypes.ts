@@ -23,6 +23,16 @@ export interface VTCurve {
   backgroundOrigin?: { x: number; y: number };
 
   /**
+   * X軸基準点の画像内座標（ピクセル）
+   */
+  backgroundXAxis?: { x: number; y: number };
+
+  /**
+   * Y軸基準点の画像内座標（ピクセル）
+   */
+  backgroundYAxis?: { x: number; y: number };
+
+  /**
    * 背景画像のスケール情報
    */
   backgroundScale?: {
