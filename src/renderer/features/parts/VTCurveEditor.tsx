@@ -244,6 +244,8 @@ export default function VTCurveEditor({
   });
   const [showOriginModal, setShowOriginModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+  // 背景画像の表示切り替え用state
+  const [showBackgroundImage, setShowBackgroundImage] = useState(true);
   // --- state定義ここまで ---
 
   // --- ここでロジック関数を宣言 ---
@@ -446,9 +448,9 @@ export default function VTCurveEditor({
     return (
       <div
         className="container vt-curve-graph-container"
-        style={{ position: 'relative' }}
+        style={{ position: 'relative', overflow: 'hidden' }}
       >
-        {vtCurve.backgroundImage && (
+        {vtCurve.backgroundImage && showBackgroundImage && (
           <img
             src={vtCurve.backgroundImage}
             alt="Background"
@@ -892,29 +894,36 @@ export default function VTCurveEditor({
   return (
     <div className="vt-curve-editor-container">
       <h3 className="header">V-T曲線エディタ</h3>
+      {renderChart()}
       <AxisRangeInputs
         axisRangeValue={axisRange}
         setAxisRangeValue={setAxisRange}
         isReadonly={readonly}
       />
-      {renderChart()}
       {!readonly && (
-        <div className="actions vt-curve-button-row">
-          <button
-            type="button"
-            className="app-button"
-            onClick={() => fileInputRef.current?.click()}
-          >
-            背景画像を選択
-          </button>
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            style={{ display: 'none' }}
-            onChange={handleImageUpload}
-          />
-          {vtCurve.backgroundImage && (
+        <div
+          className="actions vt-curve-button-row"
+          style={{ display: 'flex', justifyContent: 'flex-start', gap: 8 }}
+        >
+          {/* 背景画像の選択/削除ボタンを切り替え */}
+          {!vtCurve.backgroundImage ? (
+            <>
+              <button
+                type="button"
+                className="app-button"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                背景画像を選択
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleImageUpload}
+              />
+            </>
+          ) : (
             <>
               <button
                 type="button"
@@ -922,6 +931,14 @@ export default function VTCurveEditor({
                 onClick={removeBackgroundImage}
               >
                 背景画像を削除
+              </button>
+              {/* 背景画像の表示切り替えボタン */}
+              <button
+                type="button"
+                className="app-button"
+                onClick={() => setShowBackgroundImage((prev) => !prev)}
+              >
+                背景画像表示: {showBackgroundImage ? 'ON' : 'OFF'}
               </button>
               <button
                 type="button"
