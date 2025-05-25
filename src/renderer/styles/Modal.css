@@ -20,8 +20,8 @@
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 500px; /* 幅を広げる */
-  max-width: 90%;
+  width: 70vw; /* ウィンドウ幅の70%に設定 */
+  max-width: 70vw; /* 最大幅も70%に統一 */
   max-height: 80vh; /* 高さを制限する */
 }
 
@@ -36,10 +36,6 @@
 }
 
 /* 部品フォームモーダル用スタイル */
-.part-form-modal .modal-content {
-  width: 600px; /* 部品フォーム用に幅を広げる */
-}
-
 .part-form-modal .modal-body {
   padding-right: 10px; /* スクロールバー用の余白 */
 }
