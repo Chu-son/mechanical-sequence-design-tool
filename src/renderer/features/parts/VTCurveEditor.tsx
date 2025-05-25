@@ -6,14 +6,13 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip,
-  Legend,
   ResponsiveContainer,
   Scatter,
-  Customized,
 } from 'recharts';
 import { VTCurve } from '@/renderer/types/driveTypes';
 import BaseModal from '@/renderer/features/common/BaseModal';
 import { validateNumericInput } from '@/renderer/features/flowchart/utils/common/flowchartUtils';
+import ListComponent from '@/renderer/features/common/ListComponent';
 import './VTCurveEditor.css';
 
 interface VTCurveEditorProps {
@@ -220,8 +219,6 @@ export default function VTCurveEditor({
 }: VTCurveEditorProps) {
   const vtCurve = vtCurveProp;
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  // --- state定義ここから ---
   const [calibration, setCalibration] = useState<CalibrationState>({
     origin: null,
     xAxis: null,
@@ -244,9 +241,43 @@ export default function VTCurveEditor({
   });
   const [showOriginModal, setShowOriginModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
-  // 背景画像の表示切り替え用state
   const [showBackgroundImage, setShowBackgroundImage] = useState(true);
+  const [addPointInputs, setAddPointInputs] = useState<{
+    rpm: number;
+    torque: number;
+  }>({ rpm: 0, torque: 0 });
+  const [directAddMode, setDirectAddMode] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
+
   // --- state定義ここまで ---
+
+  // モーダルを開いたときにselectStepをoriginから順次進める
+  useEffect(() => {
+    if (showOriginModal) {
+      if (!calibration.origin) {
+        setCalibration((prev) => ({ ...prev, selectStep: 'origin' }));
+      } else if (!calibration.xAxis) {
+        setCalibration((prev) => ({ ...prev, selectStep: 'xAxis' }));
+      } else if (!calibration.yAxis) {
+        setCalibration((prev) => ({ ...prev, selectStep: 'yAxis' }));
+      } else {
+        setCalibration((prev) => ({ ...prev, selectStep: null }));
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showOriginModal]);
+
+  // プロット追加処理
+  const addPoint = () => {
+    const rpm = validateNumericInput(addPointInputs.rpm.toString(), 0);
+    const torque = validateNumericInput(addPointInputs.torque.toString(), 0);
+    if (Number.isNaN(rpm) || Number.isNaN(torque)) return;
+    const points = vtCurve.points ? [...vtCurve.points] : [];
+    points.push({ rpm, torque });
+    points.sort((a, b) => a.rpm - b.rpm);
+    onChange({ ...vtCurve, points });
+    setAddPointInputs({ rpm: 0, torque: 0 });
+  };
 
   // --- ここでロジック関数を宣言 ---
   function getCalibratedImageStyle(): React.CSSProperties {
@@ -370,24 +401,6 @@ export default function VTCurveEditor({
     }));
   };
 
-  // 画像クリック時のキャリブレーション点選択
-  const handleImageClick = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (!plot.imageSize || !calibration.selectStep) return;
-    const rect = (e.target as HTMLImageElement).getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setCalibration((prev) => {
-      if (prev.selectStep === 'origin') {
-        return { ...prev, origin: { x, y }, selectStep: null };
-      } else if (prev.selectStep === 'xAxis') {
-        return { ...prev, xAxis: { x, y }, selectStep: null };
-      } else if (prev.selectStep === 'yAxis') {
-        return { ...prev, yAxis: { x, y }, selectStep: null };
-      }
-      return prev;
-    });
-  };
-
   // 原点合わせ情報を保存
   const saveOrigin = () => {
     setModalError(null);
@@ -449,6 +462,11 @@ export default function VTCurveEditor({
       <div
         className="container vt-curve-graph-container"
         style={{ position: 'relative', overflow: 'hidden' }}
+        onClick={handleChartClick}
+        role="button"
+        tabIndex={0}
+        onKeyDown={() => {}}
+        aria-label="グラフクリックでプロット追加"
       >
         {vtCurve.backgroundImage && showBackgroundImage && (
           <img
@@ -483,7 +501,6 @@ export default function VTCurveEditor({
               ]}
             />
             <Tooltip />
-            <Legend />
             {(vtCurve.points || []).length > 0 && (
               <Line
                 type="monotone"
@@ -497,98 +514,75 @@ export default function VTCurveEditor({
               <Scatter
                 name="データポイント"
                 data={vtCurve.points || []}
-                fill="#8884d8"
-                shape="circle"
                 dataKey="torque"
+                fill="#8884d8"
+                // rechartsのScatterはactiveIndex/activeShapeでハイライトを制御
+                activeIndex={selectedIndex ?? -1}
+                activeShape={(props: any) => {
+                  const { cx, cy } = props;
+                  return (
+                    <circle
+                      cx={cx}
+                      cy={cy}
+                      r={8}
+                      fill="#ff9800"
+                      stroke="#333"
+                      strokeWidth={2}
+                    />
+                  );
+                }}
               />
             )}
-            <Customized
-              component={() =>
-                plot.plotOrigin ? (
-                  <circle
-                    cx={plot.plotOrigin.x}
-                    cy={plot.plotOrigin.y}
-                    r={6}
-                    fill="red"
-                    stroke="black"
-                    strokeWidth={2}
-                  />
-                ) : null
-              }
-            />
           </LineChart>
         </ResponsiveContainer>
       </div>
     );
   }
 
-  // テーブルUI
+  // テーブルUI（ListComponentで共通化）
   function renderTable() {
+    // ListComponent用のヘッダー定義
+    const headers = [
+      { label: '回転数 (rpm)', width: '50%' },
+      { label: 'トルク (N・m)', width: '50%' },
+    ];
+    // 小数点以下2桁で表示
+    const formatNumber = (num: number) => Number(num).toFixed(2);
+    // ListComponent用のデータ変換
+    const items = (vtCurve.points || []).map((pt, idx) => ({
+      id: idx,
+      columns: [
+        {
+          content: (
+            <PointInput
+              value={Number(formatNumber(pt.rpm))}
+              onChange={(v) => updatePoint(idx, 'rpm', v)}
+              disabled={readonly}
+            />
+          ),
+        },
+        {
+          content: (
+            <PointInput
+              value={Number(formatNumber(pt.torque))}
+              onChange={(v) => updatePoint(idx, 'torque', v)}
+              disabled={readonly}
+            />
+          ),
+        },
+      ],
+      onClick: () => setSelectedIndex(idx),
+      // 選択行のハイライト
+      className: selectedIndex === idx ? 'selected-row' : '',
+    }));
+    // 削除メニュー
+    const menuItems = !readonly
+      ? [{ label: '削除', onClick: (itemId: number) => deletePoint(itemId) }]
+      : undefined;
     return (
-      <div className="vt-curve-table-container container">
-        <table className="vt-curve-table">
-          <thead>
-            <tr>
-              <th>回転数 (rpm)</th>
-              <th>トルク (N・m)</th>
-              {!readonly && <th>操作</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {(vtCurve.points || []).map((point, idx) => (
-              <tr key={`${point.rpm}-${point.torque}`}>
-                <td>
-                  <PointInput
-                    value={point.rpm}
-                    onChange={(val) => updatePoint(idx, 'rpm', val)}
-                    disabled={readonly}
-                  />
-                </td>
-                <td>
-                  <PointInput
-                    value={point.torque}
-                    onChange={(val) => updatePoint(idx, 'torque', val)}
-                    disabled={readonly}
-                  />
-                </td>
-                {!readonly && (
-                  <td>
-                    <button
-                      type="button"
-                      className="vt-curve-delete-button"
-                      onClick={() => deletePoint(idx)}
-                    >
-                      削除
-                    </button>
-                  </td>
-                )}
-              </tr>
-            ))}
-            {(vtCurve.points || []).length === 0 && (
-              <tr>
-                <td colSpan={readonly ? 2 : 3} className="no-data">
-                  データがありません
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+      <ListComponent headers={headers} items={items} menuItems={menuItems} />
     );
   }
-
-  // showOriginModalがtrueになったときにselectStepを初期化
-  useEffect(() => {
-    if (showOriginModal) {
-      setCalibration((prev) => {
-        if (!prev.origin) return { ...prev, selectStep: 'origin' };
-        if (!prev.xAxis) return { ...prev, selectStep: 'xAxis' };
-        if (!prev.yAxis) return { ...prev, selectStep: 'yAxis' };
-        return { ...prev, selectStep: null };
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [showOriginModal]);
 
   // 原点合わせモーダルUI
   function renderCalibrationModal() {
@@ -890,17 +884,11 @@ export default function VTCurveEditor({
     );
   }
 
-  // ...state定義、UI部品、return...
-  return (
-    <div className="vt-curve-editor-container">
-      <h3 className="header">V-T曲線エディタ</h3>
-      {renderChart()}
-      <AxisRangeInputs
-        axisRangeValue={axisRange}
-        setAxisRangeValue={setAxisRange}
-        isReadonly={readonly}
-      />
-      {!readonly && (
+  // プロット追加・直接指定UI・テーブルをまとめて下部に配置
+  function renderPlotControls() {
+    if (readonly) return renderTable();
+    return (
+      <div style={{ marginTop: 32 }}>
         <div
           className="actions vt-curve-button-row"
           style={{ display: 'flex', justifyContent: 'flex-start', gap: 8 }}
@@ -950,8 +938,94 @@ export default function VTCurveEditor({
             </>
           )}
         </div>
-      )}
-      {renderTable()}
+        <div style={{ height: 16 }} />
+        {/* プロット追加UI */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+            marginBottom: 8,
+          }}
+        >
+          <span>回転数</span>
+          <NumberInput
+            value={addPointInputs.rpm}
+            onChange={(v) =>
+              setAddPointInputs((inputs) => ({ ...inputs, rpm: v }))
+            }
+            style={{ width: 80 }}
+          />
+          <span>rpm</span>
+          <span style={{ marginLeft: 12 }}>トルク</span>
+          <NumberInput
+            value={addPointInputs.torque}
+            onChange={(v) =>
+              setAddPointInputs((inputs) => ({ ...inputs, torque: v }))
+            }
+            style={{ width: 80 }}
+          />
+          <span>N・m</span>
+          <button
+            type="button"
+            className="app-button"
+            onClick={addPoint}
+            style={{ marginLeft: 12 }}
+          >
+            追加
+          </button>
+          <button
+            type="button"
+            className={directAddMode ? 'app-button active' : 'app-button'}
+            style={{ marginLeft: 16 }}
+            onClick={() => setDirectAddMode((mode) => !mode)}
+          >
+            直接指定モード: {directAddMode ? 'ON' : 'OFF'}
+          </button>
+        </div>
+        {renderTable()}
+      </div>
+    );
+  }
+
+  // グラフクリックでプロット追加
+  const handleChartClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!directAddMode) return;
+    const svg = document.querySelector('.recharts-surface');
+    if (!svg) return;
+    const svgRect = svg.getBoundingClientRect();
+    const x = e.clientX - svgRect.left;
+    const y = e.clientY - svgRect.top;
+    const px = plot.plotArea.width;
+    const py = plot.plotArea.height;
+    if (px === 0 || py === 0) return;
+    const rpm =
+      axisRange.xMin +
+      ((x - plot.plotArea.left) / px) * (axisRange.xMax - axisRange.xMin);
+    const torque =
+      axisRange.yMax -
+      ((y - plot.plotArea.top) / py) * (axisRange.yMax - axisRange.yMin);
+    const points = vtCurve.points ? [...vtCurve.points] : [];
+    points.push({ rpm, torque });
+    points.sort((a, b) => a.rpm - b.rpm);
+    onChange({ ...vtCurve, points });
+    setSelectedIndex(
+      points.findIndex((p) => p.rpm === rpm && p.torque === torque),
+    );
+  };
+
+  // return部でプロット関連UIを下部に移動
+  return (
+    <div className="vt-curve-editor-container">
+      <h3 className="header">V-T曲線エディタ</h3>
+      {renderChart()}
+      <AxisRangeInputs
+        axisRangeValue={axisRange}
+        setAxisRangeValue={setAxisRange}
+        isReadonly={readonly}
+      />
+      {/* プロット関連UIを下部に集約 */}
+      {renderPlotControls()}
       {renderCalibrationModal()}
     </div>
   );
