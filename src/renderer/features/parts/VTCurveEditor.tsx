@@ -575,8 +575,133 @@ export default function VTCurveEditor({
     );
   }
 
+  // showOriginModalがtrueになったときにselectStepを初期化
+  useEffect(() => {
+    if (showOriginModal) {
+      setCalibration((prev) => {
+        if (!prev.origin) return { ...prev, selectStep: 'origin' };
+        if (!prev.xAxis) return { ...prev, selectStep: 'xAxis' };
+        if (!prev.yAxis) return { ...prev, selectStep: 'yAxis' };
+        return { ...prev, selectStep: null };
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showOriginModal]);
+
   // 原点合わせモーダルUI
   function renderCalibrationModal() {
+    // 画像上に選択済み点を描画するコンポーネント
+    const renderCalibrationPoints = () => {
+      if (!plot.imageSize) return null;
+      const pointStyle = (color: string): React.CSSProperties => ({
+        position: 'absolute',
+        width: 14,
+        height: 14,
+        borderRadius: '50%',
+        border: `2px solid ${color}`,
+        background: color,
+        opacity: 0.7,
+        transform: 'translate(-50%, -50%)',
+        zIndex: 2,
+        pointerEvents: 'none' as 'none',
+      });
+      const labelStyle: React.CSSProperties = {
+        position: 'absolute',
+        fontSize: 12,
+        color: '#222',
+        background: 'rgba(255,255,255,0.8)',
+        padding: '0 2px',
+        borderRadius: 2,
+        transform: 'translate(-50%, -120%)',
+        zIndex: 3,
+        pointerEvents: 'none' as 'none',
+      };
+      return (
+        <>
+          {calibration.origin && (
+            <>
+              <div
+                style={{
+                  ...pointStyle('red'),
+                  left: calibration.origin.x,
+                  top: calibration.origin.y,
+                }}
+              />
+              <div
+                style={{
+                  ...labelStyle,
+                  left: calibration.origin.x,
+                  top: calibration.origin.y,
+                }}
+              >
+                原点
+              </div>
+            </>
+          )}
+          {calibration.xAxis && (
+            <>
+              <div
+                style={{
+                  ...pointStyle('blue'),
+                  left: calibration.xAxis.x,
+                  top: calibration.xAxis.y,
+                }}
+              />
+              <div
+                style={{
+                  ...labelStyle,
+                  left: calibration.xAxis.x,
+                  top: calibration.xAxis.y,
+                }}
+              >
+                X軸
+              </div>
+            </>
+          )}
+          {calibration.yAxis && (
+            <>
+              <div
+                style={{
+                  ...pointStyle('green'),
+                  left: calibration.yAxis.x,
+                  top: calibration.yAxis.y,
+                }}
+              />
+              <div
+                style={{
+                  ...labelStyle,
+                  left: calibration.yAxis.x,
+                  top: calibration.yAxis.y,
+                }}
+              >
+                Y軸
+              </div>
+            </>
+          )}
+        </>
+      );
+    };
+
+    // 画像クリック時のキャリブレーション点選択（順次遷移）
+    const handleCalibrationImageClick = (
+      e: React.MouseEvent<HTMLImageElement>,
+    ) => {
+      if (!plot.imageSize || !calibration.selectStep) return;
+      const rect = (e.target as HTMLImageElement).getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      setCalibration((prev) => {
+        if (prev.selectStep === 'origin') {
+          return { ...prev, origin: { x, y }, selectStep: 'xAxis' };
+        } else if (prev.selectStep === 'xAxis') {
+          return { ...prev, xAxis: { x, y }, selectStep: 'yAxis' };
+        } else if (prev.selectStep === 'yAxis') {
+          return { ...prev, yAxis: { x, y }, selectStep: null };
+        }
+        return prev;
+      });
+    };
+
     return (
       <BaseModal
         isOpen={showOriginModal}
@@ -585,13 +710,20 @@ export default function VTCurveEditor({
       >
         <div style={{ textAlign: 'center' }}>
           {vtCurve.backgroundImage && (
-            <img
-              src={vtCurve.backgroundImage}
-              alt="origin"
-              style={{ border: '1px solid #ccc', cursor: 'crosshair' }}
-              onClick={handleImageClick}
-              onLoad={handleImageLoad}
-            />
+            <div style={{ position: 'relative', display: 'inline-block' }}>
+              <img
+                src={vtCurve.backgroundImage}
+                alt="origin"
+                style={{
+                  border: '1px solid #ccc',
+                  cursor: 'crosshair',
+                  display: 'block',
+                }}
+                onClick={handleCalibrationImageClick}
+                onLoad={handleImageLoad}
+              />
+              {renderCalibrationPoints()}
+            </div>
           )}
           <div style={{ margin: 12 }}>
             <button
@@ -607,8 +739,16 @@ export default function VTCurveEditor({
             >
               原点を選択
             </button>
+            <span
+              style={{
+                fontWeight:
+                  calibration.selectStep === 'origin' ? 'bold' : undefined,
+                marginLeft: 8,
+              }}
+            >
+              原点
+            </span>
             <span style={{ marginLeft: 8 }}>
-              原点:{' '}
               {calibration.origin
                 ? `${calibration.origin.x.toFixed(0)}, ${calibration.origin.y.toFixed(0)}`
                 : '未設定'}
@@ -624,6 +764,7 @@ export default function VTCurveEditor({
               placeholder="rpm"
               style={{ width: 70, marginLeft: 8 }}
             />
+            <span style={{ marginLeft: 2 }}>rpm</span>
             <CalibrationNumberInput
               value={calibration.originValue.torque}
               onChange={(v) =>
@@ -635,6 +776,7 @@ export default function VTCurveEditor({
               placeholder="torque"
               style={{ width: 70, marginLeft: 4 }}
             />
+            <span style={{ marginLeft: 2 }}>N・m</span>
           </div>
           <div style={{ margin: 12 }}>
             <button
@@ -650,8 +792,16 @@ export default function VTCurveEditor({
             >
               X軸基準点を選択
             </button>
+            <span
+              style={{
+                fontWeight:
+                  calibration.selectStep === 'xAxis' ? 'bold' : undefined,
+                marginLeft: 8,
+              }}
+            >
+              X軸基準点
+            </span>
             <span style={{ marginLeft: 8 }}>
-              X軸:{' '}
               {calibration.xAxis
                 ? `${calibration.xAxis.x.toFixed(0)}, ${calibration.xAxis.y.toFixed(0)}`
                 : '未設定'}
@@ -667,6 +817,7 @@ export default function VTCurveEditor({
               placeholder="rpm"
               style={{ width: 70, marginLeft: 8 }}
             />
+            <span style={{ marginLeft: 2 }}>rpm</span>
           </div>
           <div style={{ margin: 12 }}>
             <button
@@ -682,8 +833,16 @@ export default function VTCurveEditor({
             >
               Y軸基準点を選択
             </button>
+            <span
+              style={{
+                fontWeight:
+                  calibration.selectStep === 'yAxis' ? 'bold' : undefined,
+                marginLeft: 8,
+              }}
+            >
+              Y軸基準点
+            </span>
             <span style={{ marginLeft: 8 }}>
-              Y軸:{' '}
               {calibration.yAxis
                 ? `${calibration.yAxis.x.toFixed(0)}, ${calibration.yAxis.y.toFixed(0)}`
                 : '未設定'}
@@ -699,6 +858,7 @@ export default function VTCurveEditor({
               placeholder="torque"
               style={{ width: 70, marginLeft: 4 }}
             />
+            <span style={{ marginLeft: 2 }}>N・m</span>
           </div>
           {modalError && (
             <div style={{ color: 'red', marginBottom: 8 }}>{modalError}</div>
