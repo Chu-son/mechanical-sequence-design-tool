@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
-import { DriveConfig, ConfigIdentifier, Manufacturer } from '@/renderer/types/databaseTypes';
+import {
+  DriveConfig,
+  ConfigIdentifier,
+  Manufacturer,
+} from '@/renderer/types/databaseTypes';
 import { DrivePart } from '@/renderer/types/driveTypes';
 import { NodeBlock } from '@/renderer/features/flowchart/types/nodeBlocks';
 

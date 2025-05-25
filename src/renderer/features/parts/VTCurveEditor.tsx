@@ -148,7 +148,7 @@ const CalibrationNumberInput = ({
       }}
     />
   );
-}
+};
 
 // AxisRangeInputsのProps型名を変更し、props名の衝突を避ける
 interface AxisRangeInputsComponentProps {
@@ -250,28 +250,33 @@ export default function VTCurveEditor({
   function getCalibratedImageStyle(): React.CSSProperties {
     const pxPerX = (axisRange.xMax - axisRange.xMin) / plot.plotArea.width;
     const pxPerY = (axisRange.yMax - axisRange.yMin) / plot.plotArea.height;
-    const imgXPixel = (calibration.xAxis?.x || 0) - (calibration.origin?.x || 0);
-    const imgXValue = (calibration.xAxisValue.rpm || 0) - (calibration.originValue.rpm || 0);
+    const imgXPixel =
+      (calibration.xAxis?.x || 0) - (calibration.origin?.x || 0);
+    const imgXValue =
+      (calibration.xAxisValue.rpm || 0) - (calibration.originValue.rpm || 0);
     const imgPxPerX = Math.abs(imgXValue / imgXPixel);
-    const imgYPixel = (calibration.yAxis?.y || 0) - (calibration.origin?.y || 0);
-    const imgYValue = (calibration.yAxisValue.torque || 0) - (calibration.originValue.torque || 0);
+    const imgYPixel =
+      (calibration.yAxis?.y || 0) - (calibration.origin?.y || 0);
+    const imgYValue =
+      (calibration.yAxisValue.torque || 0) -
+      (calibration.originValue.torque || 0);
     const imgPxPerY = Math.abs(imgYValue / imgYPixel);
     const scaleX = pxPerX === 0 ? 1 : imgPxPerX / pxPerX;
     const scaleY = pxPerY === 0 ? 1 : imgPxPerY / pxPerY;
     const imgOriginX = calibration.origin?.x || 0;
     const imgOriginY = calibration.origin?.y || 0;
     const width =
-      vtCurve.backgroundScale && typeof vtCurve.backgroundScale.width === 'number'
+      vtCurve.backgroundScale &&
+      typeof vtCurve.backgroundScale.width === 'number'
         ? vtCurve.backgroundScale.width * scaleX
         : 'auto';
     const height =
-      vtCurve.backgroundScale && typeof vtCurve.backgroundScale.height === 'number'
+      vtCurve.backgroundScale &&
+      typeof vtCurve.backgroundScale.height === 'number'
         ? vtCurve.backgroundScale.height * scaleY
         : 'auto';
     const left =
-      plot.plotArea.left +
-      PLOT_AREA_MARGIN.left -
-      imgOriginX * scaleX;
+      plot.plotArea.left + PLOT_AREA_MARGIN.left - imgOriginX * scaleX;
     const top =
       plot.plotArea.top +
       PLOT_AREA_MARGIN.top +

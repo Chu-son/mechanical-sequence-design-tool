@@ -46,7 +46,8 @@ function BaseLinearActuatorNode({
       isOverloaded: false,
     };
     if (
-      JSON.stringify((data as any).calculatedOutput) !== JSON.stringify(calculatedOutput)
+      JSON.stringify((data as any).calculatedOutput) !==
+      JSON.stringify(calculatedOutput)
     ) {
       updateNodeData(id, {
         ...data,

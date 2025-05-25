@@ -43,7 +43,7 @@ function VelocityFigureNode({ id, data }: VelocityFigureNodeProps) {
       //     debugInfo: `Source Node ID: ${sourceId}`,
       //   });
       // }
-    // } else if (data?.sourceNodeId) {
+      // } else if (data?.sourceNodeId) {
       //   updateNodeData(id, {
       //     ...data,
       //     sourceNodeId: null,

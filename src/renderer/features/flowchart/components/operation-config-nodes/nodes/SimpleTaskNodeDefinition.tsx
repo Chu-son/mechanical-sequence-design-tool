@@ -1,6 +1,10 @@
 import { TaskNodeData } from '@/renderer/features/flowchart/components/operation-config-nodes/common';
 import { NodeDefinition } from '@/renderer/features/flowchart/components/base-nodes/types';
-import { roundToDigits, validateNumericInput, ROUND_DIGITS } from '@/renderer/features/flowchart/utils/common/flowchartUtils';
+import {
+  roundToDigits,
+  validateNumericInput,
+  ROUND_DIGITS,
+} from '@/renderer/features/flowchart/utils/common/flowchartUtils';
 import {
   PhysicalQuantityType,
   getUnitLabel,

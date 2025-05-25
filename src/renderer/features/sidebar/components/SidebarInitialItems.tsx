@@ -21,8 +21,10 @@ export const getInitialItems = (): SidebarItem[] => {
       icon: '🧩',
       content: <FlowchartNodeList />,
       isEnabled: (location: any) => location.pathname.includes('/flowchart'),
-      shouldAutoOpen: (location: any) => location.pathname.includes('/flowchart'),
-      shouldAutoPin: (location: any) => location.pathname.includes('/flowchart'),
+      shouldAutoOpen: (location: any) =>
+        location.pathname.includes('/flowchart'),
+      shouldAutoPin: (location: any) =>
+        location.pathname.includes('/flowchart'),
     },
     {
       id: 'parts-management',

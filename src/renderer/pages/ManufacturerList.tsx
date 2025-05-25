@@ -3,7 +3,9 @@ import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { Manufacturer } from '@/renderer/types/databaseTypes';
 import { useFormModal } from '@/renderer/hooks/useModal';
 import FormModal from '@/renderer/features/common/FormModal';
-import ListComponent, { MenuItem } from '@/renderer/features/common/ListComponent';
+import ListComponent, {
+  MenuItem,
+} from '@/renderer/features/common/ListComponent';
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
 
