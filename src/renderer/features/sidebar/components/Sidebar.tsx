@@ -52,6 +52,15 @@ export default function Sidebar() {
         });
         window.dispatchEvent(event);
       }
+    } else {
+      // ピン留めされていなければサイドバーを閉じる
+      if (!isPinned && activeItem !== null) {
+        setActiveItem(null);
+        const event = new CustomEvent('sidebar-change', {
+          detail: { isOpen: false },
+        });
+        window.dispatchEvent(event);
+      }
     }
   }, [location.pathname]);
 
