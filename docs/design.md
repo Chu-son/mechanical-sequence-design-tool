@@ -18,20 +18,43 @@
 - data/: 永続データ（JSON）
 - docs/: ドキュメント
 - src/: ソースコード（main: Electronメイン/ renderer: Reactフロント）
+  - main/: Electronメインプロセス（DBアクセス、IPC、メニュー等）
+  - renderer/: React/TypeScriptフロントエンド
+    - app/: アプリ全体のエントリポイント（App.tsx, index.tsx等）
+    - components/: 複数画面で使う共通UI部品（例: TitleBar等）
+    - config/: モーダルやアプリ設定
+    - context/: グローバル状態管理（React Context）
+    - features/: 機能単位でまとめたモジュール（flowchart, sidebar, parts等）
+      - common/: 汎用モーダル・リスト等
+      - flowchart/: フローチャート機能一式（ノード定義・UI・型・ユーティリティ等）
+      - parts/: 駆動部品管理機能
+      - sidebar/: サイドバー関連機能
+    - hooks/: カスタムReactフック
+    - pages/: 各画面（ルーティング単位）
+    - styles/: CSSスタイル一式
+    - types/: 型定義
+    - utils/: ユーティリティ・DBアクセス
 - release/: ビルド成果物
 
 #### 主要ファイル・ディレクトリの役割
 
 - src/main/: Electronメインプロセス（DBアクセス、IPC、メニュー等）
 - src/renderer/: React/TypeScriptフロントエンド
-  - components/flowchart/: フローチャートUI・ノード定義
-  - components/Sidebar/: サイドバーUI
-  - config/: モーダル等の設定
-  - context/: グローバル状態
-  - hooks/: カスタムフック
-  - pages/: 各画面
+  - app/: アプリ全体のエントリポイント（App.tsx, index.tsx等）
+  - components/: 複数画面で使う共通UI部品
+  - config/: モーダルやアプリ設定
+  - context/: グローバル状態管理用Context
+  - features/: 機能単位でまとめたモジュール群（flowchart, sidebar, parts等）
+    - flowchart/: フローチャート機能（ノード定義、UI、型、ユーティリティ等を内包）
+    - sidebar/: サイドバー機能
+    - parts/: 駆動部品管理機能
+    - common/: 汎用モーダル・リスト等
+  - hooks/: カスタムReactフック
+  - pages/: 画面単位のコンポーネント（ルーティング対象）
+  - styles/: CSSスタイル
   - types/: 型定義
-  - utils/: DBアクセス・ユーティリティ
+  - utils/: ユーティリティ関数、DBアクセス
+- release/: ビルド成果物
 
 ---
 
@@ -458,7 +481,7 @@ export interface OperationConfig {
 
 ---
 
-#### 運用フロー・ノード種別の使い分け
+####運用フロー・ノード種別の使い分け
 
 - 構想段階では仕様のみを入力するノードも利用可能。
 - 詳細設計段階では「駆動部品登録ページ」で部品（型式・メーカー・スペック）を登録し、フローチャートで型式選択してノード追加。
@@ -796,5 +819,3 @@ deleteManufacturer(id: string): Promise<void>
 3. JsonDatabase等の実装クラスにメソッド実装を追加
 4. 駆動部品登録関連のUI（ページ・モーダル等）を追加
 5. 既存のNodeDefinitionを拡張し、部品選択機能を追加
-
----
