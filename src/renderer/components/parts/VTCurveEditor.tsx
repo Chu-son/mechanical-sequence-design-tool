@@ -13,6 +13,7 @@ import {
 } from 'recharts';
 import { VTCurve } from '@/renderer/types/driveTypes';
 import BaseModal from '@/renderer/components/common/BaseModal';
+import { validateNumericInput } from '@/renderer/components/flowchart/common/flowchartUtils';
 import './VTCurveEditor.css';
 
 interface VTCurveEditorProps {
@@ -50,6 +51,168 @@ interface PlotState {
 // プロットエリアのマージン（背景画像の位置合わせ等で使用）
 const PLOT_AREA_MARGIN = { left: 20, top: 20 };
 
+// 型定義を先にまとめる
+interface PointInputProps {
+  value: number;
+  onChange: (v: string) => void;
+  disabled: boolean;
+}
+interface NumberInputProps {
+  value: number;
+  onChange: (v: number) => void;
+  min?: number;
+  max?: number;
+  step?: number;
+  placeholder?: string;
+  style?: React.CSSProperties;
+  disabled?: boolean;
+}
+interface CalibrationNumberInputProps {
+  value: number;
+  onChange: (v: number) => void;
+  placeholder?: string;
+  style?: React.CSSProperties;
+}
+
+// テーブルの入力欄共通化
+const PointInput = ({ value, onChange, disabled }: PointInputProps) => {
+  const [inputValue, setInputValue] = useState<string>(value.toString());
+  useEffect(() => {
+    setInputValue(value.toString());
+  }, [value]);
+  if (disabled) return value.toFixed(2);
+  return (
+    <input
+      type="number"
+      value={inputValue}
+      onChange={(e) => setInputValue(e.target.value)}
+      onBlur={(e) => onChange(e.target.value)}
+      className="form-group"
+    />
+  );
+};
+
+const NumberInput = ({
+  value,
+  onChange,
+  min,
+  max,
+  step,
+  placeholder,
+  style,
+  disabled,
+}: NumberInputProps) => {
+  const [inputValue, setInputValue] = useState<string>(value.toString());
+  useEffect(() => {
+    setInputValue(value.toString());
+  }, [value]);
+  return (
+    <input
+      type="number"
+      value={inputValue}
+      min={min}
+      max={max}
+      step={step}
+      placeholder={placeholder}
+      style={style}
+      disabled={disabled}
+      onChange={(e) => setInputValue(e.target.value)}
+      onBlur={() => {
+        const validated = validateNumericInput(inputValue, min ?? 0);
+        onChange(validated);
+      }}
+    />
+  );
+};
+
+const CalibrationNumberInput = ({
+  value,
+  onChange,
+  placeholder,
+  style,
+}: CalibrationNumberInputProps) => {
+  const [inputValue, setInputValue] = useState<string>(value.toString());
+  useEffect(() => {
+    setInputValue(value.toString());
+  }, [value]);
+  return (
+    <input
+      type="number"
+      value={inputValue}
+      placeholder={placeholder}
+      style={style}
+      onChange={(e) => setInputValue(e.target.value)}
+      onBlur={() => {
+        const validated = validateNumericInput(inputValue, 0);
+        onChange(validated);
+      }}
+    />
+  );
+}
+
+// AxisRangeInputsのProps型名を変更し、props名の衝突を避ける
+interface AxisRangeInputsComponentProps {
+  axisRangeValue: AxisRangeState;
+  setAxisRangeValue: React.Dispatch<React.SetStateAction<AxisRangeState>>;
+  isReadonly: boolean;
+}
+
+// XY軸範囲入力UI（分割代入でpropsを受け取る）
+function AxisRangeInputs({
+  axisRangeValue,
+  setAxisRangeValue,
+  isReadonly,
+}: AxisRangeInputsComponentProps) {
+  if (isReadonly) return null;
+  return (
+    <div
+      style={{
+        display: 'flex',
+        gap: 16,
+        alignItems: 'center',
+        marginBottom: 8,
+      }}
+    >
+      <span>X軸範囲:</span>
+      <NumberInput
+        value={axisRangeValue.xMin}
+        onChange={(v: number) =>
+          setAxisRangeValue((prev) => ({ ...prev, xMin: v }))
+        }
+        placeholder="最小"
+        style={{ width: 70 }}
+      />
+      <span>～</span>
+      <NumberInput
+        value={axisRangeValue.xMax}
+        onChange={(v: number) =>
+          setAxisRangeValue((prev) => ({ ...prev, xMax: v }))
+        }
+        placeholder="最大"
+        style={{ width: 70 }}
+      />
+      <span style={{ marginLeft: 16 }}>Y軸範囲:</span>
+      <NumberInput
+        value={axisRangeValue.yMin}
+        onChange={(v: number) =>
+          setAxisRangeValue((prev) => ({ ...prev, yMin: v }))
+        }
+        placeholder="最小"
+        style={{ width: 70 }}
+      />
+      <span>～</span>
+      <NumberInput
+        value={axisRangeValue.yMax}
+        onChange={(v: number) =>
+          setAxisRangeValue((prev) => ({ ...prev, yMax: v }))
+        }
+        placeholder="最大"
+        style={{ width: 70 }}
+      />
+    </div>
+  );
+}
+
 export default function VTCurveEditor({
   value: vtCurveProp = { points: [] },
   onChange,
@@ -58,7 +221,7 @@ export default function VTCurveEditor({
   const vtCurve = vtCurveProp;
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // 原点合わせ・キャリブレーションstate
+  // --- state定義ここから ---
   const [calibration, setCalibration] = useState<CalibrationState>({
     origin: null,
     xAxis: null,
@@ -68,22 +231,96 @@ export default function VTCurveEditor({
     yAxisValue: { torque: 0 },
     selectStep: null,
   });
-  // XY軸範囲state
   const [axisRange, setAxisRange] = useState<AxisRangeState>({
     xMin: 0,
     xMax: 3000,
     yMin: 0,
     yMax: 10,
   });
-  // 画像・グラフ描画state
   const [plot, setPlot] = useState<PlotState>({
     imageSize: null,
     plotArea: { width: 0, height: 0, left: 0, top: 0 },
     plotOrigin: null,
   });
-  // モーダル表示・エラー
   const [showOriginModal, setShowOriginModal] = useState(false);
   const [modalError, setModalError] = useState<string | null>(null);
+  // --- state定義ここまで ---
+
+  // --- ここでロジック関数を宣言 ---
+  function getCalibratedImageStyle(): React.CSSProperties {
+    const pxPerX = (axisRange.xMax - axisRange.xMin) / plot.plotArea.width;
+    const pxPerY = (axisRange.yMax - axisRange.yMin) / plot.plotArea.height;
+    const imgXPixel = (calibration.xAxis?.x || 0) - (calibration.origin?.x || 0);
+    const imgXValue = (calibration.xAxisValue.rpm || 0) - (calibration.originValue.rpm || 0);
+    const imgPxPerX = Math.abs(imgXValue / imgXPixel);
+    const imgYPixel = (calibration.yAxis?.y || 0) - (calibration.origin?.y || 0);
+    const imgYValue = (calibration.yAxisValue.torque || 0) - (calibration.originValue.torque || 0);
+    const imgPxPerY = Math.abs(imgYValue / imgYPixel);
+    const scaleX = pxPerX === 0 ? 1 : imgPxPerX / pxPerX;
+    const scaleY = pxPerY === 0 ? 1 : imgPxPerY / pxPerY;
+    const imgOriginX = calibration.origin?.x || 0;
+    const imgOriginY = calibration.origin?.y || 0;
+    const width =
+      vtCurve.backgroundScale && typeof vtCurve.backgroundScale.width === 'number'
+        ? vtCurve.backgroundScale.width * scaleX
+        : 'auto';
+    const height =
+      vtCurve.backgroundScale && typeof vtCurve.backgroundScale.height === 'number'
+        ? vtCurve.backgroundScale.height * scaleY
+        : 'auto';
+    const left =
+      plot.plotArea.left +
+      PLOT_AREA_MARGIN.left -
+      imgOriginX * scaleX;
+    const top =
+      plot.plotArea.top +
+      PLOT_AREA_MARGIN.top +
+      plot.plotArea.height -
+      imgOriginY * scaleY;
+    return {
+      position: 'absolute',
+      left: typeof left === 'number' ? `${left}px` : left,
+      top: typeof top === 'number' ? `${top}px` : top,
+      width: typeof width === 'number' ? `${width}px` : width,
+      height: typeof height === 'number' ? `${height}px` : height,
+      objectFit: 'fill',
+      opacity: 0.5,
+      pointerEvents: 'none',
+      zIndex: 1,
+    };
+  }
+  const updatePoint = (index: number, key: 'rpm' | 'torque', val: string) => {
+    const numValue = validateNumericInput(val, 0);
+    const points = vtCurve.points ? [...vtCurve.points] : [];
+    points[index] = { ...points[index], [key]: numValue };
+    points.sort((a, b) => a.rpm - b.rpm);
+    onChange({ ...vtCurve, points });
+  };
+  const deletePoint = (index: number) => {
+    const points = vtCurve.points ? [...vtCurve.points] : [];
+    points.splice(index, 1);
+    onChange({ ...vtCurve, points });
+  };
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      onChange({ ...vtCurve, backgroundImage: reader.result as string });
+    };
+    reader.readAsDataURL(file);
+  };
+  const removeBackgroundImage = () => {
+    onChange({
+      ...vtCurve,
+      backgroundImage: undefined,
+      backgroundOrigin: undefined,
+      backgroundXAxis: undefined,
+      backgroundYAxis: undefined,
+      backgroundScale: undefined,
+    });
+  };
+  // --- ここまで ---
 
   // グラフ描画領域（plotArea）のサイズと位置をSVGから取得し、plot stateに反映する
   // 依存配列: 背景画像・原点・データ点・軸範囲が変化したときに再計算
@@ -102,33 +339,19 @@ export default function VTCurveEditor({
         left: gridRect.left - svgRect.left,
         top: gridRect.top - svgRect.top,
       },
+      plotOrigin: {
+        x: gridRect.left - svgRect.left,
+        y: gridRect.bottom - svgRect.top,
+      },
     }));
   }, [
-    vtCurve.backgroundImage, // 背景画像が変わったとき
-    vtCurve.backgroundOrigin, // 原点位置が変わったとき
-    vtCurve.points, // データ点が変わったとき
-    axisRange.xMin, // X軸範囲が変わったとき
+    vtCurve.backgroundImage,
+    vtCurve.backgroundOrigin,
+    vtCurve.points,
+    axisRange.xMin,
     axisRange.xMax,
     axisRange.yMin,
     axisRange.yMax,
-  ]);
-
-  // グラフ上の原点座標（plotOrigin）をSVGから取得し、plot stateに反映する
-  // 依存配列: データ点・背景画像・原点が変化したときに再計算
-  useEffect(() => {
-    const svg = document.querySelector('.recharts-surface');
-    if (!svg) return;
-    const grid = svg.querySelector('g.recharts-cartesian-grid');
-    if (!grid) return;
-    const gridRect = grid.getBoundingClientRect();
-    const svgRect = svg.getBoundingClientRect();
-    const originX = gridRect.left - svgRect.left;
-    const originY = gridRect.bottom - svgRect.top;
-    setPlot((prev) => ({ ...prev, plotOrigin: { x: originX, y: originY } }));
-  }, [
-    vtCurve.points, // データ点が変わったとき
-    vtCurve.backgroundImage, // 背景画像が変わったとき
-    vtCurve.backgroundOrigin, // 原点位置が変わったとき
   ]);
 
   // 画像ロード時のサイズ取得
@@ -213,194 +436,6 @@ export default function VTCurveEditor({
     setShowOriginModal(false);
   };
 
-  // 画像のスケール・位置をXY軸範囲・キャリブレーション値から計算
-  function getCalibratedImageStyle(): React.CSSProperties {
-    const pxPerX = (axisRange.xMax - axisRange.xMin) / plot.plotArea.width;
-    const pxPerY = (axisRange.yMax - axisRange.yMin) / plot.plotArea.height;
-
-    const imgXPixel =
-      (calibration.xAxis?.x || 0) - (calibration.origin?.x || 0);
-    const imgXValue =
-      (calibration.xAxisValue.rpm || 0) - (calibration.originValue.rpm || 0);
-    const imgPxPerX = Math.abs(imgXValue / imgXPixel);
-
-    const imgYPixel =
-      (calibration.yAxis?.y || 0) - (calibration.origin?.y || 0);
-    const imgYValue =
-      (calibration.yAxisValue.torque || 0) -
-      (calibration.originValue.torque || 0);
-    const imgPxPerY = Math.abs(imgYValue / imgYPixel);
-
-    const scaleX = pxPerX === 0 ? 1 : imgPxPerX / pxPerX;
-    const scaleY = pxPerY === 0 ? 1 : imgPxPerY / pxPerY;
-
-    const imgOriginX = calibration.origin?.x || 0;
-    const imgOriginY = calibration.origin?.y || 0;
-
-    const left =
-      plot.plotArea.left + PLOT_AREA_MARGIN.left - imgOriginX * scaleX;
-    const top =
-      plot.plotArea.top +
-      PLOT_AREA_MARGIN.top +
-      plot.plotArea.height -
-      imgOriginY * scaleY;
-
-    return {
-      position: 'absolute',
-      left: `${left}px`,
-      top: `${top}px`,
-      width: `${vtCurve.backgroundScale?.width * scaleX}px`,
-      height: `${vtCurve.backgroundScale?.height * scaleY}px`,
-      objectFit: 'fill',
-      opacity: 0.5,
-      pointerEvents: 'none',
-      zIndex: 1,
-    };
-  }
-
-  // 背景画像アップロード
-  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      onChange({ ...vtCurve, backgroundImage: reader.result as string });
-    };
-    reader.readAsDataURL(file);
-  };
-
-  // 背景画像削除
-  const removeBackgroundImage = () => {
-    onChange({
-      ...vtCurve,
-      backgroundImage: undefined,
-      backgroundOrigin: undefined,
-      backgroundXAxis: undefined,
-      backgroundYAxis: undefined,
-      backgroundScale: undefined,
-    });
-  };
-
-  // データポイント削除
-  const deletePoint = (index: number) => {
-    const points = vtCurve.points ? [...vtCurve.points] : [];
-    points.splice(index, 1);
-    onChange({ ...vtCurve, points });
-  };
-
-  // データポイント更新
-  const updatePoint = (index: number, key: 'rpm' | 'torque', val: string) => {
-    const numValue = parseFloat(val);
-    if (Number.isNaN(numValue)) return;
-    const points = vtCurve.points ? [...vtCurve.points] : [];
-    points[index] = { ...points[index], [key]: numValue };
-    points.sort((a, b) => a.rpm - b.rpm);
-    onChange({ ...vtCurve, points });
-  };
-
-  // 背景画像スタイル計算
-  let imgStyle: React.CSSProperties = { display: 'none' };
-  if (vtCurve.backgroundImage) {
-    if (
-      vtCurve.backgroundScale &&
-      vtCurve.backgroundOrigin &&
-      vtCurve.backgroundXAxis &&
-      vtCurve.backgroundYAxis &&
-      plot.plotArea.width > 0 &&
-      plot.plotArea.height > 0 &&
-      !Number.isNaN(Number(axisRange.xMin)) &&
-      !Number.isNaN(Number(axisRange.xMax)) &&
-      !Number.isNaN(Number(axisRange.yMin)) &&
-      !Number.isNaN(Number(axisRange.yMax))
-    ) {
-      imgStyle = getCalibratedImageStyle();
-    } else if (vtCurve.backgroundOrigin && plot.plotOrigin) {
-      imgStyle = {
-        position: 'absolute',
-        left: `${plot.plotArea.left + PLOT_AREA_MARGIN.left - vtCurve.backgroundOrigin.x}px`,
-        top: `${plot.plotArea.top + PLOT_AREA_MARGIN.top + plot.plotArea.height - vtCurve.backgroundOrigin.y}px`,
-        width: 'auto',
-        height: 'auto',
-        opacity: 0.5,
-        pointerEvents: 'none',
-        zIndex: 1,
-      };
-    } else {
-      imgStyle = {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: '100%',
-        height: '100%',
-        opacity: 0.5,
-        pointerEvents: 'none',
-        zIndex: 1,
-      };
-    }
-  }
-
-  const chartData =
-    vtCurve.points?.map((point) => ({
-      rpm: point.rpm,
-      torque: point.torque,
-    })) || [];
-
-  // XY軸範囲入力UI
-  function renderAxisRangeInputs() {
-    if (readonly) return null;
-    return (
-      <div
-        style={{
-          display: 'flex',
-          gap: 16,
-          alignItems: 'center',
-          marginBottom: 8,
-        }}
-      >
-        <span>X軸範囲:</span>
-        <input
-          type="number"
-          value={axisRange.xMin}
-          onChange={(e) =>
-            setAxisRange({ ...axisRange, xMin: Number(e.target.value) })
-          }
-          style={{ width: 70 }}
-          placeholder="最小"
-        />
-        <span>～</span>
-        <input
-          type="number"
-          value={axisRange.xMax}
-          onChange={(e) =>
-            setAxisRange({ ...axisRange, xMax: Number(e.target.value) })
-          }
-          style={{ width: 70 }}
-          placeholder="最大"
-        />
-        <span style={{ marginLeft: 16 }}>Y軸範囲:</span>
-        <input
-          type="number"
-          value={axisRange.yMin}
-          onChange={(e) =>
-            setAxisRange({ ...axisRange, yMin: Number(e.target.value) })
-          }
-          style={{ width: 70 }}
-          placeholder="最小"
-        />
-        <span>～</span>
-        <input
-          type="number"
-          value={axisRange.yMax}
-          onChange={(e) =>
-            setAxisRange({ ...axisRange, yMax: Number(e.target.value) })
-          }
-          style={{ width: 70 }}
-          placeholder="最大"
-        />
-      </div>
-    );
-  }
-
   // グラフUI
   function renderChart() {
     return (
@@ -413,13 +448,13 @@ export default function VTCurveEditor({
             src={vtCurve.backgroundImage}
             alt="Background"
             className="vt-curve-background-image"
-            style={imgStyle}
+            style={getCalibratedImageStyle()}
             onLoad={handleImageLoad}
           />
         )}
         <ResponsiveContainer width="100%" height="100%">
           <LineChart
-            data={chartData}
+            data={vtCurve.points || []}
             margin={{ top: 20, right: 30, left: 20, bottom: 30 }}
           >
             <CartesianGrid strokeDasharray="3 3" />
@@ -442,7 +477,7 @@ export default function VTCurveEditor({
             />
             <Tooltip />
             <Legend />
-            {chartData.length > 0 && (
+            {(vtCurve.points || []).length > 0 && (
               <Line
                 type="monotone"
                 dataKey="torque"
@@ -451,10 +486,10 @@ export default function VTCurveEditor({
                 connectNulls
               />
             )}
-            {chartData.length > 0 && (
+            {(vtCurve.points || []).length > 0 && (
               <Scatter
                 name="データポイント"
-                data={chartData}
+                data={vtCurve.points || []}
                 fill="#8884d8"
                 shape="circle"
                 dataKey="torque"
@@ -493,63 +528,28 @@ export default function VTCurveEditor({
             </tr>
           </thead>
           <tbody>
-            {(vtCurve.points || []).map((point) => (
+            {(vtCurve.points || []).map((point, idx) => (
               <tr key={`${point.rpm}-${point.torque}`}>
                 <td>
-                  {readonly ? (
-                    point.rpm.toFixed(2)
-                  ) : (
-                    <input
-                      type="number"
-                      value={point.rpm}
-                      onChange={(e) =>
-                        updatePoint(
-                          vtCurve.points.findIndex(
-                            (p) =>
-                              p.rpm === point.rpm && p.torque === point.torque,
-                          ),
-                          'rpm',
-                          e.target.value,
-                        )
-                      }
-                      className="form-group"
-                    />
-                  )}
+                  <PointInput
+                    value={point.rpm}
+                    onChange={(val) => updatePoint(idx, 'rpm', val)}
+                    disabled={readonly}
+                  />
                 </td>
                 <td>
-                  {readonly ? (
-                    point.torque.toFixed(2)
-                  ) : (
-                    <input
-                      type="number"
-                      value={point.torque}
-                      onChange={(e) =>
-                        updatePoint(
-                          vtCurve.points.findIndex(
-                            (p) =>
-                              p.rpm === point.rpm && p.torque === point.torque,
-                          ),
-                          'torque',
-                          e.target.value,
-                        )
-                      }
-                      className="form-group"
-                    />
-                  )}
+                  <PointInput
+                    value={point.torque}
+                    onChange={(val) => updatePoint(idx, 'torque', val)}
+                    disabled={readonly}
+                  />
                 </td>
                 {!readonly && (
                   <td>
                     <button
                       type="button"
                       className="vt-curve-delete-button"
-                      onClick={() =>
-                        deletePoint(
-                          vtCurve.points.findIndex(
-                            (p) =>
-                              p.rpm === point.rpm && p.torque === point.torque,
-                          ),
-                        )
-                      }
+                      onClick={() => deletePoint(idx)}
                     >
                       削除
                     </button>
@@ -608,34 +608,26 @@ export default function VTCurveEditor({
                 ? `${calibration.origin.x.toFixed(0)}, ${calibration.origin.y.toFixed(0)}`
                 : '未設定'}
             </span>
-            <input
-              type="number"
-              placeholder="rpm"
+            <CalibrationNumberInput
               value={calibration.originValue.rpm}
-              onChange={(e) =>
+              onChange={(v) =>
                 setCalibration((prev) => ({
                   ...prev,
-                  originValue: {
-                    ...prev.originValue,
-                    rpm: Number(e.target.value),
-                  },
+                  originValue: { ...prev.originValue, rpm: v },
                 }))
               }
+              placeholder="rpm"
               style={{ width: 70, marginLeft: 8 }}
             />
-            <input
-              type="number"
-              placeholder="torque"
+            <CalibrationNumberInput
               value={calibration.originValue.torque}
-              onChange={(e) =>
+              onChange={(v) =>
                 setCalibration((prev) => ({
                   ...prev,
-                  originValue: {
-                    ...prev.originValue,
-                    torque: Number(e.target.value),
-                  },
+                  originValue: { ...prev.originValue, torque: v },
                 }))
               }
+              placeholder="torque"
               style={{ width: 70, marginLeft: 4 }}
             />
           </div>
@@ -659,16 +651,15 @@ export default function VTCurveEditor({
                 ? `${calibration.xAxis.x.toFixed(0)}, ${calibration.xAxis.y.toFixed(0)}`
                 : '未設定'}
             </span>
-            <input
-              type="number"
-              placeholder="rpm"
+            <CalibrationNumberInput
               value={calibration.xAxisValue.rpm}
-              onChange={(e) =>
+              onChange={(v) =>
                 setCalibration((prev) => ({
                   ...prev,
-                  xAxisValue: { rpm: Number(e.target.value) },
+                  xAxisValue: { rpm: v },
                 }))
               }
+              placeholder="rpm"
               style={{ width: 70, marginLeft: 8 }}
             />
           </div>
@@ -692,16 +683,15 @@ export default function VTCurveEditor({
                 ? `${calibration.yAxis.x.toFixed(0)}, ${calibration.yAxis.y.toFixed(0)}`
                 : '未設定'}
             </span>
-            <input
-              type="number"
-              placeholder="torque"
+            <CalibrationNumberInput
               value={calibration.yAxisValue.torque}
-              onChange={(e) =>
+              onChange={(v) =>
                 setCalibration((prev) => ({
                   ...prev,
-                  yAxisValue: { torque: Number(e.target.value) },
+                  yAxisValue: { torque: v },
                 }))
               }
+              placeholder="torque"
               style={{ width: 70, marginLeft: 4 }}
             />
           </div>
@@ -733,10 +723,15 @@ export default function VTCurveEditor({
     );
   }
 
+  // ...state定義、UI部品、return...
   return (
     <div className="vt-curve-editor-container">
       <h3 className="header">V-T曲線エディタ</h3>
-      {renderAxisRangeInputs()}
+      <AxisRangeInputs
+        axisRangeValue={axisRange}
+        setAxisRangeValue={setAxisRange}
+        isReadonly={readonly}
+      />
       {renderChart()}
       {!readonly && (
         <div className="actions vt-curve-button-row">
