@@ -3,8 +3,8 @@
  * 再利用可能なモーダル設定を提供する
  */
 
-import { NodeFieldDefinition } from '@/renderer/components/flowchart/components/base-nodes/types';
-import VTCurveEditor from '@/renderer/components/parts/VTCurveEditor';
+import { NodeFieldDefinition } from '@/renderer/features/flowchart/components/base-nodes/types';
+import VTCurveEditor from '@/renderer/features/parts/VTCurveEditor';
 import { useNavigate } from 'react-router-dom';
 
 /**

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import VTCurveEditor from '@/renderer/components/parts/VTCurveEditor';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { DrivePart, VTCurve } from '@/renderer/types/driveTypes';
+import VTCurveEditor from '@/renderer/features/parts/VTCurveEditor';
 
 const VTCurveEditPage: React.FC = () => {
   const { partId } = useParams<{ partId: string }>();

@@ -10,10 +10,10 @@ import {
 import { PART_TYPE_LABELS } from '@/renderer/types/partTypeMappings';
 import { PART_TYPE_FORM_CONFIG_MAP } from '@/renderer/config/modalConfigs';
 import { useFormModal } from '@/renderer/hooks/useModal';
-import FormModal from '@/renderer/components/common/FormModal';
+import FormModal from '@/renderer/features/common/FormModal';
 import ListComponent, {
   MenuItem,
-} from '@/renderer/components/common/ListComponent';
+} from '@/renderer/features/common/ListComponent';
 import '@/renderer/styles/Common.css';
 
 // フォームデータ型

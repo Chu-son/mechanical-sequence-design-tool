@@ -2,10 +2,8 @@ import React, { useEffect, useState } from 'react';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import { Manufacturer } from '@/renderer/types/databaseTypes';
 import { useFormModal } from '@/renderer/hooks/useModal';
-import FormModal from '@/renderer/components/common/FormModal';
-import ListComponent, {
-  MenuItem,
-} from '@/renderer/components/common/ListComponent';
+import FormModal from '@/renderer/features/common/FormModal';
+import ListComponent, { MenuItem } from '@/renderer/features/common/ListComponent';
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
 

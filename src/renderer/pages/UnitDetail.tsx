@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import DatabaseFactory from '@/renderer/utils/DatabaseFactory';
 import '@/renderer/styles/Common.css';
 import '@/renderer/styles/Modal.css';
-import ListComponent from '@/renderer/components/common/ListComponent';
-import FormModal from '@/renderer/components/common/FormModal';
+import ListComponent from '@/renderer/features/common/ListComponent';
+import FormModal from '@/renderer/features/common/FormModal';
 import { useFormModal } from '@/renderer/hooks/useModal';
 import {
   driveConfigModalConfig,
