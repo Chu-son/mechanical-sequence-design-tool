@@ -3,6 +3,41 @@
  */
 
 /**
+ * キャリブレーション情報型
+ */
+export interface CalibrationInfo {
+  origin: { x: number; y: number };
+  xAxis: { x: number; y: number };
+  yAxis: { x: number; y: number };
+  originValue: { rpm: number; torque: number };
+  xAxisValue: { rpm: number };
+  yAxisValue: { torque: number };
+  scale?: {
+    xMin: number;
+    xMax: number;
+    yMin: number;
+    yMax: number;
+    width: number;
+    height: number;
+  };
+}
+
+// XY軸範囲state型
+export interface AxisRangeState {
+  xMin: number;
+  xMax: number;
+  yMin: number;
+  yMax: number;
+}
+
+// 画像・グラフ描画関連state型
+export interface PlotState {
+  imageSize: { width: number; height: number } | null;
+  plotArea: { width: number; height: number; left: number; top: number };
+  plotOrigin: { x: number; y: number } | null;
+}
+
+/**
  * V-T曲線データ型
  * 回転数とトルクのペアデータを保持し、背景画像のスケールと原点情報も含む
  */
@@ -18,31 +53,14 @@ export interface VTCurve {
   backgroundImage?: string;
 
   /**
-   * 画像内の原点座標（ピクセル）
+   * キャリブレーション情報
    */
-  backgroundOrigin?: { x: number; y: number };
+  calibration?: CalibrationInfo;
 
   /**
-   * X軸基準点の画像内座標（ピクセル）
+   * XY軸範囲
    */
-  backgroundXAxis?: { x: number; y: number };
-
-  /**
-   * Y軸基準点の画像内座標（ピクセル）
-   */
-  backgroundYAxis?: { x: number; y: number };
-
-  /**
-   * 背景画像のスケール情報
-   */
-  backgroundScale?: {
-    xMin: number; // X軸最小値 (rpm)
-    xMax: number; // X軸最大値 (rpm)
-    yMin: number; // Y軸最小値 (torque)
-    yMax: number; // Y軸最大値 (torque)
-    width: number; // 画像の幅（ピクセル）
-    height: number; // 画像の高さ（ピクセル）
-  };
+  axisRange?: AxisRangeState;
 }
 
 // 出力仕様の基本型（共通プロパティ）

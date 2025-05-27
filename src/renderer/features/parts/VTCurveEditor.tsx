@@ -9,7 +9,11 @@ import {
   ResponsiveContainer,
   Scatter,
 } from 'recharts';
-import { VTCurve } from '@/renderer/types/driveTypes';
+import {
+  VTCurve,
+  AxisRangeState,
+  PlotState,
+} from '@/renderer/types/driveTypes';
 import BaseModal from '@/renderer/features/common/BaseModal';
 import { validateNumericInput } from '@/renderer/features/flowchart/utils/common/flowchartUtils';
 import ListComponent from '@/renderer/features/common/ListComponent';
@@ -22,7 +26,7 @@ interface VTCurveEditorProps {
 }
 
 // 原点合わせ・キャリブレーション関連のstate型
-interface CalibrationState {
+interface CalibrationModalState {
   origin: { x: number; y: number } | null;
   xAxis: { x: number; y: number } | null;
   yAxis: { x: number; y: number } | null;
@@ -30,21 +34,6 @@ interface CalibrationState {
   xAxisValue: { rpm: number };
   yAxisValue: { torque: number };
   selectStep: 'origin' | 'xAxis' | 'yAxis' | null;
-}
-
-// XY軸範囲state型
-interface AxisRangeState {
-  xMin: number;
-  xMax: number;
-  yMin: number;
-  yMax: number;
-}
-
-// 画像・グラフ描画関連state型
-interface PlotState {
-  imageSize: { width: number; height: number } | null;
-  plotArea: { width: number; height: number; left: number; top: number };
-  plotOrigin: { x: number; y: number } | null;
 }
 
 // プロットエリアのマージン（背景画像の位置合わせ等で使用）
@@ -219,21 +208,69 @@ export default function VTCurveEditor({
 }: VTCurveEditorProps) {
   const vtCurve = vtCurveProp;
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [calibration, setCalibration] = useState<CalibrationState>({
-    origin: null,
-    xAxis: null,
-    yAxis: null,
-    originValue: { rpm: 0, torque: 0 },
-    xAxisValue: { rpm: 0 },
-    yAxisValue: { torque: 0 },
-    selectStep: null,
+  // axisRangeはVTCurveのaxisRangeプロパティと同期
+  const [axisRange, setAxisRange] = useState<AxisRangeState>(
+    vtCurve.axisRange ?? { xMin: 0, xMax: 3000, yMin: 0, yMax: 10 },
+  );
+  // calibrationはVTCurveのcalibrationプロパティと同期
+  const [calibration, setCalibration] = useState<CalibrationModalState>(() => {
+    if (vtCurve.calibration) {
+      return {
+        origin: vtCurve.calibration.origin ?? null,
+        xAxis: vtCurve.calibration.xAxis ?? null,
+        yAxis: vtCurve.calibration.yAxis ?? null,
+        originValue: vtCurve.calibration.originValue ?? { rpm: 0, torque: 0 },
+        xAxisValue: vtCurve.calibration.xAxisValue ?? { rpm: 0 },
+        yAxisValue: vtCurve.calibration.yAxisValue ?? { torque: 0 },
+        selectStep: null,
+      };
+    }
+    return {
+      origin: null,
+      xAxis: null,
+      yAxis: null,
+      originValue: { rpm: 0, torque: 0 },
+      xAxisValue: { rpm: 0 },
+      yAxisValue: { torque: 0 },
+      selectStep: null,
+    };
   });
-  const [axisRange, setAxisRange] = useState<AxisRangeState>({
-    xMin: 0,
-    xMax: 3000,
-    yMin: 0,
-    yMax: 10,
-  });
+
+  // 初回マウント時にaxisRangeがundefinedならonChangeでaxisRangeをセット
+  useEffect(() => {
+    if (!vtCurve.axisRange) {
+      onChange({ ...vtCurve, axisRange });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // axisRange変更時にVTCurveへ反映
+  useEffect(() => {
+    if (
+      !vtCurve.axisRange ||
+      axisRange.xMin !== vtCurve.axisRange.xMin ||
+      axisRange.xMax !== vtCurve.axisRange.xMax ||
+      axisRange.yMin !== vtCurve.axisRange.yMin ||
+      axisRange.yMax !== vtCurve.axisRange.yMax
+    ) {
+      onChange({ ...vtCurve, axisRange });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [axisRange]);
+  // VTCurveのaxisRangeが外部から変化した場合にstateへ反映
+  useEffect(() => {
+    if (
+      vtCurve.axisRange &&
+      (axisRange.xMin !== vtCurve.axisRange.xMin ||
+        axisRange.xMax !== vtCurve.axisRange.xMax ||
+        axisRange.yMin !== vtCurve.axisRange.yMin ||
+        axisRange.yMax !== vtCurve.axisRange.yMax)
+    ) {
+      setAxisRange(vtCurve.axisRange);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [vtCurve.axisRange]);
+  // CalibrationModalStateはモーダル一時保存用
   const [plot, setPlot] = useState<PlotState>({
     imageSize: null,
     plotArea: { width: 0, height: 0, left: 0, top: 0 },
@@ -280,6 +317,30 @@ export default function VTCurveEditor({
   };
 
   // --- ここでロジック関数を宣言 ---
+  const handleChartClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!directAddMode) return;
+    const svg = document.querySelector('.recharts-surface');
+    if (!svg) return;
+    const svgRect = svg.getBoundingClientRect();
+    const x = e.clientX - svgRect.left;
+    const y = e.clientY - svgRect.top;
+    const px = plot.plotArea.width;
+    const py = plot.plotArea.height;
+    if (px === 0 || py === 0) return;
+    const rpm =
+      axisRange.xMin +
+      ((x - plot.plotArea.left) / px) * (axisRange.xMax - axisRange.xMin);
+    const torque =
+      axisRange.yMax -
+      ((y - plot.plotArea.top) / py) * (axisRange.yMax - axisRange.yMin);
+    const points = vtCurve.points ? [...vtCurve.points] : [];
+    points.push({ rpm, torque });
+    points.sort((a, b) => a.rpm - b.rpm);
+    onChange({ ...vtCurve, points });
+    setSelectedIndex(
+      points.findIndex((p) => p.rpm === rpm && p.torque === torque),
+    );
+  };
   function getCalibratedImageStyle(): React.CSSProperties {
     const pxPerX = (axisRange.xMax - axisRange.xMin) / plot.plotArea.width;
     const pxPerY = (axisRange.yMax - axisRange.yMin) / plot.plotArea.height;
@@ -299,14 +360,14 @@ export default function VTCurveEditor({
     const imgOriginX = calibration.origin?.x || 0;
     const imgOriginY = calibration.origin?.y || 0;
     const width =
-      vtCurve.backgroundScale &&
-      typeof vtCurve.backgroundScale.width === 'number'
-        ? vtCurve.backgroundScale.width * scaleX
+      vtCurve.calibration?.scale &&
+      typeof vtCurve.calibration.scale.width === 'number'
+        ? vtCurve.calibration.scale.width * scaleX
         : 'auto';
     const height =
-      vtCurve.backgroundScale &&
-      typeof vtCurve.backgroundScale.height === 'number'
-        ? vtCurve.backgroundScale.height * scaleY
+      vtCurve.calibration?.scale &&
+      typeof vtCurve.calibration.scale.height === 'number'
+        ? vtCurve.calibration.scale.height * scaleY
         : 'auto';
     const left =
       plot.plotArea.left + PLOT_AREA_MARGIN.left - imgOriginX * scaleX;
@@ -352,10 +413,7 @@ export default function VTCurveEditor({
     onChange({
       ...vtCurve,
       backgroundImage: undefined,
-      backgroundOrigin: undefined,
-      backgroundXAxis: undefined,
-      backgroundYAxis: undefined,
-      backgroundScale: undefined,
+      calibration: undefined,
     });
   };
   // --- ここまで ---
@@ -384,7 +442,7 @@ export default function VTCurveEditor({
     }));
   }, [
     vtCurve.backgroundImage,
-    vtCurve.backgroundOrigin,
+    vtCurve.calibration,
     vtCurve.points,
     axisRange.xMin,
     axisRange.xMax,
@@ -404,7 +462,6 @@ export default function VTCurveEditor({
   // 原点合わせ情報を保存
   const saveOrigin = () => {
     setModalError(null);
-
     const { origin, xAxis, yAxis, originValue, xAxisValue, yAxisValue } =
       calibration;
     if (!origin || !xAxis || !yAxis) {
@@ -439,19 +496,24 @@ export default function VTCurveEditor({
     const calcYMax = tq0 - (oy * (tq2 - tq0)) / (y2 - oy);
     onChange({
       ...vtCurve,
-      backgroundOrigin: { x: ox, y: oy },
-      backgroundXAxis: { x: x1, y: y1 },
-      backgroundYAxis: { x: x2, y: y2 },
-      backgroundScale: imgSize
-        ? {
-            xMin: calcXMin,
-            xMax: calcXMax,
-            yMin: calcYMin,
-            yMax: calcYMax,
-            width: imgSize.width,
-            height: imgSize.height,
-          }
-        : undefined,
+      calibration: {
+        origin: { x: ox, y: oy },
+        xAxis: { x: x1, y: y1 },
+        yAxis: { x: x2, y: y2 },
+        originValue: { ...originValue },
+        xAxisValue: { ...xAxisValue },
+        yAxisValue: { ...yAxisValue },
+        scale: imgSize
+          ? {
+              xMin: calcXMin,
+              xMax: calcXMax,
+              yMin: calcYMin,
+              yMax: calcYMax,
+              width: imgSize.width,
+              height: imgSize.height,
+            }
+          : undefined,
+      },
     });
     setShowOriginModal(false);
   };
@@ -987,32 +1049,6 @@ export default function VTCurveEditor({
       </div>
     );
   }
-
-  // グラフクリックでプロット追加
-  const handleChartClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!directAddMode) return;
-    const svg = document.querySelector('.recharts-surface');
-    if (!svg) return;
-    const svgRect = svg.getBoundingClientRect();
-    const x = e.clientX - svgRect.left;
-    const y = e.clientY - svgRect.top;
-    const px = plot.plotArea.width;
-    const py = plot.plotArea.height;
-    if (px === 0 || py === 0) return;
-    const rpm =
-      axisRange.xMin +
-      ((x - plot.plotArea.left) / px) * (axisRange.xMax - axisRange.xMin);
-    const torque =
-      axisRange.yMax -
-      ((y - plot.plotArea.top) / py) * (axisRange.yMax - axisRange.yMin);
-    const points = vtCurve.points ? [...vtCurve.points] : [];
-    points.push({ rpm, torque });
-    points.sort((a, b) => a.rpm - b.rpm);
-    onChange({ ...vtCurve, points });
-    setSelectedIndex(
-      points.findIndex((p) => p.rpm === rpm && p.torque === torque),
-    );
-  };
 
   // return部でプロット関連UIを下部に移動
   return (
